@@ -1,5 +1,7 @@
 import { stripe } from "@/lib/stripe";
 
+export const dynamic = "force-dynamic";
+
 export async function POST() {
   try {
     const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";

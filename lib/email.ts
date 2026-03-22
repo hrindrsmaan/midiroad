@@ -1,9 +1,9 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendEmail(email: string) {
   try {
+    // Initialize inside the function to avoid crashing Next.js static build when .env is not present
+    const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_key");
     const baseUrl = process.env.BASE_URL || "http://localhost:3000";
     const downloadUrl = `${baseUrl}/downloads/midi-drum-kit.zip`;
 
@@ -20,29 +20,26 @@ export async function sendEmail(email: string) {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
                 line-height: 1.6; 
                 color: #000000; 
-                background-color: #f4f4f0; 
+                background-color: #ffffff; 
                 margin: 0; 
                 padding: 0; 
                 -webkit-font-smoothing: antialiased; 
               }
               .wrapper { 
-                background-color: #f4f4f0; 
+                background-color: #ffffff; 
                 padding: 40px 20px; 
               }
               .container { 
                 max-width: 500px; 
                 margin: 0 auto; 
                 background: #ffffff; 
-                border: 2px solid #000000; 
-                box-shadow: 6px 6px 0px 0px #000000; 
-                border-radius: 16px; 
                 overflow: hidden; 
               }
               .header { 
                 background: #ff90e8; 
                 padding: 40px; 
                 text-align: center; 
-                border-bottom: 2px solid #000000; 
+                border-radius: 16px 16px 0 0;
               }
               .logo { 
                 display: inline-block; 
@@ -52,12 +49,10 @@ export async function sendEmail(email: string) {
                 text-decoration: none; 
                 letter-spacing: -2px; 
                 background: #ffffff; 
-                border: 3px solid #000000; 
                 border-radius: 50%; 
                 width: 70px; 
                 height: 70px; 
                 line-height: 70px; 
-                box-shadow: 3px 3px 0px 0px #000000; 
                 margin: 0 auto;
               }
               .content { 
@@ -73,7 +68,7 @@ export async function sendEmail(email: string) {
                 letter-spacing: -1px; 
               }
               p { 
-                color: #333333; 
+                color: #555555; 
                 font-size: 17px; 
                 font-weight: 500;
                 margin-bottom: 30px; 
@@ -85,8 +80,6 @@ export async function sendEmail(email: string) {
                 padding: 18px 36px; 
                 text-decoration: none; 
                 border-radius: 8px; 
-                border: 2px solid #000000;
-                box-shadow: 4px 4px 0px 0px #ff90e8;
                 font-weight: 900; 
                 font-size: 16px; 
                 margin-bottom: 10px; 
@@ -96,9 +89,8 @@ export async function sendEmail(email: string) {
               .link-container { 
                 margin-top: 40px; 
                 padding-top: 30px; 
-                border-top: 2px solid #000000; 
                 text-align: left; 
-                background: #f4f4f0; 
+                background: #f9f9f9; 
                 margin-bottom: -40px; 
                 margin-left: -30px; 
                 margin-right: -30px; 
@@ -124,10 +116,9 @@ export async function sendEmail(email: string) {
                 padding: 30px; 
                 text-align: center; 
                 background: #ffffff; 
-                border-top: 2px solid #000000;
               }
               .footer p { 
-                color: #666666; 
+                color: #999999; 
                 font-size: 14px; 
                 font-weight: 600; 
                 margin: 0; 
