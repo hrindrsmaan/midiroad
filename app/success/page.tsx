@@ -68,10 +68,10 @@ export default function Success() {
           <p className="mt-4 text-[18px] font-medium text-black leading-relaxed max-w-2xl">
             Reply to the order confirmation email or reach us at{" "}
             <a
-              href="mailto:help@midikits.com"
+              href="mailto:help@midiroad.com"
               className="text-black font-black hover:bg-black hover:text-[#ffc2f1] underline underline-offset-4 decoration-4 transition-colors px-1"
             >
-              help@midikits.com
+              help@midiroad.com
             </a>
             . We'll get you back inside the kit within minutes.
           </p>

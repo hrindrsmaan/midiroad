@@ -57,12 +57,12 @@ export default function Page() {
         <a
           href="/"
           className="font-bold text-xl tracking-tighter text-white flex items-center gap-2 hover:opacity-80 transition-opacity"
-          aria-label="MIDIKits Home"
+          aria-label="MidiRoad Home"
         >
           <div className="w-8 h-8 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#000]">
             <span className="text-black font-black text-[16px] leading-none pt-[1px] -ml-[1px]">M</span>
           </div>
-          MIDIKits
+          MidiRoad
         </a>
         <button
           onClick={handleBuy}
@@ -300,14 +300,14 @@ export default function Page() {
           <div className="w-10 h-10 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#000]">
             <span className="text-black font-black text-xl leading-none pt-[2px] -ml-[1px]">M</span>
           </div>
-          <span className="font-bold text-2xl tracking-tighter">MIDIKits</span>
+          <span className="font-bold text-2xl tracking-tighter">MidiRoad</span>
         </a>
         <p className="mb-6 font-medium text-black max-w-sm mx-auto text-[15px] px-6 leading-relaxed">
           Premium drag-and-drop MIDI loops, chord progressions, and pro-grade
           drum kits to speed up your workflow.
         </p>
         <p className="text-[14px] font-bold uppercase tracking-widest text-black/60">
-          © {new Date().getFullYear()} MIDIKits
+          © {new Date().getFullYear()} MidiRoad
         </p>
       </footer>
     </main>

@@ -142,7 +142,7 @@ export async function sendEmail(email: string) {
                   </div>
                 </div>
                 <div class="footer">
-                  <p>© ${new Date().getFullYear()} MIDIKits. All rights reserved.</p>
+                  <p>© ${new Date().getFullYear()} MidiRoad. All rights reserved.</p>
                   <p style="margin-top: 8px; font-weight: 500;">If you have any issues, reply to this email.</p>
                 </div>
               </div>

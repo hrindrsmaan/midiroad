@@ -15,7 +15,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "MIDIKits | Premium MIDI Drum Kits & Production Tools",
+  title: "MidiRoad | Premium MIDI Drum Kits & Production Tools",
   description:
     "Instantly level up your production with 300+ royalty-free MIDI sequences and 200+ pro-grade drum samples. Built for modern producers. Compatible with all major DAWs.",
   keywords: [
@@ -29,15 +29,15 @@ export const metadata: Metadata = {
     "Ableton Live packs",
   ],
   openGraph: {
-    title: "MIDIKits | Premium MIDI Drum Kits",
+    title: "MidiRoad | Premium MIDI Drum Kits",
     description:
       "Get unstuck and finish tracks faster with drag-and-drop MIDI loops, chord progressions, and modern drum hits.",
     type: "website",
-    siteName: "MIDIKits",
+    siteName: "MidiRoad",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MIDIKits | Premium MIDI Drum Kits",
+    title: "MidiRoad | Premium MIDI Drum Kits",
     description: "Drag-and-drop MIDI loops and drum kits for modern producers.",
   },
   robots: {
