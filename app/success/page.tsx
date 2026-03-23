@@ -2,14 +2,26 @@ const bundleInfo = {
   name: "Premium MIDI + Drum Kit Bundle",
   description:
     "Your complete download with 300+ MIDI sequences and 200+ mix-ready drum samples. Everything is organized and DAW-ready.",
-  link: "/downloads/midi-drum-kit.zip",
+  link: "/downloads/midiroad.zip",
   highlights: ["MIDI Progressions", "Premium Drum Hits", "Session Starters"],
 };
 
 export default function Success() {
   return (
-    <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black px-6 py-16 md:py-24">
-      <div className="mx-auto max-w-4xl space-y-12">
+    <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black">
+      <nav className="flex items-center px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black sticky top-0 z-50">
+        <a
+          href="/"
+          className="font-bold text-xl tracking-tighter text-white flex items-center gap-2 hover:opacity-80 transition-opacity"
+          aria-label="MidiRoad Home"
+        >
+          <div className="w-8 h-8 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#000]">
+            <span className="text-black font-black text-[16px] leading-none pt-[1px] -ml-[1px]">M</span>
+          </div>
+          MidiRoad
+        </a>
+      </nav>
+      <div className="px-6 py-16 md:py-24 mx-auto max-w-4xl space-y-12">
         {/* Main Success Card */}
         <div className="rounded-[2.5rem] border-4 border-black bg-white p-8 md:p-16 shadow-neo-lg relative overflow-hidden">          
           <div className="relative z-10">

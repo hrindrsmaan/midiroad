@@ -17,7 +17,7 @@ export async function POST() {
             product_data: {
               name: "MIDI + Drum Kit Bundle",
             },
-            unit_amount: 900,
+            unit_amount: 1499,
           },
           quantity: 1,
         },

@@ -5,7 +5,7 @@ export async function sendEmail(email: string) {
     // Initialize inside the function to avoid crashing Next.js static build when .env is not present
     const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_key");
     const baseUrl = process.env.BASE_URL || "http://localhost:3000";
-    const downloadUrl = `${baseUrl}/downloads/midi-drum-kit.zip`;
+    const downloadUrl = `${baseUrl}/downloads/midiroad.zip`;
 
     const result = await resend.emails.send({
       from: process.env.EMAIL_FROM || "onboarding@resend.dev",

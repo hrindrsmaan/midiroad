@@ -78,7 +78,7 @@ export default function Page() {
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
 
 
-          <h1 className="text-6xl font-bold tracking-tighter text-black md:text-8xl lg:leading-[1.1]">
+          <h1 className="text-5xl font-bold tracking-tighter text-black md:text-6xl lg:leading-[1.1] max-w-3xl mx-auto">
             Stop overthinking beats.
           </h1>
 
@@ -94,14 +94,37 @@ export default function Page() {
             drum hits directly into your DAW. Finish tracks tonight.
           </p>
 
-          <div className="pt-8 flex flex-col items-center gap-6 w-full sm:w-auto">
-            <button
-              onClick={handleBuy}
-              disabled={loading}
-              className="btn-primary cursor-pointer w-full sm:w-auto flex items-center justify-center px-10 py-5 text-[17px] font-bold uppercase tracking-wide disabled:opacity-80 disabled:cursor-not-allowed"
-            >
-              {loading ? "Redirecting..." : "Download the Premium Bundle — $9"}
-            </button>
+          <div className="pt-12 flex flex-col items-center gap-8 w-full sm:w-auto">
+            {/* The Image + Overlapping Badge Group */}
+            <div className="relative inline-block mt-4 mb-2">
+              <div className="absolute -top-6 -right-6 md:-right-10 z-20 rotate-12 bg-black text-[#ff90e8] text-[13px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[2px_2px_0_0_#ff90e8] animate-bounce">
+                💥 70% OFF
+              </div>
+              <img 
+                src="/images/bundle-poster.png" 
+                alt="Premium MIDI + Drum Kit Bundle Poster" 
+                className="w-48 md:w-56 mx-auto mix-blend-multiply object-contain pointer-events-none" 
+              />
+            </div>
+
+            <div className="flex flex-col items-center gap-3">
+              <span className="bg-[#ff90e8] text-black border-2 border-black text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[2px_2px_0_0_#000]">
+                Sale Ends Tonight
+              </span>
+              <button
+                onClick={handleBuy}
+                disabled={loading}
+                className="btn-primary cursor-pointer w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-5 text-[17px] font-bold uppercase tracking-wide disabled:opacity-80 disabled:cursor-not-allowed"
+              >
+                {loading ? "Redirecting..." : "Download the Premium Bundle"}
+                {!loading && (
+                  <span className="flex items-center gap-2">
+                    <span className="line-through opacity-60 text-sm font-bold">$49.99</span>
+                    <span>$14.99</span>
+                  </span>
+                )}
+              </button>
+            </div>
             <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 text-[14px] text-black font-bold uppercase tracking-wider">
               <span className="flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-black rounded-full"></div> Instant Access
@@ -262,8 +285,11 @@ export default function Page() {
             <h2 className="text-5xl font-black text-black md:text-7xl tracking-tighter mb-6 leading-none">
               Start finishing tracks tonight.
             </h2>
+            <p className="text-xl font-medium text-black mb-6 max-w-2xl mx-auto leading-relaxed">
+              Get immediate lifetime access to the entire bundle. It's normally <span className="line-through opacity-60 font-bold">$49.99</span>, but you can grab it today for just <span className="font-bold bg-[#ff90e8] px-2 py-0.5 rounded border-2 border-black -skew-x-6 inline-block">$14.99</span>. 
+            </p>
             <p className="text-xl font-medium text-black mb-12 max-w-2xl mx-auto leading-relaxed">
-              Get immediate lifetime access to the entire bundle. It's just $9, and if it doesn't double your output, you get your money back.
+              If it doesn't double your output, you get your money back.
             </p>
 
             <div className="bg-[#ff90e8] border-2 border-black rounded-2xl p-6 md:p-8 mb-12 max-w-md mx-auto text-left shadow-[2px_2px_0_0_#000]">
@@ -276,13 +302,24 @@ export default function Page() {
               </p>
             </div>
 
-            <button
-              onClick={handleBuy}
-              disabled={loading}
-              className="btn-primary cursor-pointer w-full sm:w-auto flex items-center justify-center px-14 py-6 text-[18px] font-bold uppercase tracking-wider mx-auto disabled:opacity-80 disabled:cursor-not-allowed"
-            >
-              {loading ? "Redirecting..." : "Get Instant Access — $9"}
-            </button>
+            <div className="flex flex-col items-center gap-3">
+              <span className="bg-black text-[#ff90e8] text-[13px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[2px_2px_0_0_#ff90e8] animate-bounce">
+                💥 70% OFF — Sale Ends Tonight
+              </span>
+              <button
+                onClick={handleBuy}
+                disabled={loading}
+                className="btn-primary cursor-pointer w-full sm:w-auto flex items-center justify-center gap-3 px-14 py-6 text-[18px] font-bold uppercase tracking-wider mx-auto disabled:opacity-80 disabled:cursor-not-allowed"
+              >
+                {loading ? "Redirecting..." : "Get Instant Access"}
+                {!loading && (
+                  <span className="flex items-center gap-2">
+                    <span className="line-through opacity-60 text-sm">$49.99</span>
+                    <span>$14.99</span>
+                  </span>
+                )}
+              </button>
+            </div>
             <p className="text-[14px] font-bold uppercase tracking-wider text-black mt-8 flex items-center justify-center gap-2">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
               One-time payment. Secure checkout.
