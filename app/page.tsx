@@ -120,7 +120,27 @@ export default function Page() {
               />
             </div>
 
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-4">
+              {/* Avatar Stack Social Proof */}
+              <div className="flex items-center gap-2 mb-1">
+                <div className="flex -space-x-3">
+                  {[
+                    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=64&q=80",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80",
+                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80"
+                  ].map((url, i) => (
+                    <img key={i} src={url} className="w-8 h-8 rounded-full border-2 border-black object-cover" alt="User avatar" />
+                  ))}
+                </div>
+                <div className="flex flex-col items-start leading-none">
+                  <div className="flex gap-0.5 mb-1">
+                    {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="#ff90e8" stroke="black" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>)}
+                  </div>
+                  <span className="text-[12px] font-black uppercase tracking-tight text-black">Joined by 500+ producers</span>
+                </div>
+              </div>
+
               <span className="bg-[#ff90e8] text-black border-2 border-black text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[2px_2px_0_0_#000]">
                 Sale Ends Tonight
               </span>
@@ -354,7 +374,27 @@ export default function Page() {
               </p>
             </div>
 
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-4">
+              {/* Avatar Stack Social Proof */}
+              <div className="flex items-center gap-2 mb-1">
+                <div className="flex -space-x-3">
+                  {[
+                    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=64&q=80",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80",
+                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80"
+                  ].map((url, i) => (
+                    <img key={i} src={url} className="w-8 h-8 rounded-full border-2 border-black object-cover" alt="User avatar" />
+                  ))}
+                </div>
+                <div className="flex flex-col items-start leading-none">
+                  <div className="flex gap-0.5 mb-1">
+                    {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="#ff90e8" stroke="black" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>)}
+                  </div>
+                  <span className="text-[12px] font-black uppercase tracking-tight text-black">Joined by 500+ producers</span>
+                </div>
+              </div>
+
               <span className="bg-black text-[#ff90e8] text-[13px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[2px_2px_0_0_#ff90e8] animate-bounce">
                 💥 70% OFF — Sale Ends Tonight
               </span>
