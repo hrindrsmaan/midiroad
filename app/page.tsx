@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { SalesPopup } from "@/components/SalesPopup";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { ExitPopup } from "@/components/ExitPopup";
+import { AudioDemo } from "@/components/AudioDemo";
 import * as gtag from "@/lib/gtag";
 
 const testimonials = [
@@ -106,6 +107,9 @@ export default function Page() {
             drum hits directly into your DAW. Finish tracks tonight.
           </p>
 
+          {/* Audio Demo Player */}
+          <AudioDemo />
+
           <div className="pt-12 flex flex-col items-center gap-8 w-full sm:w-auto">
             {/* The Image + Overlapping Badge Group */}
             <div className="relative inline-block mt-4 mb-2">
@@ -137,8 +141,19 @@ export default function Page() {
                   <div className="flex gap-0.5 mb-1">
                     {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="#ff90e8" stroke="black" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>)}
                   </div>
-                  <span className="text-[12px] font-black uppercase tracking-tight text-black">Joined by 500+ producers</span>
+                  <span className="text-[12px] font-black uppercase tracking-tight text-black">Downloaded by 500+ producers</span>
                 </div>
+              </div>
+
+              {/* Dynamic Trending Pill */}
+              <div className="flex items-center gap-2 bg-white border-2 border-black px-3 py-1.5 rounded-full shadow-[2px_2px_0_0_#000] mb-1 animate-pulse">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-black">
+                  🔥 Trending in Los Angeles
+                </span>
               </div>
 
               <span className="bg-[#ff90e8] text-black border-2 border-black text-[11px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[2px_2px_0_0_#000]">
@@ -190,11 +205,32 @@ export default function Page() {
           <p className="text-[13px] uppercase tracking-widest text-black font-bold mb-8">
             Tested & proven to work inside your favorite DAW
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-24 opacity-80 select-none">
-            <span className="text-2xl sm:text-3xl font-black tracking-tighter">FL Studio</span>
-            <span className="text-2xl sm:text-3xl font-black tracking-tighter">Ableton Live</span>
-            <span className="text-2xl sm:text-3xl font-black tracking-tighter">Logic Pro</span>
-            <span className="text-2xl sm:text-3xl font-black tracking-tighter">Pro Tools</span>
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-80 select-none grayscale contrast-125">
+            {/* FL Studio Logo (Simplified SVG) */}
+            <div className="flex flex-col items-center gap-2 group">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="black"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+              <span className="text-[14px] font-black uppercase tracking-tighter">FL Studio</span>
+            </div>
+            {/* Ableton Logo (Simplified Lines) */}
+            <div className="flex flex-col items-center gap-2 group">
+              <div className="flex gap-1 h-10 items-center">
+                {[1,2,3,4].map(i => <div key={i} className="w-1.5 h-full bg-black"></div>)}
+                <div className="flex flex-col gap-1 h-full mx-1">
+                  {[1,2,3,4].map(i => <div key={i} className="h-1.5 w-6 bg-black"></div>)}
+                </div>
+              </div>
+              <span className="text-[14px] font-black uppercase tracking-tighter">Ableton Live</span>
+            </div>
+            {/* Logic Pro (Simplified SVG) */}
+            <div className="flex flex-col items-center gap-2 group">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+              <span className="text-[14px] font-black uppercase tracking-tighter">Logic Pro</span>
+            </div>
+            {/* Pro Tools (Simplified SVG) */}
+            <div className="flex flex-col items-center gap-2 group">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="black"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span className="text-[14px] font-black uppercase tracking-tighter">Pro Tools</span>
+            </div>
           </div>
         </div>
       </section>
@@ -315,10 +351,16 @@ export default function Page() {
                     className="h-14 w-14 rounded-full object-cover border-2 border-black shadow-[2px_2px_0_0_#000]"
                     loading="lazy"
                   />
-                  <div>
-                    <p className="text-[16px] font-bold text-black tracking-tight">
-                      {testimonial.name}
-                    </p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[16px] font-bold text-black tracking-tight">
+                        {testimonial.name}
+                      </p>
+                      <span className="flex items-center gap-1 bg-green-500/10 text-green-700 text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-green-500/20">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Verified
+                      </span>
+                    </div>
                     <p className="text-[13px] md:text-[14px] font-bold text-black/60 uppercase tracking-widest mt-0.5">
                       {testimonial.role}
                     </p>
@@ -353,9 +395,13 @@ export default function Page() {
                   <span>200+ Mix-Ready Drum Hits</span>
                   <span className="opacity-50 line-through">$29</span>
                 </div>
+                <div className="flex justify-between items-center text-[#ff90e8] drop-shadow-[1px_1px_0_#000]">
+                  <span>✨ BONUS: Trap Arrangement Kit</span>
+                  <span>FREE</span>
+                </div>
                 <div className="flex justify-between items-center pt-4 border-t-2 border-black/20">
                   <span>Total Value</span>
-                  <span className="opacity-50 line-through">$78</span>
+                  <span className="opacity-50 line-through">$107</span>
                 </div>
                 <div className="flex justify-between items-center pt-6 border-t-4 border-black text-2xl md:text-3xl text-black">
                   <span>Today's Price</span>
@@ -391,8 +437,19 @@ export default function Page() {
                   <div className="flex gap-0.5 mb-1">
                     {[1,2,3,4,5].map(s => <svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="#ff90e8" stroke="black" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>)}
                   </div>
-                  <span className="text-[12px] font-black uppercase tracking-tight text-black">Joined by 500+ producers</span>
+                  <span className="text-[12px] font-black uppercase tracking-tight text-black">Downloaded by 500+ producers</span>
                 </div>
+              </div>
+
+              {/* Dynamic Trending Pill */}
+              <div className="flex items-center gap-2 bg-white border-2 border-black px-3 py-1.5 rounded-full shadow-[2px_2px_0_0_#000] mb-1">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-black">
+                  🔥 Trending in New York City
+                </span>
               </div>
 
               <span className="bg-black text-[#ff90e8] text-[13px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[2px_2px_0_0_#ff90e8] animate-bounce">

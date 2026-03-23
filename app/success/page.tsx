@@ -1,9 +1,9 @@
 const bundleInfo = {
   name: "Premium MIDI + Drum Kit Bundle",
   description:
-    "Your complete download with 300+ MIDI sequences and 200+ mix-ready drum samples. Everything is organized and DAW-ready.",
+    "Your complete download with 300+ MIDI sequences, 200+ drum samples, and the Trap Arrangement Bonus Kit.",
   link: "/downloads/midiroad.zip",
-  highlights: ["MIDI Progressions", "Premium Drum Hits", "Session Starters"],
+  highlights: ["MIDI Progressions", "Premium Drum Hits", "Trap Arrangement Kit"],
 };
 
 export default function Success() {
