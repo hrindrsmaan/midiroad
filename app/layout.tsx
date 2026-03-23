@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
+import { headers } from "next/headers";
 import "./globals.css";
 
 const inter = Inter({
@@ -50,32 +51,47 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let userIP = "";
+  try {
+    const headersList = await headers();
+    userIP = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "";
+  } catch (e) {
+    // Failsafe for build-time static generation
+  }
+
+  // Prevent Google Analytics if it's the Dev IP (173.35.162.117) or Localhost
+  const isDevIP = userIP.includes("173.35.162.117") || process.env.NODE_ENV === "development";
+
   return (
     <html lang="en" className="scroll-smooth">
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} antialiased font-sans`}
       >
-        {/* Google Analytics Tag */}
-        <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-9HYPTS5VTB" />
-        <Script
-          id="google-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-9HYPTS5VTB', {
-                page_path: window.location.pathname,
-              });
-            `,
-          }}
-        />
+        {/* Conditionally render Google Analytics based on IP */}
+        {!isDevIP && (
+          <>
+            <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-9HYPTS5VTB" />
+            <Script
+              id="google-analytics"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'G-9HYPTS5VTB', {
+                    page_path: window.location.pathname,
+                  });
+                `,
+              }}
+            />
+          </>
+        )}
         {children}
       </body>
     </html>
