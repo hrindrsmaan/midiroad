@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import * as gtag from "@/lib/gtag";
 
 export function ExitPopup() {
   const [loading, setLoading] = useState(false);
@@ -9,6 +10,14 @@ export function ExitPopup() {
 
   const handleDiscountBuy = async () => {
     setLoading(true);
+
+    // Track the discount click event
+    gtag.event({
+      action: "click_download",
+      category: "engagement",
+      label: "Exit Popup Discount Button",
+    });
+
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",

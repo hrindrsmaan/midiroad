@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { SalesPopup } from "@/components/SalesPopup";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { ExitPopup } from "@/components/ExitPopup";
+import * as gtag from "@/lib/gtag";
 
 const testimonials = [
   {
@@ -37,6 +38,14 @@ export default function Page() {
 
   const handleBuy = useCallback(async () => {
     setLoading(true);
+    
+    // Track the click event
+    gtag.event({
+      action: "click_download",
+      category: "engagement",
+      label: "Main Page Bundle Button",
+    });
+
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
