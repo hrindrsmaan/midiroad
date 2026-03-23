@@ -2,9 +2,19 @@ import { stripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
+    let isDiscounted = false;
+
+    try {
+      const body = await request.json();
+      if (body.discount === true) {
+        isDiscounted = true;
+      }
+    } catch (e) {
+      // Ignored, standard layout button doesn't send a body
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -15,9 +25,9 @@ export async function POST() {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "MIDI + Drum Kit Bundle",
+              name: isDiscounted ? "MIDI + Drum Kit Bundle (10% OFF)" : "MIDI + Drum Kit Bundle",
             },
-            unit_amount: 1499,
+            unit_amount: isDiscounted ? 1349 : 1499,
           },
           quantity: 1,
         },

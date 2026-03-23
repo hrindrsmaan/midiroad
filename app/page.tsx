@@ -1,6 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { SalesPopup } from "@/components/SalesPopup";
+import { CountdownTimer } from "@/components/CountdownTimer";
+import { ExitPopup } from "@/components/ExitPopup";
 
 const testimonials = [
   {
@@ -51,9 +54,9 @@ export default function Page() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black">
-
-      <nav className="flex items-center justify-between px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black sticky top-0 z-50">
+    <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black overflow-x-hidden">
+      <CountdownTimer />
+      <nav className="flex items-center justify-between px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black sticky top-0 z-40">
         <a
           href="/"
           className="font-bold text-xl tracking-tighter text-white flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -103,7 +106,8 @@ export default function Page() {
               <img 
                 src="/images/bundle-poster.png" 
                 alt="Premium MIDI + Drum Kit Bundle Poster" 
-                className="w-48 md:w-56 mx-auto mix-blend-multiply object-contain pointer-events-none" 
+                className="w-48 md:w-56 mx-auto object-contain pointer-events-none" 
+                style={{ mixBlendMode: 'multiply' }}
               />
             </div>
 
@@ -114,14 +118,25 @@ export default function Page() {
               <button
                 onClick={handleBuy}
                 disabled={loading}
-                className="btn-primary cursor-pointer w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-5 text-[17px] font-bold uppercase tracking-wide disabled:opacity-80 disabled:cursor-not-allowed"
+                className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-4 md:px-10 md:py-5 disabled:opacity-80 disabled:cursor-not-allowed text-center"
               >
-                {loading ? "Redirecting..." : "Download the Premium Bundle"}
+                <div className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 transition-transform duration-300 ${!loading ? "group-hover:-translate-y-20" : ""}`}>
+                  {loading ? (
+                    <span className="text-[15px] md:text-[17px] font-bold uppercase tracking-wide">Redirecting...</span>
+                  ) : (
+                    <span className="text-[15px] md:text-[17px] font-bold uppercase tracking-wide">Download the Premium Bundle</span>
+                  )}
+                  {!loading && (
+                    <span className="flex items-center gap-2 mt-1 sm:mt-0 text-[15px] md:text-[17px] font-bold uppercase tracking-wide">
+                      <span className="line-through opacity-60 text-sm font-bold">$49.99</span>
+                      <span className="text-[#ff90e8] sm:text-inherit">$14.99</span>
+                    </span>
+                  )}
+                </div>
                 {!loading && (
-                  <span className="flex items-center gap-2">
-                    <span className="line-through opacity-60 text-sm font-bold">$49.99</span>
-                    <span>$14.99</span>
-                  </span>
+                  <div className="absolute inset-0 flex items-center justify-center gap-3 text-[16px] md:text-[18px] font-black uppercase tracking-wide bg-black text-[#ff90e8] translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <span className="text-xl">🤑</span> You save $35 today!
+                  </div>
                 )}
               </button>
             </div>
@@ -155,17 +170,7 @@ export default function Page() {
         </div>
       </section>
 
-      {/* 3. The Agitation (Problem) */}
-      <section className="py-24 px-6 md:py-32 bg-[#ff90e8] border-b-2 border-black">
-        <div className="max-w-3xl mx-auto text-center space-y-8 bg-white border-2 border-black p-10 md:p-16 rounded-[2rem] shadow-neo-lg">
-          <h2 className="text-4xl font-bold text-black md:text-6xl tracking-tighter leading-[1.1]">
-            Are your tracks sounding thin and repetitive?
-          </h2>
-          <p className="text-black font-medium text-lg md:text-xl leading-relaxed mx-auto pt-2">
-            You know exactly how the beat should sound in your head, but spending hours clicking in MIDI notes and digging through weak drum samples kills your momentum. By the time you find the right snare, the initial spark is completely gone.
-          </p>
-        </div>
-      </section>
+
 
       {/* 4. The Solution (What's Inside) */}
       <section className="py-24 md:py-32 px-6 border-b-2 border-black bg-[#f4f4f0]">
@@ -234,18 +239,36 @@ export default function Page() {
       </section>
 
       {/* 5. Testimonials */}
-      <section className="py-24 px-6 border-b-2 border-black bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
+      <section className="py-24 px-0 border-b-2 border-black bg-[#ff90e8] overflow-hidden">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="text-center mb-12 md:mb-20 max-w-2xl mx-auto">
             <h2 className="text-4xl font-black text-black md:text-6xl tracking-tighter">
               Producers are leveling up.
             </h2>
           </div>
-          <div className="grid gap-8 md:grid-cols-3">
-            {testimonials.map((testimonial) => (
+        </div>
+
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .animate-marquee {
+            display: flex;
+            width: max-content;
+            animation: marquee 35s linear infinite;
+          }
+          .animate-marquee:hover {
+            animation-play-state: paused;
+          }
+        `}</style>
+
+        <div className="relative w-full flex overflow-hidden py-4">
+          <div className="animate-marquee gap-6 md:gap-8 px-4">
+            {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((testimonial, i) => (
               <figure
-                key={testimonial.quote}
-                className="flex flex-col justify-between rounded-3xl border-2 border-black bg-[#f4f4f0] p-8 md:p-10 shadow-neo hover:-translate-y-1 transition-transform"
+                key={i}
+                className="w-[300px] md:w-[400px] shrink-0 flex flex-col justify-between rounded-[2rem] border-4 border-black bg-white p-8 md:p-10 shadow-[4px_4px_0_0_#000] hover:-translate-y-2 hover:shadow-[8px_8px_0_0_#000] transition-all cursor-grab active:cursor-grabbing"
               >
                 <div className="flex gap-1 mb-6 text-[#ff90e8]">
                   {/* Stars */}
@@ -253,7 +276,7 @@ export default function Page() {
                     <svg key={star} width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="black" strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                   ))}
                 </div>
-                <blockquote className="text-[17px] font-medium text-black leading-relaxed mb-8">
+                <blockquote className="text-[16px] md:text-[18px] font-medium text-black leading-relaxed mb-8">
                   "{testimonial.quote}"
                 </blockquote>
                 <div className="flex items-center gap-4 mt-auto pt-6 border-t-2 border-black">
@@ -267,7 +290,7 @@ export default function Page() {
                     <p className="text-[16px] font-bold text-black tracking-tight">
                       {testimonial.name}
                     </p>
-                    <p className="text-[14px] font-bold text-black/60 uppercase tracking-widest mt-0.5">
+                    <p className="text-[13px] md:text-[14px] font-bold text-black/60 uppercase tracking-widest mt-0.5">
                       {testimonial.role}
                     </p>
                   </div>
@@ -285,12 +308,32 @@ export default function Page() {
             <h2 className="text-5xl font-black text-black md:text-7xl tracking-tighter mb-6 leading-none">
               Start finishing tracks tonight.
             </h2>
-            <p className="text-xl font-medium text-black mb-6 max-w-2xl mx-auto leading-relaxed">
-              Get immediate lifetime access to the entire bundle. It's normally <span className="line-through opacity-60 font-bold">$49.99</span>, but you can grab it today for just <span className="font-bold bg-[#ff90e8] px-2 py-0.5 rounded border-2 border-black -skew-x-6 inline-block">$14.99</span>. 
+            <p className="text-xl font-medium text-black mb-8 max-w-2xl mx-auto leading-relaxed">
+              Get immediate lifetime access to the entire bundle. If it doesn't double your output, you get your money back.
             </p>
-            <p className="text-xl font-medium text-black mb-12 max-w-2xl mx-auto leading-relaxed">
-              If it doesn't double your output, you get your money back.
-            </p>
+
+            {/* The Value Stack */}
+            <div className="max-w-md mx-auto mb-12 text-left border-4 border-black bg-[#f4f4f0] p-6 md:p-10 rounded-3xl shadow-[4px_4px_0_0_#000]">
+              <h3 className="text-2xl font-black uppercase tracking-widest mb-6 border-b-4 border-black pb-4 text-center">Value Stack</h3>
+              <div className="space-y-4 text-[17px] font-bold text-black">
+                <div className="flex justify-between items-center">
+                  <span>300+ Premium MIDI Progressions</span>
+                  <span className="opacity-50 line-through">$49</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>200+ Mix-Ready Drum Hits</span>
+                  <span className="opacity-50 line-through">$29</span>
+                </div>
+                <div className="flex justify-between items-center pt-4 border-t-2 border-black/20">
+                  <span>Total Value</span>
+                  <span className="opacity-50 line-through">$78</span>
+                </div>
+                <div className="flex justify-between items-center pt-6 border-t-4 border-black text-2xl md:text-3xl text-black">
+                  <span>Today's Price</span>
+                  <span className="bg-[#ff90e8] text-black px-3 py-1 border-2 border-black rounded shadow-[2px_2px_0_0_#000] -skew-x-6">$14.99</span>
+                </div>
+              </div>
+            </div>
 
             <div className="bg-[#ff90e8] border-2 border-black rounded-2xl p-6 md:p-8 mb-12 max-w-md mx-auto text-left shadow-[2px_2px_0_0_#000]">
               <h4 className="flex items-center gap-3 text-black font-black text-lg mb-3 uppercase tracking-wide">
@@ -309,14 +352,25 @@ export default function Page() {
               <button
                 onClick={handleBuy}
                 disabled={loading}
-                className="btn-primary cursor-pointer w-full sm:w-auto flex items-center justify-center gap-3 px-14 py-6 text-[18px] font-bold uppercase tracking-wider mx-auto disabled:opacity-80 disabled:cursor-not-allowed"
+                className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-5 md:px-14 md:py-6 disabled:opacity-80 disabled:cursor-not-allowed text-center"
               >
-                {loading ? "Redirecting..." : "Get Instant Access"}
+                <div className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 transition-transform duration-300 ${!loading ? "group-hover:-translate-y-24" : ""}`}>
+                  {loading ? (
+                    <span className="text-[16px] md:text-[18px] font-bold uppercase tracking-wider">Redirecting...</span>
+                  ) : (
+                    <span className="text-[16px] md:text-[18px] font-bold uppercase tracking-wider">Get Instant Access</span>
+                  )}
+                  {!loading && (
+                    <span className="flex items-center gap-2 mt-1 sm:mt-0 text-[16px] md:text-[18px] font-bold uppercase tracking-wider">
+                      <span className="line-through opacity-60 text-sm font-bold">$49.99</span>
+                      <span className="text-[#ff90e8] sm:text-inherit">$14.99</span>
+                    </span>
+                  )}
+                </div>
                 {!loading && (
-                  <span className="flex items-center gap-2">
-                    <span className="line-through opacity-60 text-sm">$49.99</span>
-                    <span>$14.99</span>
-                  </span>
+                  <div className="absolute inset-0 flex items-center justify-center gap-3 text-[17px] md:text-[19px] font-black uppercase tracking-wide bg-black text-[#ff90e8] translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <span className="text-xl">😏</span> Steal this bundle now
+                  </div>
                 )}
               </button>
             </div>
@@ -324,6 +378,31 @@ export default function Page() {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
               One-time payment. Secure checkout.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. FAQ Section */}
+      <section className="py-24 px-6 md:py-32 border-b-2 border-black bg-[#f4f4f0]">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black text-black md:text-6xl tracking-tighter">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <div className="space-y-6 text-left">
+            <div className="border-4 border-black p-6 md:p-8 bg-white rounded-[2rem] shadow-[4px_4px_0_0_#000] hover:-translate-y-1 transition-transform">
+              <h3 className="text-xl md:text-2xl font-black text-black mb-3 tracking-tight uppercase">Are these 100% royalty-free?</h3>
+              <p className="text-[17px] text-black font-medium leading-relaxed">Absolutely. Once you purchase the bundle, you own the right to use these melodies and drums in your commercial tracks, no credit required. You keep all your placements and royalties.</p>
+            </div>
+            <div className="border-4 border-black p-6 md:p-8 bg-white rounded-[2rem] shadow-[4px_4px_0_0_#000] hover:-translate-y-1 transition-transform">
+              <h3 className="text-xl md:text-2xl font-black text-black mb-3 tracking-tight uppercase">Do these files work in my DAW?</h3>
+              <p className="text-[17px] text-black font-medium leading-relaxed">Yes. All MIDI files and WAV drum samples are universally compatible. FL Studio, Ableton Live, Logic Pro, Pro Tools, Studio One—if your software accepts MIDI/WAV, you're good-to-go.</p>
+            </div>
+            <div className="border-4 border-black p-6 md:p-8 bg-white rounded-[2rem] shadow-[4px_4px_0_0_#000] hover:-translate-y-1 transition-transform">
+              <h3 className="text-xl md:text-2xl font-black text-black mb-3 tracking-tight uppercase">How do I access the files?</h3>
+              <p className="text-[17px] text-black font-medium leading-relaxed">Instantly. After completing the secure checkout, you'll immediately be redirected to a download page. We also automatically send you an email receipt with a secure backup download link that lasts for 30 days.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -347,6 +426,11 @@ export default function Page() {
           © {new Date().getFullYear()} MidiRoad
         </p>
       </footer>
+
+      {/* FOMO Sales Notification */}
+      <SalesPopup />
+      {/* Exit Intent */}
+      <ExitPopup />
     </main>
   );
 }
