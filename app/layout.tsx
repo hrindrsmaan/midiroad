@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -59,6 +60,22 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} antialiased font-sans`}
       >
+        {/* Google Analytics Tag */}
+        <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-9HYPTS5VTB" />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-9HYPTS5VTB', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
         {children}
       </body>
     </html>
