@@ -9,7 +9,7 @@ export function ExitPopup() {
   const [show, setShow] = useState(false);
   const [hasShown, setHasShown] = useState(false);
 
-  const handleDiscountBuy = async () => {
+  const handleDiscountBuy = () => {
     setLoading(true);
 
     // Track the discount click event
@@ -21,22 +21,8 @@ export function ExitPopup() {
 
     playSFX('click');
 
-    try {
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ discount: true }),
-      });
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error(data.error || "Failed to create checkout session");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      setLoading(false);
-    }
+    // Redirect to our custom checkout page with discount param
+    window.location.href = "/checkout?discount=true";
   };
 
   useEffect(() => {

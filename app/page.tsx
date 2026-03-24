@@ -39,32 +39,21 @@ const testimonials = [
 export default function Page() {
   const [loading, setLoading] = useState(false);
 
-  const handleBuy = useCallback(async () => {
+  const handleBuy = useCallback(async (isDiscount: boolean = false) => {
     setLoading(true);
     
     // Track the click event
     gtag.event({
       action: "click_download",
       category: "engagement",
-      label: "Main Page Bundle Button",
+      label: isDiscount ? "Main Page Bundle Button (DISCOUNTED)" : "Main Page Bundle Button",
     });
 
     playSFX('click');
 
-    try {
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-      });
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error(data.error || "Failed to create checkout session");
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-      setLoading(false);
-    }
+    // Redirect to our custom checkout page
+    const checkoutUrl = isDiscount ? "/checkout?discount=true" : "/checkout";
+    window.location.href = checkoutUrl;
   }, []);
 
   return (
@@ -82,7 +71,7 @@ export default function Page() {
           MidiRoad
         </a>
         <button
-          onClick={handleBuy}
+          onClick={() => handleBuy(false)}
           disabled={loading}
           className="text-white font-bold uppercase text-[13px] tracking-wider hover:underline underline-offset-4 decoration-2"
         >
@@ -164,7 +153,7 @@ export default function Page() {
                 Sale Ends Tonight
               </span>
               <button
-                onClick={handleBuy}
+                onClick={() => handleBuy(false)}
                 onMouseEnter={() => playSFX('hover')}
                 disabled={loading}
                 className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-4 md:px-10 md:py-5 disabled:opacity-80 disabled:cursor-not-allowed text-center"
@@ -461,7 +450,7 @@ export default function Page() {
                 💥 70% OFF — Sale Ends Tonight
               </span>
               <button
-                onClick={handleBuy}
+                onClick={() => handleBuy(false)}
                 onMouseEnter={() => playSFX('hover')}
                 disabled={loading}
                 className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-5 md:px-14 md:py-6 disabled:opacity-80 disabled:cursor-not-allowed text-center"
@@ -544,7 +533,7 @@ export default function Page() {
       {/* Exit Intent */}
       <ExitPopup />
       {/* Sticky CTA */}
-      <StickyCTA onBuy={handleBuy} loading={loading} />
+      <StickyCTA onBuy={() => handleBuy(false)} loading={loading} />
     </main>
   );
 }
