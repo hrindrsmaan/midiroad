@@ -7,10 +7,12 @@ import CheckoutForm from "@/components/CheckoutForm";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+import { Suspense } from "react";
+
 // Initialize Stripe with your public key
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_dummy");
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const [clientSecret, setClientSecret] = useState("");
   const searchParams = useSearchParams();
   const isDiscounted = searchParams.get("discount") === "true";
@@ -66,6 +68,70 @@ export default function CheckoutPage() {
   };
 
   return (
+    <div className="grid md:grid-cols-2 gap-12 items-start">
+      {/* Left Side: Branding & Order Summary */}
+      <div className="space-y-8">
+        <div className="bg-white border-4 border-black p-8 rounded-2xl shadow-neo">
+          <h3 className="text-xl font-black uppercase tracking-widest mb-6 border-b-2 border-black/10 pb-4">
+            Order Summary
+          </h3>
+          
+          <div className="flex justify-between items-start mb-6 border-b-2 border-black/10 pb-6">
+            <div className="flex gap-4">
+              <div className="w-16 h-16 bg-[#ff90e8] border-2 border-black rounded-xl flex items-center justify-center font-black text-xl shadow-[2px_2px_0_0_#000]">
+                M
+              </div>
+              <div>
+                <p className="font-black uppercase text-sm tracking-tight">The Premium Bundle</p>
+                <p className="text-[12px] font-bold text-black/40">300+ MIDI / 200+ DRUMS</p>
+              </div>
+            </div>
+            <p className="font-black text-lg">${isDiscounted ? "13.49" : "14.99"}</p>
+          </div>
+
+          <div className="space-y-3">
+             <div className="flex justify-between text-sm font-bold">
+                <span className="opacity-40 uppercase tracking-widest">Subtotal</span>
+                <span>${isDiscounted ? "13.49" : "14.99"}</span>
+             </div>
+             <div className="flex justify-between text-sm font-bold">
+                <span className="opacity-40 uppercase tracking-widest">Handling</span>
+                <span className="text-green-600 font-black">FREE</span>
+             </div>
+             <div className="flex justify-between text-2xl font-black pt-5 border-t-2 border-black">
+                <span className="tracking-tighter uppercase">Total Due</span>
+                <span className="text-[#ff90e8] drop-shadow-[1px_1px_0_#000] tracking-tight">${isDiscounted ? "13.49" : "14.99"}</span>
+             </div>
+          </div>
+        </div>
+
+        {/* Trust Signals */}
+        <div className="flex flex-wrap items-center gap-6 opacity-40 grayscale contrast-150 pl-2">
+           <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" alt="Visa" className="h-[14px] w-auto" />
+           <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-8 w-auto" />
+           <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" className="h-7 w-auto" />
+        </div>
+      </div>
+
+      {/* Right Side: Payment Form */}
+      <div className="relative">
+        {clientSecret ? (
+          <Elements options={options} stripe={stripePromise}>
+            <CheckoutForm />
+          </Elements>
+        ) : (
+          <div className="border-4 border-black bg-white rounded-2xl p-20 flex flex-col items-center justify-center shadow-neo">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#ff90e8] border-r-4 border-r-black mb-6"></div>
+            <p className="font-black uppercase tracking-widest text-[10px]">Encrypting Connection...</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
     <main className="min-h-screen bg-[#f4f4f0] py-8 md:py-16 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
@@ -77,6 +143,7 @@ export default function CheckoutPage() {
                 Back to Store
             </Link>
         </div>
+        
         {/* Mobile Header (Hidden on Desktop) */}
         <header className="md:hidden text-center mb-10">
           <div className="inline-block bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
@@ -86,6 +153,7 @@ export default function CheckoutPage() {
             Finalize Order
           </h1>
         </header>
+
         <header className="hidden md:block mb-12">
           <div className="inline-block bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-6">
             Secure Checkout
@@ -98,67 +166,14 @@ export default function CheckoutPage() {
           </p>
         </header>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
-          {/* Left Side: Branding & Order Summary */}
-          <div className="space-y-8">
-            <div className="bg-white border-4 border-black p-8 rounded-2xl shadow-neo">
-              <h3 className="text-xl font-black uppercase tracking-widest mb-6 border-b-2 border-black/10 pb-4">
-                Order Summary
-              </h3>
-              
-              <div className="flex justify-between items-start mb-6 border-b-2 border-black/10 pb-6">
-                <div className="flex gap-4">
-                  <div className="w-16 h-16 bg-[#ff90e8] border-2 border-black rounded-xl flex items-center justify-center font-black text-xl shadow-[2px_2px_0_0_#000]">
-                    M
-                  </div>
-                  <div>
-                    <p className="font-black uppercase text-sm tracking-tight">The Premium Bundle</p>
-                    <p className="text-[12px] font-bold text-black/40">300+ MIDI / 200+ DRUMS</p>
-                  </div>
-                </div>
-                <p className="font-black text-lg">${isDiscounted ? "13.49" : "14.99"}</p>
-              </div>
-
-              <div className="space-y-3">
-                 <div className="flex justify-between text-sm font-bold">
-                    <span className="opacity-40 uppercase tracking-widest">Subtotal</span>
-                    <span>${isDiscounted ? "13.49" : "14.99"}</span>
-                 </div>
-                 <div className="flex justify-between text-sm font-bold">
-                    <span className="opacity-40 uppercase tracking-widest">Handling</span>
-                    <span className="text-green-600 font-black">FREE</span>
-                 </div>
-                 <div className="flex justify-between text-2xl font-black pt-5 border-t-2 border-black">
-                    <span className="tracking-tighter uppercase">Total Due</span>
-                    <span className="text-[#ff90e8] drop-shadow-[1px_1px_0_#000] tracking-tight">${isDiscounted ? "13.49" : "14.99"}</span>
-                 </div>
-              </div>
-            </div>
-
-            {/* Trust Signals - Using reliable Cloudinary/static assets */}
-            <div className="flex flex-wrap items-center gap-6 opacity-40 grayscale contrast-150 pl-2">
-               <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" alt="Visa" className="h-[14px] w-auto" />
-               <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-8 w-auto" />
-               <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" className="h-7 w-auto" />
-            </div>
+        <Suspense fallback={
+          <div className="border-4 border-black bg-white rounded-2xl p-20 flex flex-col items-center justify-center shadow-neo">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#ff90e8] border-r-4 border-r-black mb-6"></div>
+            <p className="font-black uppercase tracking-widest text-[10px]">Loading Secure Payment...</p>
           </div>
-
-          {/* Right Side: Payment Form */}
-          <div className="relative">
-            {clientSecret ? (
-              <Elements options={options} stripe={stripePromise}>
-                <CheckoutForm />
-              </Elements>
-            ) : (
-              <div className="border-4 border-black bg-white rounded-[2rem] p-20 flex flex-col items-center justify-center shadow-neo">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-[#ff90e8] border-r-4 border-r-black mb-6"></div>
-                <p className="font-black uppercase tracking-widest text-[10px]">Encrypting Connection...</p>
-              </div>
-            )}
-
-
-          </div>
-        </div>
+        }>
+          <CheckoutContent />
+        </Suspense>
       </div>
     </main>
   );
