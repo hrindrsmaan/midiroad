@@ -5,6 +5,8 @@ import { SalesPopup } from "@/components/SalesPopup";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { ExitPopup } from "@/components/ExitPopup";
 import { AudioDemo } from "@/components/AudioDemo";
+import { StickyCTA } from "@/components/StickyCTA";
+import { playSFX } from "@/lib/audio-sfx";
 import * as gtag from "@/lib/gtag";
 
 const testimonials = [
@@ -47,6 +49,8 @@ export default function Page() {
       label: "Main Page Bundle Button",
     });
 
+    playSFX('click');
+
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -87,11 +91,11 @@ export default function Page() {
       </nav>
 
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-24 md:pt-32 md:pb-40 px-6 border-b-2 border-black">
-        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+      <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 px-6 border-b-2 border-black">
+        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6">
 
 
-          <h1 className="text-5xl font-bold tracking-tighter text-black md:text-6xl lg:leading-[1.1] max-w-3xl mx-auto">
+          <h1 className="text-5xl font-black tracking-tighter text-black md:text-7xl leading-none max-w-3xl mx-auto">
             Stop overthinking beats.
           </h1>
 
@@ -102,7 +106,7 @@ export default function Page() {
             }
           `}</style>
 
-          <p className="text-xl text-black font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-black font-medium max-w-2xl mx-auto leading-snug">
             Drag and drop 300+ royalty-free MIDI sequences and 200+ pro-grade
             drum hits directly into your DAW. Finish tracks tonight.
           </p>
@@ -161,6 +165,7 @@ export default function Page() {
               </span>
               <button
                 onClick={handleBuy}
+                onMouseEnter={() => playSFX('hover')}
                 disabled={loading}
                 className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-4 md:px-10 md:py-5 disabled:opacity-80 disabled:cursor-not-allowed text-center"
               >
@@ -457,6 +462,7 @@ export default function Page() {
               </span>
               <button
                 onClick={handleBuy}
+                onMouseEnter={() => playSFX('hover')}
                 disabled={loading}
                 className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-5 md:px-14 md:py-6 disabled:opacity-80 disabled:cursor-not-allowed text-center"
               >
@@ -537,6 +543,8 @@ export default function Page() {
       <SalesPopup />
       {/* Exit Intent */}
       <ExitPopup />
+      {/* Sticky CTA */}
+      <StickyCTA onBuy={handleBuy} loading={loading} />
     </main>
   );
 }

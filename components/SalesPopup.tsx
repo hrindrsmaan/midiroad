@@ -56,8 +56,8 @@ export function SalesPopup() {
 
   return (
     <div
-      className={`fixed bottom-6 left-6 z-50 transition-all duration-500 transform ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0 pointer-events-none"
+      className={`fixed top-24 left-6 z-[70] transition-all duration-700 transform ${
+        isVisible ? "translate-x-0 opacity-100" : "-translate-x-32 opacity-0 pointer-events-none"
       }`}
     >
       <div className="bg-white border-2 border-black p-4 rounded-xl shadow-[4px_4px_0_0_#000] flex items-center gap-4 w-72 md:w-80">

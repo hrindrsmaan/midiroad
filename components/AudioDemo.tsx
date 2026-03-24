@@ -32,75 +32,62 @@ export function AudioDemo() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto mt-12 mb-8">
-      <div className="bg-white border-4 border-black p-6 rounded-[2rem] shadow-[8px_8px_0_0_#000] relative overflow-hidden group">
+    <div className="w-full max-w-[280px] mx-auto mt-2 mb-2">
+      <div className="bg-white border-2 border-black p-1.5 rounded-lg shadow-[2px_2px_0_0_#000] relative overflow-hidden group">
         
-        {/* Animated Background Pulse (only when playing) */}
+        {/* Animated Background Pulse */}
         {isPlaying && (
-          <div className="absolute inset-0 bg-[#ff90e8]/5 animate-pulse pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[#ff90e8]/10 animate-pulse pointer-events-none"></div>
         )}
 
-        <div className="flex items-center gap-6 relative z-10">
+        <div className="flex items-center gap-4 relative z-10">
           {/* Play/Pause Button */}
           <button
             onClick={togglePlay}
-            className="w-16 h-16 rounded-full bg-[#ff90e8] border-4 border-black flex items-center justify-center shadow-[4px_4px_0_0_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0_0_#000] active:translate-y-0 active:shadow-[2px_2px_0_0_#000] transition-all flex-shrink-0 group/btn"
+            className="w-8 h-8 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center shadow-[1px_1px_0_0_#000] hover:-translate-y-0.5 transition-all flex-shrink-0"
           >
             {isPlaying ? (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="black" stroke="black" strokeWidth="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="black" stroke="black" strokeWidth="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
             ) : (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="black" stroke="black" strokeWidth="2" className="ml-1"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="black" stroke="black" strokeWidth="2" className="ml-0.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
             )}
           </button>
 
-          <div className="flex-1 text-left">
-            <h4 className="text-[13px] font-black uppercase tracking-[0.2em] text-black/40 mb-1">
-              {isPlaying ? "Now Playing" : "A Message for Producers"}
-            </h4>
-            <h3 className="text-xl font-black text-black tracking-tight leading-tight mb-3">
-              Quick Message from <span className="text-[#ff90e8]">MidiRoad</span>
-            </h3>
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-1.5">
+              <h3 className="text-[12px] font-black text-black tracking-tight leading-none">
+                Message from <span className="text-[#ff90e8]">MidiRoad</span>
+              </h3>
+              <span className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-[#ff90e8]">
+                <span className="w-1 h-1 rounded-full bg-[#ff90e8] animate-ping"></span>
+                LIVE
+              </span>
+            </div>
             
-            {/* Progress Bar Container */}
+            {/* Minimal Progress Bar */}
             <div 
-              className="h-4 w-full bg-[#f4f4f0] border-2 border-black rounded-full overflow-hidden cursor-pointer relative"
+              className="h-2 w-full bg-[#f4f4f0] border-2 border-black rounded-full overflow-hidden cursor-pointer relative"
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const x = e.clientX - rect.left;
-                const clickedProgress = x / rect.width;
-                if (audioRef.current) {
-                  audioRef.current.currentTime = clickedProgress * audioRef.current.duration;
-                }
+                if (audioRef.current) audioRef.current.currentTime = (x / rect.width) * audioRef.current.duration;
               }}
             >
               <div 
-                className="h-full bg-black transition-all duration-100 ease-linear rounded-full"
+                className="h-full bg-black transition-all duration-100 ease-linear"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
           </div>
         </div>
 
-        {/* Hidden Audio Element */}
         <audio
           ref={audioRef}
-          src="/audio/demo.mp3" /* Instructions: Add demo.mp3 to public/audio/ folder */
+          src="/audio/demo.mp3"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleEnded}
         />
-
-        {/* Bottom Label */}
-        <div className="mt-4 pt-4 border-t-2 border-black/10 flex justify-end items-center px-1">
-           <span className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-[#ff90e8]">
-             <span className="w-1.5 h-1.5 rounded-full bg-[#ff90e8] animate-ping"></span>
-             LIVE HQ PREVIEW
-           </span>
-        </div>
       </div>
-      
-      <p className="mt-4 text-[12px] font-bold text-black/50 uppercase tracking-widest text-center">
-        Note: Actual kit includes 500+ individual files
-      </p>
     </div>
   );
 }

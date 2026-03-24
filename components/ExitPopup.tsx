@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { playSFX } from "@/lib/audio-sfx";
 import * as gtag from "@/lib/gtag";
 
 export function ExitPopup() {
@@ -17,6 +18,8 @@ export function ExitPopup() {
       category: "engagement",
       label: "Exit Popup Discount Button",
     });
+
+    playSFX('click');
 
     try {
       const response = await fetch("/api/create-checkout-session", {
@@ -73,6 +76,7 @@ export function ExitPopup() {
         
         <button 
           onClick={handleDiscountBuy} 
+          onMouseEnter={() => playSFX('hover')}
           disabled={loading}
           className="btn-primary w-full text-[17px] md:text-[20px] py-6 uppercase font-black tracking-wider shadow-[4px_4px_0_0_#000] disabled:opacity-80"
         >
