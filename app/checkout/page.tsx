@@ -19,6 +19,8 @@ function CheckoutContent() {
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
+    console.log("🛒 Checkout initialized", { isDiscounted });
+    
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

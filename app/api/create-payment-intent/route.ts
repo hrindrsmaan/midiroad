@@ -1,4 +1,5 @@
 import { stripe } from "@/lib/stripe";
+import logger from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -12,10 +13,16 @@ export async function POST(request: Request) {
         isDiscounted = true;
       }
     } catch (e) {
-      // Ignored
+      logger.warn({ error: e }, "Failed to parse checkout request body");
     }
 
     const amount = isDiscounted ? 1349 : 1499;
+
+    logger.info({
+      isDiscounted,
+      amount,
+      currency: "usd",
+    }, "Initiating PaymentIntent creation");
 
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
@@ -30,11 +37,16 @@ export async function POST(request: Request) {
       },
     });
 
+    logger.info({
+      intentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+    }, "Successfully created PaymentIntent");
+
     return Response.json({
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error: any) {
-    console.error("PaymentIntent error:", error);
+    logger.error({ error: error.message, stack: error.stack }, "PaymentIntent creation failed");
     return Response.json(
       { error: error.message || "Failed to create payment intent" },
       { status: 500 },
