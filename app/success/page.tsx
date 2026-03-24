@@ -6,7 +6,10 @@ const bundleInfo = {
   highlights: ["MIDI Progressions", "Premium Drum Hits", "Trap Arrangement Kit"],
 };
 
+import logger from "@/lib/logger";
+
 export default function Success() {
+  logger.info("💰 Order Success page viewed - Conversion confirmed!");
   return (
     <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black">
       <nav className="flex items-center px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black sticky top-0 z-50">

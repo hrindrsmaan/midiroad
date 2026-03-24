@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
 import { ProducerTag } from "@/components/ProducerTag";
+import logger from "@/lib/logger";
 import "./globals.css";
 
 const inter = Inter({
@@ -67,6 +68,8 @@ export default async function RootLayout({
 
   // Prevent Google Analytics if it's the Dev IP (173.35.162.117) or Localhost
   const isDevIP = userIP.includes("173.35.162.117") || process.env.NODE_ENV === "development";
+
+  logger.info({ userIP, isDevIP }, "Serving Page Request");
 
   return (
     <html lang="en" className="scroll-smooth">

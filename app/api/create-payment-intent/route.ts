@@ -4,6 +4,7 @@ import logger from "@/lib/logger";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  console.log("💳 [API] create-payment-intent handler hit!");
   try {
     let isDiscounted = false;
 

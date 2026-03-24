@@ -3,17 +3,22 @@ import pino from 'pino';
 // HARDCODED FOR VERIFICATION
 const SOURCE_TOKEN = "uCyA1YaFehqpeUFKybebRanK";
 
+// For verification: we use a multi-stream approach so you see it in terminal too
 const transport = pino.transport({
-  target: '@logtail/pino',
-  options: { sourceToken: SOURCE_TOKEN }
+  targets: [
+    {
+      target: '@logtail/pino',
+      options: { sourceToken: SOURCE_TOKEN }
+    },
+    {
+      target: 'pino-pretty', // This will keep logs in your terminal
+      options: { colorize: true }
+    }
+  ]
 });
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
-  base: {
-    env: process.env.NODE_ENV,
-    ver: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
-  },
 }, transport);
 
 export default logger;
