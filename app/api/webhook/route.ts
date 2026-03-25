@@ -54,10 +54,27 @@ export async function POST(req: Request) {
       }
     }
 
-    // Handle payment_intent.succeeded as backup
+    // Handle payment_intent.succeeded for custom Elements flow
     if (event.type === "payment_intent.succeeded") {
       const paymentIntent: any = event.data.object;
-      logger.info({ intentId: paymentIntent.id }, "Payment intent succeeded");
+      const email = paymentIntent.receipt_email || paymentIntent.metadata?.email;
+
+      logger.info({
+        intentId: paymentIntent.id,
+        email: email,
+        amount: paymentIntent.amount,
+      }, "Payment intent succeeded - Processing fulfillment");
+
+      if (email) {
+        try {
+          await sendEmail(email);
+          logger.info({ email, intentId: paymentIntent.id }, "Fulfillment email sent successfully via PaymentIntent");
+        } catch (emailError: any) {
+          logger.error({ email, error: emailError.message }, "Failed to send fulfillment email for PaymentIntent");
+        }
+      } else {
+        logger.warn({ intentId: paymentIntent.id }, "No email found in PaymentIntent for fulfillment");
+      }
     }
 
     return new Response("ok");

@@ -13,6 +13,7 @@ export default function CheckoutForm() {
   const elements = useElements();
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +29,7 @@ export default function CheckoutForm() {
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/success`,
+        receipt_email: email,
       },
     });
 
@@ -57,6 +59,8 @@ export default function CheckoutForm() {
             type="email"
             required
             placeholder="producer@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full bg-white border-[3px] border-black p-4 rounded-xl shadow-[4px_4px_0_0_#000] focus:translate-x-1 focus:translate-y-1 focus:shadow-none transition-all outline-none font-bold text-lg"
           />
         </div>
