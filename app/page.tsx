@@ -95,9 +95,11 @@ export default function Page() {
             }
           `}</style>
 
-          <p className="text-lg md:text-xl text-black font-medium max-w-2xl mx-auto leading-snug">
-            Drag and drop 300+ royalty-free MIDI sequences and 200+ pro-grade
-            drum hits directly into your DAW. Finish tracks tonight.
+          <p className="text-xl md:text-2xl text-black font-black max-w-2xl mx-auto leading-tight">
+            Get 500+ pro-grade sounds for just <span className="bg-[#ff90e8] border-2 border-black px-2 py-0.5 rounded shadow-[2px_2px_0_0_#000]">$14.99</span> <span className="text-[14px] uppercase tracking-tighter opacity-70">(70% OFF)</span>. 
+          </p>
+          <p className="text-lg text-black/60 font-bold max-w-2xl mx-auto leading-snug">
+            Drag and drop royalty-free MIDI sequences and drum hits directly into your DAW. Finish tracks tonight.
           </p>
 
           {/* Audio Demo Player */}
@@ -350,9 +352,9 @@ export default function Page() {
                       <p className="text-[16px] font-bold text-black tracking-tight">
                         {testimonial.name}
                       </p>
-                      <span className="flex items-center gap-1 bg-green-500/10 text-green-700 text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-green-500/20">
+                      <span className="flex items-center gap-1 bg-green-50 text-green-600 text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border border-green-200">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        Verified
+                        Verified Purchase
                       </span>
                     </div>
                     <p className="text-[13px] md:text-[14px] font-bold text-black/60 uppercase tracking-widest mt-0.5">
@@ -475,7 +477,14 @@ export default function Page() {
                 )}
               </button>
             </div>
-            <p className="text-[14px] font-bold uppercase tracking-wider text-black mt-8 flex items-center justify-center gap-2">
+            <p className="text-[12px] font-black uppercase tracking-[0.2em] text-black/40 mt-6 flex items-center justify-center gap-3">
+              <span>Lifetime Access</span>
+              <span className="w-1 h-1 bg-black/20 rounded-full"></span>
+              <span>One-Time Payment</span>
+              <span className="w-1 h-1 bg-black/20 rounded-full"></span>
+              <span>No Subscription</span>
+            </p>
+            <p className="text-[14px] font-bold uppercase tracking-wider text-black mt-4 flex items-center justify-center gap-2">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
               One-time payment. Secure checkout.
             </p>
@@ -528,8 +537,6 @@ export default function Page() {
         </p>
       </footer>
 
-      {/* FOMO Sales Notification */}
-      <SalesPopup />
       {/* Exit Intent */}
       <ExitPopup />
       {/* Sticky CTA */}

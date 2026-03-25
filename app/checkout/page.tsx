@@ -108,6 +108,21 @@ function CheckoutContent() {
         </div>
 
         {/* Trust Signals */}
+        <div className="bg-white border-2 border-dashed border-black/20 p-6 rounded-2xl flex flex-col gap-4">
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-200">
+                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <p className="text-[13px] font-black uppercase tracking-tight">Instant Email Delivery</p>
+           </div>
+           <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-200">
+                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <p className="text-[13px] font-black uppercase tracking-tight">256-Bit SSL Encryption</p>
+           </div>
+        </div>
+
         <div className="flex flex-wrap items-center gap-6 opacity-40 grayscale contrast-150 pl-2">
            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" alt="Visa" className="h-[14px] w-auto" />
            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-8 w-auto" />

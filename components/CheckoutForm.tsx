@@ -46,6 +46,21 @@ export default function CheckoutForm() {
         <h3 className="text-xl font-black uppercase tracking-widest mb-6 border-b-2 border-black pb-4">
           Secure Payment
         </h3>
+        
+        {/* Email Field - CRITICAL FOR CONVERSION */}
+        <div className="mb-6">
+          <label htmlFor="email" className="block text-[12px] font-black uppercase tracking-widest mb-2 text-black/60">
+            Email Address (For Download Link)
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            placeholder="producer@example.com"
+            className="w-full bg-white border-[3px] border-black p-4 rounded-xl shadow-[4px_4px_0_0_#000] focus:translate-x-1 focus:translate-y-1 focus:shadow-none transition-all outline-none font-bold text-lg"
+          />
+        </div>
+
         <PaymentElement 
           id="payment-element" 
           options={{
