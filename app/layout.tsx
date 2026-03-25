@@ -69,7 +69,7 @@ export default async function RootLayout({
   // Prevent Google Analytics if it's the Dev IP (173.35.162.117) or Localhost
   const isDevIP = userIP.includes("173.35.162.117") || process.env.NODE_ENV === "development";
 
-  logger.info({ userIP, isDevIP }, "Serving Page Request");
+  logger.info({ userIP, isDevIP }, "🌊 Someone landed on MidiRoad.com");
 
   return (
     <html lang="en" className="scroll-smooth">
