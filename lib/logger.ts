@@ -10,8 +10,10 @@ const logger = pino({
   },
 }, {
   write: (msg) => {
-    // 1. Send to BetterStack via Fetch (Async/Fire-and-forget)
-    if (SOURCE_TOKEN) {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    // 1. Send to BetterStack via Fetch (Async/Fire-and-forget) - PRODUCTION ONLY
+    if (isProduction && SOURCE_TOKEN) {
       fetch('https://in.logs.betterstack.com', {
         method: 'POST',
         headers: {
