@@ -4,6 +4,7 @@ const SOURCE_TOKEN = "uCyA1YaFehqpeUFKybebRanK";
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
+  base: undefined, // Remove pid and hostname for cleaner logs
 }, {
   write: (msg) => {
     const isProduction = process.env.NODE_ENV === 'production';
@@ -15,8 +16,10 @@ const logger = pino({
       const betterStackPayload = {
         ...logObj,
         message: logObj.msg,
-        dt: new Date(logObj.time).toISOString(),
       };
+
+      // Remove msg to avoid duplication as requested
+      delete (betterStackPayload as any).msg;
 
       fetch('https://in.logs.betterstack.com', {
         method: 'POST',

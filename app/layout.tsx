@@ -59,9 +59,29 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   let userIP = "";
+  let geo = {};
+  let context = {};
+
   try {
     const headersList = await headers();
     userIP = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "";
+    
+    const userAgent = headersList.get("user-agent") || "unknown";
+    const referer = headersList.get("referer") || "direct";
+    
+    geo = {
+      country: headersList.get("x-vercel-ip-country") || "unknown",
+      city: headersList.get("x-vercel-ip-city") || "unknown",
+      region: headersList.get("x-vercel-ip-country-region") || "unknown",
+      timezone: headersList.get("x-vercel-ip-timezone") || "unknown",
+    };
+
+    context = {
+      referer,
+      userAgent,
+      isBot: /bot|googlebot|crawler|spider|robot|crawling/i.test(userAgent),
+      path: "/", // Layout covers root by default
+    };
   } catch (e) {
     // Failsafe for build-time static generation
   }
@@ -69,7 +89,7 @@ export default async function RootLayout({
   // Prevent Google Analytics if it's the Dev IP (173.35.162.117) or Localhost
   const isDevIP = userIP.includes("173.35.162.117") || process.env.NODE_ENV === "development";
 
-  logger.info({ userIP, isDevIP }, "🌊 Someone landed on MidiRoad.com");
+  logger.info({ userIP, isDevIP, ...geo, ...context }, "🌊 Someone landed on MidiRoad.com");
 
   return (
     <html lang="en" className="scroll-smooth">
