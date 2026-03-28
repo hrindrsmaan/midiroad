@@ -11,6 +11,11 @@ export async function POST(req: Request) {
     const headerList = await headers();
     const sig = headerList.get("stripe-signature");
 
+    console.log("🔔 [Webhook] Hit!", { 
+      sig: sig?.substring(0, 10) + "...", 
+      bodyLength: body.length 
+    });
+
     if (!sig) {
       logger.error("Missing stripe-signature header");
       return new Response("Missing stripe-signature header", { status: 400 });
@@ -27,6 +32,7 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET,
     );
 
+    console.log("✅ [Webhook] Event verified:", event.type);
     logger.info({ eventType: event.type, eventId: event.id }, "Received Stripe webhook event");
 
     // Handle checkout.session.completed (works with Payment Links)
@@ -67,12 +73,15 @@ export async function POST(req: Request) {
 
       if (email) {
         try {
+          console.log("✉️ [Webhook] Attempting fulfillment for:", email);
           await sendEmail(email);
           logger.info({ email, intentId: paymentIntent.id }, "Fulfillment email sent successfully via PaymentIntent");
         } catch (emailError: any) {
+          console.error("❌ [Webhook] Email error:", emailError.message);
           logger.error({ email, error: emailError.message }, "Failed to send fulfillment email for PaymentIntent");
         }
       } else {
+        console.warn("⚠️ [Webhook] No email found in PaymentIntent metadata or receipt_email");
         logger.warn({ intentId: paymentIntent.id }, "No email found in PaymentIntent for fulfillment");
       }
     }

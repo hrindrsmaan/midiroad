@@ -2,11 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { SalesPopup } from "@/components/SalesPopup";
-import { CountdownTimer } from "@/components/CountdownTimer";
-import { ExitPopup } from "@/components/ExitPopup";
-import { AudioDemo } from "@/components/AudioDemo";
 import { StickyCTA } from "@/components/StickyCTA";
-import { playSFX } from "@/lib/audio-sfx";
 import * as gtag from "@/lib/gtag";
 
 const testimonials = [
@@ -49,8 +45,6 @@ export default function Page() {
       label: isDiscount ? "Main Page Bundle Button (DISCOUNTED)" : "Main Page Bundle Button",
     });
 
-    playSFX('click');
-
     // Redirect to our custom checkout page
     const checkoutUrl = isDiscount ? "/checkout?discount=true" : "/checkout";
     window.location.href = checkoutUrl;
@@ -58,17 +52,17 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black overflow-x-hidden">
-      <CountdownTimer />
-      <nav className="flex items-center justify-between px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black sticky top-0 z-40">
+      <nav className="flex items-center justify-between px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black fixed top-0 z-50">
         <a
           href="/"
-          className="font-bold text-xl tracking-tighter text-white flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="MidiRoad Home"
         >
-          <div className="w-8 h-8 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#000]">
-            <span className="text-black font-black text-[16px] leading-none pt-[1px] -ml-[1px]">M</span>
-          </div>
-          MidiRoad
+          <img 
+            src="/logo-white.png" 
+            alt="MidiRoad" 
+            className="h-10 w-auto" 
+          />
         </a>
         <button
           onClick={() => handleBuy(false)}
@@ -80,7 +74,7 @@ export default function Page() {
       </nav>
 
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 px-6 border-b-2 border-black">
+      <section className="relative overflow-hidden pt-24 pb-16 md:pt-32 md:pb-24 px-6 border-b-2 border-black">
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6">
 
 
@@ -101,9 +95,6 @@ export default function Page() {
           <p className="text-lg text-black/60 font-bold max-w-2xl mx-auto leading-snug">
             Drag and drop royalty-free MIDI sequences and drum hits directly into your DAW. Finish tracks tonight.
           </p>
-
-          {/* Audio Demo Player */}
-          <AudioDemo />
 
           <div className="pt-12 flex flex-col items-center gap-8 w-full sm:w-auto">
             {/* The Image + Overlapping Badge Group */}
@@ -156,7 +147,6 @@ export default function Page() {
               </span>
               <button
                 onClick={() => handleBuy(false)}
-                onMouseEnter={() => playSFX('hover')}
                 disabled={loading}
                 className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-4 md:px-10 md:py-5 disabled:opacity-80 disabled:cursor-not-allowed text-center"
               >
@@ -453,7 +443,6 @@ export default function Page() {
               </span>
               <button
                 onClick={() => handleBuy(false)}
-                onMouseEnter={() => playSFX('hover')}
                 disabled={loading}
                 className="btn-primary group relative overflow-hidden cursor-pointer w-full sm:w-auto px-6 py-5 md:px-14 md:py-6 disabled:opacity-80 disabled:cursor-not-allowed text-center"
               >
@@ -523,10 +512,11 @@ export default function Page() {
           href="/"
           className="flex items-center justify-center gap-3 mb-8 hover:-translate-y-1 transition-transform"
         >
-          <div className="w-10 h-10 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#000]">
-            <span className="text-black font-black text-xl leading-none pt-[2px] -ml-[1px]">M</span>
-          </div>
-          <span className="font-bold text-2xl tracking-tighter">MidiRoad</span>
+          <img 
+            src="/logo.png" 
+            alt="MidiRoad" 
+            className="h-16 w-auto" 
+          />
         </a>
         <p className="mb-6 font-medium text-black max-w-sm mx-auto text-[15px] px-6 leading-relaxed">
           Premium drag-and-drop MIDI loops, chord progressions, and pro-grade
@@ -537,8 +527,6 @@ export default function Page() {
         </p>
       </footer>
 
-      {/* Exit Intent */}
-      <ExitPopup />
       {/* Sticky CTA */}
       <StickyCTA onBuy={() => handleBuy(false)} loading={loading} />
     </main>

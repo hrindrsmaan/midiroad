@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
-import { ProducerTag } from "@/components/ProducerTag";
 import logger from "@/lib/logger";
 import "./globals.css";
 
@@ -19,7 +18,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "MidiRoad | Premium MIDI Drum Kits & Production Tools",
+  title: "Download MIDI Drum Kits | Premium Packs",
   verification: {
     google: "2I4opu_i4ibpzNbr4aZGNVITaV38iWPM9IcknqvL-ws",
   },
@@ -36,7 +35,7 @@ export const metadata: Metadata = {
     "Ableton Live packs",
   ],
   openGraph: {
-    title: "MidiRoad | Premium MIDI Drum Kits",
+    title: "Download MIDI Drum Kits | Premium Packs",
     description:
       "Get unstuck and finish tracks faster with drag-and-drop MIDI loops, chord progressions, and modern drum hits.",
     type: "website",
@@ -44,7 +43,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MidiRoad | Premium MIDI Drum Kits",
+    title: "Download MIDI Drum Kits | Premium Packs",
     description: "Drag-and-drop MIDI loops and drum kits for modern producers.",
   },
   robots: {
@@ -116,7 +115,6 @@ export default async function RootLayout({
             />
           </>
         )}
-        <ProducerTag />
         {children}
       </body>
     </html>

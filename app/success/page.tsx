@@ -12,19 +12,20 @@ export default function Success() {
   logger.info("💰 Order Success page viewed - Conversion confirmed!");
   return (
     <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black">
-      <nav className="flex items-center px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black sticky top-0 z-50">
+      <nav className="flex items-center px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black fixed top-0 z-50">
         <a
           href="/"
-          className="font-bold text-xl tracking-tighter text-white flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="MidiRoad Home"
         >
-          <div className="w-8 h-8 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center shadow-[2px_2px_0_0_#000]">
-            <span className="text-black font-black text-[16px] leading-none pt-[1px] -ml-[1px]">M</span>
-          </div>
-          MidiRoad
+          <img 
+            src="/logo-white.png" 
+            alt="MidiRoad" 
+            className="h-10 w-auto" 
+          />
         </a>
       </nav>
-      <div className="px-6 py-16 md:py-24 mx-auto max-w-4xl space-y-12">
+      <div className="px-6 py-24 md:py-32 mx-auto max-w-4xl space-y-12">
         {/* Main Success Card */}
         <div className="rounded-[2.5rem] border-4 border-black bg-white p-8 md:p-16 shadow-neo-lg relative overflow-hidden">          
           <div className="relative z-10">
@@ -83,10 +84,10 @@ export default function Success() {
           <p className="mt-4 text-[18px] font-medium text-black leading-relaxed max-w-2xl">
             Reply to the order confirmation email or reach us at{" "}
             <a
-              href="mailto:help@midiroad.com"
+              href="mailto:support@midiroad.com"
               className="text-black font-black hover:bg-black hover:text-[#ffc2f1] underline underline-offset-4 decoration-4 transition-colors px-1"
             >
-              help@midiroad.com
+              support@midiroad.com
             </a>
             . We'll get you back inside the kit within minutes.
           </p>
@@ -95,9 +96,11 @@ export default function Success() {
         {/* Simple Footer/Back Link */}
         <div className="pt-8 text-center flex flex-col items-center">
           <a href="/" className="inline-flex items-center justify-center gap-3 text-[15px] font-bold uppercase tracking-wider text-black bg-white border-2 border-black rounded-full px-8 py-4 shadow-[2px_2px_0_0_#000] hover:-translate-y-1 hover:shadow-[4px_4px_0_0_#000] transition-all">
-            <div className="w-6 h-6 rounded-full bg-[#ff90e8] border-2 border-black flex items-center justify-center -ml-2">
-              <span className="text-black font-black text-[12px] leading-none pt-[1px]">M</span>
-            </div>
+            <img 
+              src="/logo-icon.png" 
+              alt="" 
+              className="w-8 h-8 object-contain -ml-2" 
+            />
             Return to Homepage
           </a>
         </div>

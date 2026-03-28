@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { playSFX } from "@/lib/audio-sfx";
 
 interface StickyMobileCTAProps {
   onBuy: () => void;
@@ -32,10 +31,8 @@ export function StickyCTA({ onBuy, loading }: StickyMobileCTAProps) {
       <div className="max-w-4xl mx-auto bg-black border-2 border-white/10 rounded-2xl p-3 shadow-[0_-8px_30px_rgb(0,0,0,0.12)] backdrop-blur-md bg-opacity-90">
         <button
           onClick={() => {
-            playSFX('click');
             onBuy();
           }}
-          onMouseEnter={() => playSFX('hover')}
           disabled={loading}
           className="w-full bg-[#ff90e8] text-black font-black uppercase py-4 rounded-xl shadow-[4px_4px_0_0_#000] active:translate-y-1 active:shadow-none transition-all flex items-center justify-between px-4 sm:px-6 cursor-pointer group hover:scale-[1.01]"
         >

@@ -6,7 +6,6 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { playSFX } from "@/lib/audio-sfx";
 
 export default function CheckoutForm() {
   const stripe = useStripe();
@@ -23,7 +22,6 @@ export default function CheckoutForm() {
     }
 
     setIsLoading(true);
-    playSFX('click');
 
     const { error } = await stripe.confirmPayment({
       elements,
@@ -82,7 +80,6 @@ export default function CheckoutForm() {
       <button
         disabled={isLoading || !stripe || !elements}
         id="submit"
-        onMouseEnter={() => playSFX('hover')}
         className="w-full bg-[#ff90e8] text-black font-black uppercase py-5 rounded-2xl border-4 border-black shadow-[8px_8px_0_0_#000] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xl tracking-tight"
       >
         <span id="button-text">

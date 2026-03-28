@@ -152,6 +152,9 @@ export async function sendEmail(email: string) {
       `,
     });
 
+    if (result.error) {
+      throw new Error(`Resend API Error: ${result.error.message}`);
+    }
     console.log("Email sent successfully:", result);
     return result;
   } catch (error: any) {

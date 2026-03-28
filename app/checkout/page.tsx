@@ -80,9 +80,11 @@ function CheckoutContent() {
           
           <div className="flex justify-between items-start mb-6 border-b-2 border-black/10 pb-6">
             <div className="flex gap-4">
-              <div className="w-16 h-16 bg-[#ff90e8] border-2 border-black rounded-xl flex items-center justify-center font-black text-xl shadow-[2px_2px_0_0_#000]">
-                M
-              </div>
+              <img 
+                src="/logo-icon.png" 
+                alt="Logo" 
+                className="w-16 h-16 object-contain" 
+              />
               <div>
                 <p className="font-black uppercase text-sm tracking-tight">The Premium Bundle</p>
                 <p className="text-[12px] font-bold text-black/40">300+ MIDI / 200+ DRUMS</p>
