@@ -3,13 +3,14 @@ const bundleInfo = {
   description:
     "Your complete download with 300+ MIDI sequences, 200+ drum samples, and the Trap Arrangement Bonus Kit.",
   link: "/downloads/midiroad.zip",
-  highlights: ["MIDI Progressions", "Premium Drum Hits", "Trap Arrangement Kit"],
+  highlights: [
+    "MIDI Progressions",
+    "Premium Drum Hits",
+    "Trap Arrangement Kit",
+  ],
 };
 
-import logger from "@/lib/logger";
-
 export default function Success() {
-  logger.info("💰 Order Success page viewed - Conversion confirmed!");
   return (
     <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black">
       <nav className="flex items-center px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black fixed top-0 z-50">
@@ -18,16 +19,12 @@ export default function Success() {
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="MidiRoad Home"
         >
-          <img 
-            src="/logo-white.png" 
-            alt="MidiRoad" 
-            className="h-10 w-auto" 
-          />
+          <img src="/logo-white.png" alt="MidiRoad" className="h-10 w-auto" />
         </a>
       </nav>
       <div className="px-6 py-24 md:py-32 mx-auto max-w-4xl space-y-12">
         {/* Main Success Card */}
-        <div className="rounded-[2.5rem] border-4 border-black bg-white p-8 md:p-16 shadow-neo-lg relative overflow-hidden">          
+        <div className="rounded-[2.5rem] border-4 border-black bg-white p-8 md:p-16 shadow-neo-lg relative overflow-hidden">
           <div className="relative z-10">
             <p className="text-[13px] uppercase tracking-widest text-black font-bold mb-6">
               Order confirmed
@@ -36,9 +33,7 @@ export default function Success() {
               Payment successful.
             </h1>
             <p className="mt-6 text-xl font-medium text-black max-w-2xl leading-relaxed">
-              Your bundle is now unlocked. Download the files below or use the
-              link we just sent to your email. The link stays active for 30
-              days.
+              Your bundle is now unlocked. Download the files below.
             </p>
 
             <div className="mt-14">
@@ -80,9 +75,11 @@ export default function Success() {
 
         {/* Support Section */}
         <section className="rounded-3xl border-2 border-black bg-[#ffc2f1] p-8 md:p-12 text-left shadow-neo-lg">
-          <h2 className="text-3xl font-black text-black tracking-tighter">Need help?</h2>
+          <h2 className="text-3xl font-black text-black tracking-tighter">
+            Need help?
+          </h2>
           <p className="mt-4 text-[18px] font-medium text-black leading-relaxed max-w-2xl">
-            Reply to the order confirmation email or reach us at{" "}
+            Reach us at{" "}
             <a
               href="mailto:support@midiroad.com"
               className="text-black font-black hover:bg-black hover:text-[#ffc2f1] underline underline-offset-4 decoration-4 transition-colors px-1"
@@ -92,14 +89,17 @@ export default function Success() {
             . We'll get you back inside the kit within minutes.
           </p>
         </section>
-        
+
         {/* Simple Footer/Back Link */}
         <div className="pt-8 text-center flex flex-col items-center">
-          <a href="/" className="inline-flex items-center justify-center gap-3 text-[15px] font-bold uppercase tracking-wider text-black bg-white border-2 border-black rounded-full px-8 py-4 shadow-[2px_2px_0_0_#000] hover:-translate-y-1 hover:shadow-[4px_4px_0_0_#000] transition-all">
-            <img 
-              src="/logo-icon.png" 
-              alt="" 
-              className="w-8 h-8 object-contain -ml-2" 
+          <a
+            href="/"
+            className="inline-flex items-center justify-center gap-3 text-[15px] font-bold uppercase tracking-wider text-black bg-white border-2 border-black rounded-full px-8 py-4 shadow-[2px_2px_0_0_#000] hover:-translate-y-1 hover:shadow-[4px_4px_0_0_#000] transition-all"
+          >
+            <img
+              src="/logo-icon.png"
+              alt=""
+              className="w-8 h-8 object-contain -ml-2"
             />
             Return to Homepage
           </a>

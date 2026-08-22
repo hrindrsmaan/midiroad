@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
-import logger from "@/lib/logger";
 import "./globals.css";
 
 const inter = Inter({
@@ -58,37 +57,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   let userIP = "";
-  let geo = {};
-  let context = {};
 
   try {
     const headersList = await headers();
-    userIP = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "";
-    
-    const userAgent = headersList.get("user-agent") || "unknown";
-    const referer = headersList.get("referer") || "direct";
-    
-    geo = {
-      country: headersList.get("x-vercel-ip-country") || "unknown",
-      city: headersList.get("x-vercel-ip-city") || "unknown",
-      region: headersList.get("x-vercel-ip-country-region") || "unknown",
-      timezone: headersList.get("x-vercel-ip-timezone") || "unknown",
-    };
-
-    context = {
-      referer,
-      userAgent,
-      isBot: /bot|googlebot|crawler|spider|robot|crawling/i.test(userAgent),
-      path: "/", // Layout covers root by default
-    };
+    userIP =
+      headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "";
   } catch (e) {
     // Failsafe for build-time static generation
   }
 
-  // Prevent Google Analytics if it's the Dev IP (173.35.162.117) or Localhost
-  const isDevIP = userIP.includes("173.35.162.117") || process.env.NODE_ENV === "development";
-
-  logger.info({ userIP, isDevIP, ...geo, ...context }, "🌊 Someone landed on MidiRoad.com");
+  // Prevent Google Analytics for excluded IPs (owner) or Localhost
+  const EXCLUDED_IPS = ["99.245.213.180"];
+  const isDevIP =
+    process.env.NODE_ENV === "development" ||
+    EXCLUDED_IPS.some((ip) => userIP.includes(ip));
 
   return (
     <html lang="en" className="scroll-smooth">
@@ -96,9 +78,12 @@ export default async function RootLayout({
         className={`${spaceGrotesk.variable} ${inter.variable} antialiased font-sans`}
       >
         {/* Conditionally render Google Analytics based on IP */}
-        {!isDevIP && (
+        {!isDevIP ? (
           <>
-            <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-9HYPTS5VTB" />
+            <Script
+              strategy="afterInteractive"
+              src="https://www.googletagmanager.com/gtag/js?id=G-9HYPTS5VTB"
+            />
             <Script
               id="google-analytics"
               strategy="afterInteractive"
@@ -110,10 +95,17 @@ export default async function RootLayout({
                   gtag('config', 'G-9HYPTS5VTB', {
                     page_path: window.location.pathname,
                   });
+                  console.log('%c[Analytics] ✅ Google Analytics is RUNNING', 'color: green; font-weight: bold;');
                 `,
               }}
             />
           </>
+        ) : (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `console.log('%c[Analytics] ⛔ Google Analytics BLOCKED (excluded IP / dev mode)', 'color: orange; font-weight: bold;');`,
+            }}
+          />
         )}
         {children}
       </body>
