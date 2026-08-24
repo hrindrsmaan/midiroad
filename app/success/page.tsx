@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+
 const bundleInfo = {
   name: "Premium MIDI + Drum Kit Bundle",
   description:
@@ -60,12 +62,13 @@ export default function Success() {
                       ))}
                     </ul>
                   </div>
-                  <a
-                    href={bundleInfo.link}
-                    download
-                    className="btn-primary cursor-pointer shrink-0 inline-flex items-center justify-center px-10 py-5 text-[15px] font-bold uppercase tracking-wider"
-                  >
-                    Download Bundle
+                  <a href={bundleInfo.link} download>
+                    <Button
+                      size="lg"
+                      className="shrink-0 bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider"
+                    >
+                      Download Bundle
+                    </Button>
                   </a>
                 </div>
               </article>
@@ -92,16 +95,14 @@ export default function Success() {
 
         {/* Simple Footer/Back Link */}
         <div className="pt-8 text-center flex flex-col items-center">
-          <a
-            href="/"
-            className="inline-flex items-center justify-center gap-3 text-[15px] font-bold uppercase tracking-wider text-black bg-white border-2 border-black rounded-full px-8 py-4 shadow-[2px_2px_0_0_#000] hover:-translate-y-1 hover:shadow-[4px_4px_0_0_#000] transition-all"
-          >
-            <img
-              src="/logo-icon.png"
-              alt=""
-              className="w-8 h-8 object-contain -ml-2"
-            />
-            Return to Homepage
+          <a href="/">
+            <Button
+              variant="outline"
+              size="lg"
+              className="font-bold uppercase tracking-wider"
+            >
+              Return to Homepage
+            </Button>
           </a>
         </div>
       </div>
