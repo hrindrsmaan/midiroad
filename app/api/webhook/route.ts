@@ -11,11 +11,6 @@ export async function POST(req: Request) {
     const headerList = await headers();
     const sig = headerList.get("stripe-signature");
 
-    console.log("🔔 [Webhook] Hit!", { 
-      sig: sig?.substring(0, 10) + "...", 
-      bodyLength: body.length 
-    });
-
     if (!sig) {
       logger.error("Missing stripe-signature header");
       return new Response("Missing stripe-signature header", { status: 400 });
@@ -32,19 +27,24 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET,
     );
 
-    console.log("✅ [Webhook] Event verified:", event.type);
-    logger.info({ eventType: event.type, eventId: event.id }, "Received Stripe webhook event");
+    logger.info(
+      { eventType: event.type, eventId: event.id },
+      "Received Stripe webhook event",
+    );
 
-    // Handle checkout.session.completed (works with Payment Links)
+    // Handle checkout.session.completed for Payment Links
     if (event.type === "checkout.session.completed") {
       const session: any = event.data.object;
       const email = session.customer_details?.email || session.customer_email;
 
-      logger.info({
-        sessionId: session.id,
-        email: email,
-        amount: session.amount_total,
-      }, "Checkout session completed");
+      logger.info(
+        {
+          sessionId: session.id,
+          email: email,
+          amount: session.amount_total,
+        },
+        "Checkout session completed",
+      );
 
       if (email) {
         logger.info({ email }, "Sending fulfillment email");
@@ -52,43 +52,25 @@ export async function POST(req: Request) {
           await sendEmail(email);
           logger.info({ email }, "Email sent successfully");
         } catch (emailError: any) {
-          logger.error({ email, error: emailError.message }, "Failed to send fulfillment email");
-          // Don't fail the webhook if email fails
+          logger.error(
+            { email, error: emailError.message },
+            "Failed to send fulfillment email",
+          );
         }
       } else {
-        logger.warn({ sessionId: session.id }, "No email found in checkout session");
-      }
-    }
-
-    // Handle payment_intent.succeeded for custom Elements flow
-    if (event.type === "payment_intent.succeeded") {
-      const paymentIntent: any = event.data.object;
-      const email = paymentIntent.receipt_email || paymentIntent.metadata?.email;
-
-      logger.info({
-        intentId: paymentIntent.id,
-        email: email,
-        amount: paymentIntent.amount,
-      }, "Payment intent succeeded - Processing fulfillment");
-
-      if (email) {
-        try {
-          console.log("✉️ [Webhook] Attempting fulfillment for:", email);
-          await sendEmail(email);
-          logger.info({ email, intentId: paymentIntent.id }, "Fulfillment email sent successfully via PaymentIntent");
-        } catch (emailError: any) {
-          console.error("❌ [Webhook] Email error:", emailError.message);
-          logger.error({ email, error: emailError.message }, "Failed to send fulfillment email for PaymentIntent");
-        }
-      } else {
-        console.warn("⚠️ [Webhook] No email found in PaymentIntent metadata or receipt_email");
-        logger.warn({ intentId: paymentIntent.id }, "No email found in PaymentIntent for fulfillment");
+        logger.warn(
+          { sessionId: session.id },
+          "No email found in checkout session",
+        );
       }
     }
 
     return new Response("ok");
   } catch (error: any) {
-    logger.error({ error: error.message, stack: error.stack }, "Webhook processing failed");
+    logger.error(
+      { error: error.message, stack: error.stack },
+      "Webhook processing failed",
+    );
     return new Response(`Webhook error: ${error.message}`, { status: 400 });
   }
 }

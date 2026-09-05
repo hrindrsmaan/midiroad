@@ -10,26 +10,19 @@ const US_CITIES = [
   "Portland, OR", "Detroit, MI", "Charlotte, NC"
 ];
 
-const CUSTOMER_NAMES = [
-  "Alex M.", "Jordan T.", "Chris L.", "Taylor R.", "Casey B.", 
-  "Morgan S.", "Jamie K.", "Riley P.", "Avery D.", "Drew H.",
-  "Sam W.", "Cameron G.", "Jesse F.", "Quinn N.", "Skyler V."
-];
-
 export function SalesPopup() {
   const [isVisible, setIsVisible] = useState(false);
-  const [purchaseData, setPurchaseData] = useState({ name: "", city: "", time: 1 });
+  const [purchaseData, setPurchaseData] = useState({ city: "", time: 1 });
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     const triggerPopup = () => {
-      // Pick random data
+      // Pick random city + minutes-ago
       const randomCity = US_CITIES[Math.floor(Math.random() * US_CITIES.length)];
-      const randomName = CUSTOMER_NAMES[Math.floor(Math.random() * CUSTOMER_NAMES.length)];
       const randomTime = Math.floor(Math.random() * 14) + 1; // 1 to 15 mins ago
 
-      setPurchaseData({ name: randomName, city: randomCity, time: randomTime });
+      setPurchaseData({ city: randomCity, time: randomTime });
       setIsVisible(true);
 
       // Hide after 4 seconds
@@ -69,10 +62,10 @@ export function SalesPopup() {
         </div>
         <div>
           <p className="text-[13px] font-bold text-black leading-tight">
-            {purchaseData.name} in {purchaseData.city}
+            Someone in {purchaseData.city}
           </p>
           <p className="text-[12px] font-bold text-black/60 mt-0.5">
-            Purchased the Premium Bundle
+            Just purchased the bundle
           </p>
           <p className="text-[10px] font-black uppercase tracking-wider text-[#ff90e8] mt-1 line-clamp-1 truncate" style={{ WebkitTextStroke: "0.2px black" }}>
             {purchaseData.time} min ago
