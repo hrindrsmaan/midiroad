@@ -4,6 +4,11 @@ import { useCallback, useState } from "react";
 import { SalesPopup } from "@/components/SalesPopup";
 import * as gtag from "@/lib/gtag";
 import { ProductDetail } from "@/components/ProductDetail";
+import { UrgencyBar } from "@/components/UrgencyBar";
+import { DiscountBadge } from "@/components/DiscountBadge";
+import { FAQSection } from "@/components/FAQSection";
+import { PricingTable } from "@/components/PricingTable";
+import { PRICING, formatUSD } from "@/lib/pricing";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -49,13 +54,18 @@ export default function Page() {
         </a>
         <Button
           variant="ghost"
-          onClick={() => handleBuy(false)}
+          onClick={() => handleBuy(true)}
           disabled={loading}
           className="text-white font-bold uppercase text-[13px] tracking-wider hover:bg-white/10 hover:text-white"
         >
-          {loading ? "Loading..." : "Buy"}
+          {loading ? "Loading..." : "Get Access"}
         </Button>
       </nav>
+
+      {/* Urgency / Scarcity Bar — countdown + low-stock + price-increase warning */}
+      <div className="pt-[72px] md:pt-[76px]">
+        <UrgencyBar />
+      </div>
 
       {/* Product Detail (replaces hero) */}
       <ProductDetail onBuy={handleBuy} loading={loading} />
@@ -141,19 +151,54 @@ export default function Page() {
         </div>
       </section>
 
+      {/* Pricing Table — single, dual, and pro tiers */}
+      <PricingTable />
+
+      {/* FAQ — addresses objections after the pricing decision */}
+      <FAQSection />
+
+      {/* Floating discount pill (desktop) */}
+      <DiscountBadge variant="floating" />
+
+      {/* Live "someone just bought" social-proof popup */}
+      <SalesPopup />
+
       {/* Sticky Mobile Buy Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t-2 border-black md:hidden z-50">
-        <Button
-          size="lg"
-          className="w-full bg-black hover:bg-gray-800 text-white font-bold"
-          onClick={() => {
-            window.location.href =
-              process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK ||
-              "https://buy.stripe.com/test_4gMcN56mH5ABa3p97Za3u00";
-          }}
-        >
-          Buy Now - $24.99
-        </Button>
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t-2 border-black md:hidden z-50 shadow-[0_-4px_0_0_#000]">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <span className="text-[11px] font-black uppercase tracking-wider text-gray-500 line-through">
+            {formatUSD(PRICING.originalPrice)}
+          </span>
+          <span className="bg-black text-[#ff90e8] text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded">
+            Save {PRICING.discountPercent}%
+          </span>
+          <span className="text-sm font-black text-black">
+            From {formatUSD(PRICING.currentPrice)}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            size="lg"
+            variant="outline"
+            className="border-2 border-black bg-white text-black font-bold hover:bg-black hover:text-white"
+            onClick={() => {
+              document
+                .getElementById("pricing")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          >
+            Choose Plan
+          </Button>
+          <Button
+            size="lg"
+            className="bg-black hover:bg-gray-800 text-white font-bold"
+            onClick={() => {
+              handleBuy(true);
+            }}
+          >
+            Get Bundle
+          </Button>
+        </div>
       </div>
 
       {/* Footer */}

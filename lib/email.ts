@@ -6,7 +6,7 @@ export async function sendEmail(to: string) {
   const downloadLink = `${process.env.BASE_URL || "https://midiroad.com"}/downloads/midiroad.zip`;
 
   const { data, error } = await resend.emails.send({
-    from: "MidiRoad <onboarding@resend.dev>",
+    from: "MidiRoad <noreply@midiroad.com>",
     to: [to],
     subject: "Your MidiRoad Bundle is Ready! 🎵",
     html: `

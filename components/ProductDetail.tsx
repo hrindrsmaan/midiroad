@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { DiscountBadge, PriceStack } from "@/components/DiscountBadge";
+import { TrustBadges, GuaranteeSeal } from "@/components/TrustBadges";
 
 type Props = {
   onBuy: (isDiscount?: boolean) => void;
@@ -33,7 +34,7 @@ export function ProductDetail({ onBuy, loading }: Props) {
   const [buyLoading, setBuyLoading] = useState<boolean>(false);
 
   return (
-    <section className="pt-24 md:pt-32 pb-12 md:pb-20 px-6 bg-white">
+    <section id="main-cta" className="pt-24 md:pt-32 pb-12 md:pb-20 px-6 bg-white scroll-mt-32">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
         {/* Left: Large product image */}
         <div className="flex items-start justify-center">
@@ -58,44 +59,45 @@ export function ProductDetail({ onBuy, loading }: Props) {
             </p>
           </div>
 
+          {/* Discount badge */}
+          <div>
+            <DiscountBadge variant="inline" />
+          </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="w-full sm:w-auto bg-black hover:bg-gray-800 text-white font-bold rounded-full px-8 text-lg"
+                className="group relative w-full sm:w-auto bg-black hover:bg-gray-800 text-white font-extrabold uppercase tracking-wide rounded-full px-8 py-6 text-base sm:text-lg shadow-[4px_4px_0_0_#ff90e8] hover:shadow-[2px_2px_0_0_#ff90e8] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 onClick={() => {
                   setBuyLoading(true);
-                  // Redirect to Stripe Payment Link
-                  window.location.href =
-                    process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK ||
-                    "https://buy.stripe.com/test_4gMcN56mH5ABa3p97Za3u00";
+                  // Notify parent so analytics can log the DISCOUNTED click.
+                  onBuy(true);
                 }}
                 disabled={buyLoading}
+                aria-label="Get instant access to the MidiRoad bundle for $24.99"
               >
-                {buyLoading ? "Redirecting…" : "Buy Now"}
+                {buyLoading ? (
+                  "Redirecting…"
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Get Instant Access
+                    <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+                  </span>
+                )}
               </Button>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-3xl md:text-4xl font-bold">$24.99</span>
+            <PriceStack />
           </div>
 
-          {/* Trust Badges */}
-          <div className="flex flex-wrap gap-3">
-            <Badge variant="success" className="gap-1.5 py-1.5 px-3">
-              <CheckIcon className="w-4 h-4" />
-              Instant Download
-            </Badge>
-            <Badge variant="success" className="gap-1.5 py-1.5 px-3">
-              <CheckIcon className="w-4 h-4" />
-              Royalty-Free
-            </Badge>
-            <Badge variant="success" className="gap-1.5 py-1.5 px-3">
-              <CheckIcon className="w-4 h-4" />
-              30-Day Refund
-            </Badge>
-          </div>
+          {/* Visual Guarantee Seals */}
+          <TrustBadges />
+
+          {/* Prominent Money-Back Guarantee seal block */}
+          <GuaranteeSeal />
 
           {/* License Info */}
           <Card className="bg-gray-50">
