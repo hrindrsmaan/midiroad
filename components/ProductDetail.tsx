@@ -68,7 +68,7 @@ export function ProductDetail({ onBuy, loading }: Props) {
             <div className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="group relative w-full sm:w-auto bg-black hover:bg-gray-800 text-white font-extrabold uppercase tracking-wide rounded-full px-8 py-6 text-base sm:text-lg shadow-[4px_4px_0_0_#ff90e8] hover:shadow-[2px_2px_0_0_#ff90e8] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                className="group relative w-full sm:w-auto bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide rounded-full px-10 py-7 text-lg sm:text-xl shadow-[5px_5px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 onClick={() => {
                   setBuyLoading(true);
                   // Notify parent so analytics can log the DISCOUNTED click.

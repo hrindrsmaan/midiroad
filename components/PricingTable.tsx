@@ -46,7 +46,7 @@ function OfferCard({ offer }: { offer: Offer }) {
 
   // Tier-specific button styling.
   const buttonClass = isPopular
-    ? "bg-black text-white hover:bg-gray-800 shadow-[3px_3px_0_0_#fff]"
+    ? "bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black shadow-[3px_3px_0_0_#000]"
     : offer.id === "pro"
       ? "bg-white text-black border-2 border-black hover:bg-black hover:text-white"
       : "bg-white text-black border-2 border-black hover:bg-black hover:text-white";
@@ -121,23 +121,23 @@ export function PricingTable() {
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
         <div className="text-center mb-12">
-          <span className="inline-block text-[11px] sm:text-[12px] font-black uppercase tracking-widest text-black bg-[#9eff9e] border-2 border-black rounded-full px-3 py-1 shadow-[3px_3px_0_0_#000] -rotate-2">
+          <span className="inline-block text-[11px] sm:text-[12px] font-black uppercase tracking-widest text-black bg-[#ffe14d] border-2 border-black rounded-full px-3 py-1 shadow-[3px_3px_0_0_#000] -rotate-2">
             Pick Your Tier
           </span>
           <h2
             id="pricing-heading"
             className="text-3xl md:text-4xl font-black mt-4 mb-3 tracking-tight"
           >
-            One system. Three ways in.
+            Two ways in. Same 838 files.
           </h2>
           <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto">
             Every tier is royalty-free, works in every major DAW, and ships
-            instantly. Pick what fits your workflow — upgrade anytime.
+            instantly. Pro adds project files and a masterclass on top.
           </p>
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-5 lg:gap-6 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch max-w-3xl mx-auto">
           {sorted.map((offer) => (
             <OfferCard key={offer.id} offer={offer} />
           ))}

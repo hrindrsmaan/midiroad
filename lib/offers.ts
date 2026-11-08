@@ -1,21 +1,12 @@
 /**
  * Offer catalog for the MidiRoad bundle landing page.
  *
- * Three tiers designed to capture leads at every price point:
- *  - "Starter" downsell for budget-conscious leads
- *  - "Standard" (Most Popular) — the bundle as it exists today
- *  - "Pro" upsell with extras
- *
- * NOTE on file counts: The feature lists advertise a different number of
- * files per tier (Starter = 200, Standard = 838, Pro = 1,500+) so the
- * copy escalates cleanly across the table. In practice, every tier
- * currently ships the same 838-file core bundle. Tier differences in
- * reality are *extras only*: workflow guide, project files, masterclass,
- * VIP support, early access, sync rights.
+ * Two tiers: the Full Bundle and a Pro kit with extras. Both ship the same
+ * 838-file core; only list extras on a tier that the buyer actually receives.
+ * The former "Starter" tier was removed because it sold the identical files
+ * for less and advertised a smaller file count than it delivered.
  *
  * Each tier has its own Stripe Payment Link URL. Set them in .env.
- * If a link is empty, the CTA falls back to a smooth-scroll to the
- * most-popular tier (treated as "the deal").
  */
 export type Offer = {
   id: "starter" | "standard" | "pro";
@@ -37,31 +28,13 @@ export type Offer = {
 
 export const OFFERS: Offer[] = [
   {
-    id: "starter",
-    name: "Starter",
-    tagline: "Same bundle · lowest price",
-    price: 9.99,
-    displayOrder: 1,
-    accent: "bg-white",
-    rationale:
-      "Pick me if you're on a tight budget — straightforward, just the essentials.",
-    features: [
-      "200 hand-picked WAVs & MIDIs",
-      "40+ drum patterns across trap, RnB & soul",
-      "Royalty-free for commercial releases",
-      "Instant download — keep forever",
-      "Compatible with all major DAWs",
-      "Email support",
-    ],
-  },
-  {
     id: "standard",
     name: "Full Bundle",
-    tagline: "Most producers pick this",
+    tagline: "Everything you need to start",
     price: 24.99,
-    displayOrder: 2,
+    displayOrder: 1,
     accent: "bg-[#ff90e8]",
-    badge: "Most Popular · 38% Off",
+    badge: "Best Value · 38% Off",
     rationale:
       "Pick me if you want the core bundle plus our workflow guide — the tier most producers go with.",
     features: [
@@ -80,12 +53,11 @@ export const OFFERS: Offer[] = [
     name: "Producer's Pro Kit",
     tagline: "Bundle + every bonus",
     price: 49.99,
-    displayOrder: 3,
+    displayOrder: 2,
     accent: "bg-[#a0e8ff]",
     rationale:
       "Pick me if you want the bundle plus project files, a masterclass, and direct VIP support.",
     features: [
-      "1,500+ files — full 838-file bundle plus 3 fully-produced project files",
       "Everything in the Full Bundle (incl. workflow guide)",
       "Bonus: 3 fully-produced project files (.als / .flp)",
       "Bonus: MIDI chord progression masterclass",

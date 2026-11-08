@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     google: "2I4opu_i4ibpzNbr4aZGNVITaV38iWPM9IcknqvL-ws",
   },
   description:
-    "Instantly level up your production with 300+ royalty-free MIDI sequences and 200+ pro-grade drum samples. Built for modern producers. Compatible with all major DAWs.",
+    "838 royalty-free MIDIs, drums and presets for dark trap, RnB and soul. Built for modern producers. Compatible with all major DAWs.",
   keywords: [
     "MIDI kits",
     "MIDI drum kits",
