@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       if (email) {
         logger.info({ email }, "Sending fulfillment email");
         try {
-          await sendEmail(email);
+          await sendEmail(email, session.id);
           logger.info({ email }, "Email sent successfully");
         } catch (emailError: any) {
           logger.error(

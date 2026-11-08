@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, Black_Ops_One } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
 import "./globals.css";
@@ -7,6 +7,13 @@ import "./globals.css";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const blackOpsOne = Black_Ops_One({
+  variable: "--font-black-ops",
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -22,7 +29,7 @@ export const metadata: Metadata = {
     google: "2I4opu_i4ibpzNbr4aZGNVITaV38iWPM9IcknqvL-ws",
   },
   description:
-    "Instantly level up your production with 300+ royalty-free MIDI sequences and 200+ pro-grade drum samples. Built for modern producers. Compatible with all major DAWs.",
+    "838 royalty-free MIDIs, drums and presets for dark trap, RnB and soul. Built for modern producers. Compatible with all major DAWs.",
   keywords: [
     "MIDI kits",
     "MIDI drum kits",
@@ -75,7 +82,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${spaceGrotesk.variable} ${inter.variable} antialiased font-sans`}
+        className={`${blackOpsOne.variable} ${spaceGrotesk.variable} ${inter.variable} antialiased font-sans`}
       >
         {/* Conditionally render Google Analytics based on IP */}
         {!isDevIP ? (

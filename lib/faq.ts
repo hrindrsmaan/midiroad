@@ -60,11 +60,10 @@ export const FAQS: FaqItem[] = [
   },
   {
     q: "How will I receive the files after purchase?",
-    a: "Instantly. After checkout, Stripe sends you an email with a download link — usually within 30 seconds. You'll also get a secure copy in your account.",
+    a: "Instantly. After checkout you land on a download page, and we also email you a download link — usually within a minute. Check spam if it doesn't arrive.",
     bullets: [
       "Delivered as a single .zip (~1.2 GB) — organized into folders by category",
-      "Download link never expires",
-      "Use the same link to re-download anytime",
+      "Your download link stays valid — re-download anytime from the email",
     ],
   },
   {

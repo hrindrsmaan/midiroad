@@ -4,7 +4,6 @@ const bundleInfo = {
   name: "Premium MIDI + Drum Kit Bundle",
   description:
     "Your complete download with 300+ MIDI sequences, 200+ drum samples, and the Trap Arrangement Bonus Kit.",
-  link: "/downloads/midiroad.zip",
   highlights: [
     "MIDI Progressions",
     "Premium Drum Hits",
@@ -12,7 +11,16 @@ const bundleInfo = {
   ],
 };
 
-export default function Success() {
+export default async function Success({
+  searchParams,
+}: {
+  searchParams: Promise<{ session_id?: string }>;
+}) {
+  const { session_id: sessionId } = await searchParams;
+  const downloadHref = sessionId
+    ? `/api/download?session_id=${encodeURIComponent(sessionId)}`
+    : null;
+
   return (
     <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black">
       <nav className="flex items-center px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black fixed top-0 z-50">
@@ -62,14 +70,21 @@ export default function Success() {
                       ))}
                     </ul>
                   </div>
-                  <a href={bundleInfo.link} download>
-                    <Button
-                      size="lg"
-                      className="shrink-0 bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider"
-                    >
-                      Download Bundle
-                    </Button>
-                  </a>
+                  {downloadHref ? (
+                    <a href={downloadHref} download>
+                      <Button
+                        size="lg"
+                        className="shrink-0 bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider"
+                      >
+                        Download Bundle
+                      </Button>
+                    </a>
+                  ) : (
+                    <p className="text-sm font-bold max-w-[16rem]">
+                      Check your email for your download link, or contact
+                      support@midiroad.com.
+                    </p>
+                  )}
                 </div>
               </article>
             </div>
