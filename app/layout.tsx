@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk, Black_Ops_One } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
 import "./globals.css";
+import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,14 +29,12 @@ export const metadata: Metadata = {
   verification: {
     google: "2I4opu_i4ibpzNbr4aZGNVITaV38iWPM9IcknqvL-ws",
   },
-  description:
-    "838 royalty-free MIDIs, drums and presets for dark trap, RnB and soul. Built for modern producers. Compatible with all major DAWs.",
+  description: `${MIDI_PATTERN_COUNT} royalty-free MIDI drum patterns and ${ONE_SHOT_COUNT} drum one-shots for dark trap, RnB and soul. Drag and drop into any DAW.`,
   keywords: [
     "MIDI kits",
     "MIDI drum kits",
     "drum samples",
     "beat making",
-    "music production plugins",
     "royalty free MIDI",
     "FL Studio MIDI",
     "Ableton Live packs",
@@ -43,14 +42,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Download MIDI Drum Kits | Premium Packs",
     description:
-      "Get unstuck and finish tracks faster with drag-and-drop MIDI loops, chord progressions, and modern drum hits.",
+      "Finish beats faster with drag-and-drop MIDI drum patterns and trap one-shots.",
     type: "website",
     siteName: "MidiRoad",
   },
   twitter: {
     card: "summary_large_image",
     title: "Download MIDI Drum Kits | Premium Packs",
-    description: "Drag-and-drop MIDI loops and drum kits for modern producers.",
+    description: "Drag-and-drop MIDI drum kits and trap one-shots for producers.",
   },
   robots: {
     index: true,
@@ -69,7 +68,7 @@ export default async function RootLayout({
     const headersList = await headers();
     userIP =
       headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "";
-  } catch (e) {
+  } catch {
     // Failsafe for build-time static generation
   }
 

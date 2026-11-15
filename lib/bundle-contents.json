@@ -1,0 +1,37 @@
+{
+  "drumKit": "Anamoly Trap Drum Kit",
+  "oneShots": [
+    {
+      "label": "808s",
+      "count": 10
+    },
+    {
+      "label": "Kicks",
+      "count": 8
+    },
+    {
+      "label": "Snares",
+      "count": 13
+    },
+    {
+      "label": "Claps",
+      "count": 8
+    },
+    {
+      "label": "Hi-Hats",
+      "count": 8
+    },
+    {
+      "label": "Open Hats",
+      "count": 9
+    },
+    {
+      "label": "Rims",
+      "count": 6
+    },
+    {
+      "label": "Percussion",
+      "count": 15
+    }
+  ]
+}

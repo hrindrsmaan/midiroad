@@ -1,3 +1,4 @@
+import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { sendEmail } from "@/lib/email";
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
 
     // Handle checkout.session.completed for Payment Links
     if (event.type === "checkout.session.completed") {
-      const session: any = event.data.object;
+      const session = event.data.object as Stripe.Checkout.Session;
       const email = session.customer_details?.email || session.customer_email;
 
       logger.info(
@@ -51,9 +52,13 @@ export async function POST(req: Request) {
         try {
           await sendEmail(email, session.id);
           logger.info({ email }, "Email sent successfully");
-        } catch (emailError: any) {
+        } catch (emailError) {
           logger.error(
-            { email, error: emailError.message },
+            {
+              email,
+              error:
+                emailError instanceof Error ? emailError.message : String(emailError),
+            },
             "Failed to send fulfillment email",
           );
         }
@@ -66,11 +71,12 @@ export async function POST(req: Request) {
     }
 
     return new Response("ok");
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     logger.error(
-      { error: error.message, stack: error.stack },
+      { error: message, stack: error instanceof Error ? error.stack : undefined },
       "Webhook processing failed",
     );
-    return new Response(`Webhook error: ${error.message}`, { status: 400 });
+    return new Response(`Webhook error: ${message}`, { status: 400 });
   }
 }

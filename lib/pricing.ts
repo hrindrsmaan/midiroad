@@ -18,11 +18,3 @@ export const PRICING = {
 export function formatUSD(amount: number): string {
   return `$${amount.toFixed(2)}`;
 }
-
-export function getSavings(): number {
-  return PRICING.originalPrice - PRICING.currentPrice;
-}
-
-export function getDiscountedPrice(): number {
-  return PRICING.currentPrice;
-}

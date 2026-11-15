@@ -1,189 +1,93 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { DiscountBadge, PriceStack } from "@/components/DiscountBadge";
-import { TrustBadges, GuaranteeSeal } from "@/components/TrustBadges";
+import { PriceStack } from "@/components/PriceStack";
+import { Reassurance } from "@/components/Reassurance";
+import { AudioPreviews } from "@/components/AudioPreviews";
+import { PRICING, formatUSD } from "@/lib/pricing";
+import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 
 type Props = {
-  onBuy: (isDiscount?: boolean) => void;
+  onBuy: (label: string) => void;
   loading?: boolean;
 };
 
-function CheckIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M5 13l4 4L19 7"
-      />
-    </svg>
-  );
-}
-
 export function ProductDetail({ onBuy, loading }: Props) {
-  const [buyLoading, setBuyLoading] = useState<boolean>(false);
-
   return (
-    <section id="main-cta" className="pt-24 md:pt-32 pb-12 md:pb-20 px-6 bg-white scroll-mt-32">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-        {/* Left: Large product image */}
-        <div className="flex items-start justify-center">
-          <Card className="bg-[#f9f9f9] p-8 w-full max-w-md">
-            <img
-              src="/images/bundle-poster.png"
-              alt="Product"
-              className="w-full object-contain"
+    <section
+      id="main-cta"
+      className="pt-28 md:pt-36 pb-16 md:pb-24 px-6 bg-[#0e1014] text-white scroll-mt-32"
+    >
+      <div className="max-w-6xl mx-auto">
+        {/*
+          Poster and previews share the left column so it roughly matches the
+          buy box. On mobile the DOM order puts the buy box before previews.
+        */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-x-16 md:gap-y-10">
+          {/* Poster */}
+          <div className="relative flex items-center justify-center md:col-start-1 md:row-start-1">
+            {/* Soft glow so the dark covers lift off the dark background */}
+            <div
+              aria-hidden
+              className="absolute inset-x-0 top-1/2 mx-auto aspect-square w-4/5 max-w-sm -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(168,85,247,0.28),rgba(43,217,107,0.10)_60%,transparent)] blur-2xl"
             />
-          </Card>
-        </div>
-
-        {/* Right: Product details */}
-        <div className="pt-2 space-y-6">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-2">
-              Finish beats faster
-            </h1>
-            <p className="text-lg text-gray-600">
-              800+ drag-and-drop MIDIs, drums and presets for dark trap, RnB and
-              soul
-            </p>
+            <Image
+              src="/images/bundle-poster.png"
+              alt="MidiRoad bundle covers"
+              width={782}
+              height={897}
+              sizes="(min-width: 768px) 384px, 352px"
+              priority
+              className="relative w-full max-w-[22rem] md:max-w-sm h-auto object-contain drop-shadow-[0_24px_40px_rgba(0,0,0,0.6)]"
+            />
           </div>
 
-          {/* Discount badge */}
-          <div>
-            <DiscountBadge variant="inline" />
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="group relative w-full sm:w-auto bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide rounded-full px-10 py-7 text-lg sm:text-xl shadow-[5px_5px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                onClick={() => {
-                  setBuyLoading(true);
-                  // Notify parent so analytics can log the DISCOUNTED click.
-                  onBuy(true);
-                }}
-                disabled={buyLoading}
-                aria-label="Get instant access to the MidiRoad bundle for $24.99"
-              >
-                {buyLoading ? (
-                  "Redirecting…"
-                ) : (
-                  <span className="flex items-center gap-2">
-                    Get Instant Access
-                    <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-                  </span>
-                )}
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <PriceStack />
-          </div>
-
-          {/* Visual Guarantee Seals */}
-          <TrustBadges />
-
-          {/* Prominent Money-Back Guarantee seal block */}
-          <GuaranteeSeal />
-
-          {/* License Info */}
-          <Card className="bg-gray-50">
-            <CardContent className="p-4">
-              <p className="text-sm text-gray-700">
-                <strong>License:</strong> Use in commercial beats, sell on
-                Spotify, Apple Music, etc. No attribution required.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <div>
-              <h2 className="font-bold text-lg mb-2">
-                Instant inspiration. Pro-ready sounds.
-              </h2>
-              <p className="text-sm text-gray-600">
-                The Ultimate MIDI Multikit — 838 studio-quality WAVs, MIDIs and
-                presets designed to get tracks finished fast. Drag, drop, and
-                sound professional.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <p className="font-semibold text-sm">Key Features:</p>
-              <ul className="space-y-1 text-sm text-gray-700">
-                <li className="flex items-center gap-2">
-                  <CheckIcon className="w-4 h-4 text-green-600" />
-                  <span>
-                    <strong>160+</strong> melodic ideas across dark trap, RnB,
-                    and soul
-                  </span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckIcon className="w-4 h-4 text-green-600" />
-                  <span>
-                    <strong>Accurate key labels</strong> for instant arrangement
-                  </span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckIcon className="w-4 h-4 text-green-600" />
-                  <span>
-                    <strong>All WAVs normalized @ 44kHz / 24-bit</strong> — DAW
-                    ready
-                  </span>
-                </li>
-              </ul>
-            </div>
-
-            <Separator />
-
-            <div>
-              <p className="font-bold">
-                Includes 838 total files — WAVs, MIDIs, presets. Compatible with
-                all major DAWs.
-              </p>
-            </div>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-sm">
-                  <span>(73) HiHat MIDIs</span>
-                  <span>(80) 808 MIDIs</span>
-                  <span>(35) Kick MIDIs</span>
-                  <span>(50) Open Hat MIDIs</span>
-                  <span>(45) Snare MIDIs</span>
-                  <span>(14) 808s</span>
-                  <span>(27) Claps</span>
-                  <span>(14) Crashes</span>
-                  <span>(22) FX</span>
-                  <span>(14) HiHats</span>
-                  <span>(14) Kicks</span>
-                  <span>(16) Open Hats</span>
-                  <span>(33) Percussions</span>
-                  <span>(64) Snares</span>
-                  <span>(15) Rim Snares</span>
-                </div>
-                <Separator className="my-3" />
-                <p className="text-sm font-medium">
-                  Compatible With All DAWs (FL Studio, Ableton, Logic, Reason,
-                  Studio One, Maschine, etc.)
+          {/* Buy box */}
+          <div className="md:col-start-2 md:row-start-1 md:row-span-2 md:self-start md:sticky md:top-28">
+            <div className="bg-[#18181b] rounded-md p-6 sm:p-8 space-y-6">
+              <div>
+                <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
+                  The Ultimate MIDI Multikit
                 </p>
-              </CardContent>
-            </Card>
+                <h1 className="text-2xl md:text-3xl leading-tight">
+                  Finish beats faster
+                </h1>
+                <p className="mt-4 text-base font-light leading-relaxed tracking-wide text-gray-300">
+                  {MIDI_PATTERN_COUNT} drag-and-drop MIDI drum patterns and{" "}
+                  {ONE_SHOT_COUNT} one-shots for dark trap, RnB and soul. Drag,
+                  drop, and sound professional.
+                </p>
+              </div>
+
+              <div className="h-px bg-white/10" />
+
+              <div className="space-y-4">
+                <PriceStack />
+                <Button
+                  size="lg"
+                  className="group relative w-full bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide rounded-full px-8 py-6 text-base shadow-[5px_5px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  onClick={() => onBuy("Product Section Button")}
+                  disabled={loading}
+                  aria-label={`Get instant access to the MidiRoad bundle for ${formatUSD(PRICING.currentPrice)}`}
+                >
+                  {loading ? (
+                    "Redirecting…"
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Get Instant Access
+                      <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+                    </span>
+                  )}
+                </Button>
+                <Reassurance />
+              </div>
+            </div>
+          </div>
+
+          {/* Quick listen */}
+          <div className="md:col-start-1 md:row-start-2 rounded-md border border-white/10 p-6 sm:p-8">
+            <AudioPreviews />
           </div>
         </div>
       </div>
