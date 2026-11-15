@@ -1,5 +1,3 @@
-"use client";
-
 import { FAQS } from "@/lib/faq";
 
 /**
@@ -7,33 +5,28 @@ import { FAQS } from "@/lib/faq";
  *
  * Why not shadcn Accordion? The native elements already provide keyboard
  * navigation, screen-reader semantics, and zero-JS behavior out of the
- * box. We just add CSS for the chevron rotate and a clean reveal.
+ * box. We just add CSS for the icon rotate.
  */
 export function FAQSection() {
   return (
     <section
       id="faq"
       aria-labelledby="faq-heading"
-      className="py-16 px-6 bg-[#f4f4f0]"
+      className="py-16 md:py-24 px-6 bg-[#0e1014] border-t border-white/10 text-white"
     >
-      <div className="max-w-3xl mx-auto">
-        {/* Heading */}
-        <div className="text-center mb-10">
-          <span className="inline-block text-[11px] sm:text-[12px] font-black uppercase tracking-widest text-black bg-[#ff90e8] border-2 border-black rounded-full px-3 py-1 shadow-[3px_3px_0_0_#000] -rotate-2">
-            Got Questions?
-          </span>
-          <h2
-            id="faq-heading"
-            className="text-3xl md:text-4xl font-black mt-4 mb-3 tracking-tight"
-          >
-            Everything you need to know
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_1.6fr] gap-10 md:gap-16">
+        <div>
+          <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
+            FAQ
+          </p>
+          <h2 id="faq-heading" className="text-2xl md:text-3xl leading-tight">
+            Questions, answered
           </h2>
-          <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto">
-            Honest answers to the questions producers ask before hitting
-            checkout. Still stuck? Email{" "}
+          <p className="mt-4 text-sm font-light tracking-wide text-gray-400 max-w-xs">
+            Anything else? Email{" "}
             <a
               href="mailto:support@midiroad.com"
-              className="underline underline-offset-2 hover:text-black font-semibold"
+              className="text-gray-200 underline underline-offset-4 hover:text-white"
             >
               support@midiroad.com
             </a>
@@ -41,69 +34,37 @@ export function FAQSection() {
           </p>
         </div>
 
-        {/* Accordion */}
-        <div className="space-y-3">
+        <div className="border-t border-white/10">
           {FAQS.map((item, i) => (
             <details
               key={item.q}
-              // Open the first two by default — the ones that match the
-              // highest-traffic objections (compatibility + skill level).
-              open={i < 2}
-              className="group rounded-xl border-2 border-black bg-white shadow-[3px_3px_0_0_#000] overflow-hidden transition-shadow hover:shadow-[5px_5px_0_0_#000]"
+              // Open the first one so the format is obvious at a glance.
+              open={i === 0}
+              className="group border-b border-white/10"
             >
-              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none px-5 py-4 select-none">
-                <span className="font-bold text-base sm:text-lg leading-snug pr-2">
+              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none py-5 select-none [&::-webkit-details-marker]:hidden">
+                <span className="text-base text-gray-100 group-hover:text-white">
                   {item.q}
                 </span>
-                {/* Chevron — rotates 180° when <details> is open */}
-                <span
+                {/* Plus that turns into a cross when open */}
+                <svg
+                  viewBox="0 0 24 24"
                   aria-hidden
-                  className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#ff90e8] border-2 border-black text-black text-sm font-black transition-transform duration-300 group-open:rotate-180"
+                  className="h-4 w-4 shrink-0 text-gray-500 transition-transform duration-200 group-open:rotate-45 group-open:text-[#2bd96b]"
                 >
-                  ⌄
-                </span>
+                  <path
+                    d="M12 5v14M5 12h14"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                  />
+                </svg>
               </summary>
-              <div className="px-5 pb-5 -mt-1">
-                <p className="text-sm sm:text-base text-gray-800 leading-relaxed">
-                  {item.a}
-                </p>
-                {item.bullets && (
-                  <ul className="mt-3 space-y-1.5">
-                    {item.bullets.map((b, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-start gap-2 text-sm text-gray-700 leading-relaxed"
-                      >
-                        <span
-                          aria-hidden
-                          className="mt-1.5 inline-block w-1.5 h-1.5 bg-black rounded-full shrink-0"
-                        />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <p className="pb-5 pr-8 text-sm font-light leading-relaxed tracking-wide text-gray-400">
+                {item.a}
+              </p>
             </details>
           ))}
-        </div>
-
-        {/* Bottom CTA rail */}
-        <div className="mt-10 text-center">
-          <p className="text-sm text-gray-600 mb-3">Ready to make your next beat?</p>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              // Scroll back to the main product CTA.
-              document
-                .getElementById("main-cta")
-                ?.scrollIntoView({ behavior: "smooth", block: "center" });
-            }}
-            className="inline-flex items-center gap-2 font-bold text-black underline underline-offset-4 hover:no-underline"
-          >
-            Get Instant Access — $24.99 <span aria-hidden>→</span>
-          </a>
         </div>
       </div>
     </section>

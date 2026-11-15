@@ -1,161 +1,95 @@
 "use client";
 
-import { OFFERS, getOfferPaymentLink, type Offer } from "@/lib/offers";
-import { formatUSD } from "@/lib/pricing";
-import * as gtag from "@/lib/gtag";
+import { Button } from "@/components/ui/button";
+import { PriceStack } from "@/components/PriceStack";
+import { Reassurance } from "@/components/Reassurance";
+import {
+  DRUM_KIT_NAME,
+  MIDI_KIT_COUNT,
+  MIDI_PATTERN_COUNT,
+  ONE_SHOT_COUNT,
+} from "@/lib/bundle";
+import { PRICING, formatUSD } from "@/lib/pricing";
 
-function FeatureItem({ text }: { text: string }) {
-  // Render an inline-bolder **word** runs (used to emphasize "**Everything**" etc.)
-  const parts = text.split(/\*\*([^*]+)\*\*/g);
+type Props = {
+  onBuy: (label: string) => void;
+  loading?: boolean;
+};
+
+/** Short recap; the full breakdown lives in "What's inside". */
+const INCLUDED = [
+  `${MIDI_PATTERN_COUNT} MIDI drum patterns across ${MIDI_KIT_COUNT} MIDI kits`,
+  `${ONE_SHOT_COUNT} one-shot WAVs from the ${DRUM_KIT_NAME}`,
+];
+
+function CheckIcon({ className }: { className?: string }) {
   return (
-    <li className="flex items-start gap-2 text-sm leading-relaxed">
-      <span
-        aria-hidden
-        className="mt-1 inline-flex items-center justify-center w-4 h-4 rounded-full bg-black text-[#ff90e8] text-[10px] font-black shrink-0"
-      >
-        ✓
-      </span>
-      <span className="text-black">
-        {parts.map((p, i) =>
-          i % 2 === 1 ? (
-            <strong key={i} className="font-extrabold">
-              {p}
-            </strong>
-          ) : (
-            <span key={i}>{p}</span>
-          ),
-        )}
-      </span>
-    </li>
-  );
-}
-
-function OfferCard({ offer }: { offer: Offer }) {
-  const isPopular = offer.id === "standard";
-  const accentText = offer.id === "pro" ? "text-black" : "text-black";
-  const onClick = () => {
-    // GA tracking — distinct label per tier for funnel analytics.
-    gtag.event({
-      action: "click_download",
-      category: "engagement",
-      label: `Pricing CTA — ${offer.name}${isPopular ? " (DISCOUNTED)" : ""}`,
-    });
-    const url = getOfferPaymentLink(offer.id);
-    if (url) window.location.href = url;
-  };
-
-  // Tier-specific button styling.
-  const buttonClass = isPopular
-    ? "bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black shadow-[3px_3px_0_0_#000]"
-    : offer.id === "pro"
-      ? "bg-white text-black border-2 border-black hover:bg-black hover:text-white"
-      : "bg-white text-black border-2 border-black hover:bg-black hover:text-white";
-
-  return (
-    <div
-      className={`relative rounded-2xl border-2 border-black p-6 flex flex-col h-full ${offer.accent} shadow-[4px_4px_0_0_#000] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#000]`}
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden
     >
-      {/* Sticker badge for the popular tier */}
-      {offer.badge && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-          <span className="inline-block bg-black text-white text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border-2 border-black shadow-[2px_2px_0_0_#ff90e8]">
-            {offer.badge}
-          </span>
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="text-center mb-4 pt-2">
-        <p className={`text-[11px] sm:text-[12px] font-black uppercase tracking-widest ${accentText}`}>
-          {offer.tagline}
-        </p>
-        <h3 className="text-2xl sm:text-3xl font-black mt-1 tracking-tight">
-          {offer.name}
-        </h3>
-      </div>
-
-      {/* Price */}
-      <div className="text-center mb-5">
-        <p className="text-5xl sm:text-6xl font-black tracking-tighter leading-none">
-          {formatUSD(offer.price)}
-        </p>
-        <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-black/70 mt-2">
-          One-time · Lifetime access
-        </p>
-      </div>
-
-      {/* CTA */}
-      <button
-        type="button"
-        onClick={onClick}
-        className={`w-full font-extrabold uppercase tracking-wider text-sm sm:text-base py-3 rounded-full transition-all ${buttonClass}`}
-        aria-label={`Choose ${offer.name} for ${formatUSD(offer.price)}`}
-      >
-        Get {offer.name}
-      </button>
-
-      {/* Rationale line */}
-      <p className="text-[12px] italic text-black/80 text-center mt-4 mb-5 leading-snug">
-        {offer.rationale}
-      </p>
-
-      {/* Feature list */}
-      <ul className="space-y-2.5 flex-1">
-        {offer.features.map((f, i) => (
-          <FeatureItem key={i} text={f} />
-        ))}
-      </ul>
-    </div>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
+    </svg>
   );
 }
 
-export function PricingTable() {
-  const sorted = [...OFFERS].sort((a, b) => a.displayOrder - b.displayOrder);
-
+export function PricingTable({ onBuy, loading }: Props) {
   return (
     <section
       id="pricing"
       aria-labelledby="pricing-heading"
-      className="py-16 md:py-20 px-6 bg-white border-t-2 border-b-2 border-black"
+      className="py-16 md:py-24 px-6 bg-[#0e1014] border-t border-white/10 text-white scroll-mt-24"
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Heading */}
-        <div className="text-center mb-12">
-          <span className="inline-block text-[11px] sm:text-[12px] font-black uppercase tracking-widest text-black bg-[#ffe14d] border-2 border-black rounded-full px-3 py-1 shadow-[3px_3px_0_0_#000] -rotate-2">
-            Pick Your Tier
-          </span>
-          <h2
-            id="pricing-heading"
-            className="text-3xl md:text-4xl font-black mt-4 mb-3 tracking-tight"
-          >
-            Two ways in. Same 838 files.
-          </h2>
-          <p className="text-gray-600 text-sm sm:text-base max-w-xl mx-auto">
-            Every tier is royalty-free, works in every major DAW, and ships
-            instantly. Pro adds project files and a masterclass on top.
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-10 md:gap-16 items-center">
+        <div>
+          <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
+            One bundle · one price
           </p>
+          <h2 id="pricing-heading" className="text-2xl md:text-3xl leading-tight">
+            Get the full bundle
+          </h2>
+          <ul className="mt-6 space-y-3">
+            {INCLUDED.map((item) => (
+              <li key={item} className="flex gap-3 text-base font-light tracking-wide text-gray-300">
+                <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-[#2bd96b]" />
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-stretch max-w-3xl mx-auto">
-          {sorted.map((offer) => (
-            <OfferCard key={offer.id} offer={offer} />
-          ))}
-        </div>
-
-        {/* Reassurance row */}
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[12px] sm:text-[13px] font-semibold text-black">
-          <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden>🔒</span> Secure checkout (Stripe)
-          </span>
-          <span className="hidden sm:inline opacity-30">•</span>
-          <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden>⚡</span> Instant download
-          </span>
-          <span className="hidden sm:inline opacity-30">•</span>
-          <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden>🛡</span> 30-day refund
-          </span>
+        <div className="flex flex-col gap-5 rounded-md bg-[#18181b] p-6 sm:p-8">
+          <div>
+            <PriceStack />
+            <p className="mt-2 text-[11px] font-black uppercase tracking-widest text-gray-500">
+              One-time payment · lifetime access
+            </p>
+          </div>
+          <Button
+            size="lg"
+            className="group relative w-full bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide rounded-full px-8 py-6 text-base shadow-[5px_5px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            onClick={() => onBuy("Pricing Section Button")}
+            disabled={loading}
+            aria-label={`Get instant access to the MidiRoad bundle for ${formatUSD(PRICING.currentPrice)}`}
+          >
+            {loading ? (
+              "Redirecting…"
+            ) : (
+              <span className="flex items-center gap-2">
+                Get Instant Access
+                <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+              </span>
+            )}
+          </Button>
+          <Reassurance />
         </div>
       </div>
     </section>

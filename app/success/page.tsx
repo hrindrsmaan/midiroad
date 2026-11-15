@@ -1,14 +1,17 @@
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+  DRUM_KIT_NAME,
+  MIDI_KIT_COUNT,
+  MIDI_PATTERN_COUNT,
+  ONE_SHOT_COUNT,
+} from "@/lib/bundle";
 
 const bundleInfo = {
-  name: "Premium MIDI + Drum Kit Bundle",
-  description:
-    "Your complete download with 300+ MIDI sequences, 200+ drum samples, and the Trap Arrangement Bonus Kit.",
-  highlights: [
-    "MIDI Progressions",
-    "Premium Drum Hits",
-    "Trap Arrangement Kit",
-  ],
+  name: "MidiRoad MIDI Drum Kit Bundle",
+  description: `Your complete download: ${MIDI_PATTERN_COUNT} MIDI drum patterns across ${MIDI_KIT_COUNT} MIDI kits, plus ${ONE_SHOT_COUNT} one-shot WAVs from the ${DRUM_KIT_NAME}.`,
+  highlights: ["MIDI Drum Patterns", "808 MIDIs", "Drum One-Shots"],
 };
 
 export default async function Success({
@@ -24,13 +27,13 @@ export default async function Success({
   return (
     <main className="min-h-screen bg-[#f4f4f0] text-black font-sans selection:bg-[#ff90e8] selection:text-black">
       <nav className="flex items-center px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black fixed top-0 z-50">
-        <a
+        <Link
           href="/"
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="MidiRoad Home"
         >
-          <img src="/logo-white.png" alt="MidiRoad" className="h-10 w-auto" />
-        </a>
+          <Image src="/logo-white.png" alt="MidiRoad" width={640} height={640} priority className="h-10 w-auto" />
+        </Link>
       </nav>
       <div className="px-6 py-24 md:py-32 mx-auto max-w-4xl space-y-12">
         {/* Main Success Card */}
@@ -104,13 +107,13 @@ export default async function Success({
             >
               support@midiroad.com
             </a>
-            . We'll get you back inside the kit within minutes.
+            {" "}and we&apos;ll help you get your files.
           </p>
         </section>
 
         {/* Simple Footer/Back Link */}
         <div className="pt-8 text-center flex flex-col items-center">
-          <a href="/">
+          <Link href="/">
             <Button
               variant="outline"
               size="lg"
@@ -118,7 +121,7 @@ export default async function Success({
             >
               Return to Homepage
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
     </main>
