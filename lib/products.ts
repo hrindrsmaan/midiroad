@@ -167,7 +167,37 @@ export type Sellable = {
  */
 export const TEST_ID = "test";
 
+/**
+ * Upgrade to the bundle after buying a single kit (or the test kit), priced
+ * at the difference. Offered only on the success page; /api/checkout checks
+ * the original order before selling it.
+ */
+export const UPGRADE_PREFIX = "upgrade-";
+
+/** The product an upgrade id upgrades from, if it's a valid upgrade. */
+export function upgradeBase(id: string): Sellable | undefined {
+  if (!id.startsWith(UPGRADE_PREFIX)) return undefined;
+  const baseId = id.slice(UPGRADE_PREFIX.length);
+  if (baseId === BUNDLE_ID || baseId.startsWith(UPGRADE_PREFIX)) return undefined;
+  return sellable(baseId);
+}
+
+export function upgradePrice(base: Sellable) {
+  return Math.round((BUNDLE_PRICE - base.price) * 100) / 100;
+}
+
 export function sellable(id: string): Sellable | undefined {
+  const base = upgradeBase(id);
+  if (base) {
+    const bundle = sellable(BUNDLE_ID)!;
+    return {
+      ...bundle,
+      id,
+      name: `${BUNDLE_NAME} – Upgrade`,
+      description: `Every other kit plus 77 one-shots, at the difference from your ${base.name.replace(/ – .*$/, "")} order.`,
+      price: upgradePrice(base),
+    };
+  }
   if (id === TEST_ID) {
     return {
       id,
