@@ -161,7 +161,24 @@ export type Sellable = {
   path: string;
 };
 
+/**
+ * Free, unlisted product for checking the live purchase flow end to end
+ * (checkout → email → download) without paying. Bought from /test-checkout.
+ */
+export const TEST_ID = "test";
+
 export function sellable(id: string): Sellable | undefined {
+  if (id === TEST_ID) {
+    return {
+      id,
+      name: "MidiRoad Test Kit (Free)",
+      description: "A free test download: one MIDI file and a README. Used to check checkout, email and download.",
+      price: 0,
+      file: "test-kit.zip",
+      downloadName: "midiroad-test-kit.zip",
+      path: "/test-checkout",
+    };
+  }
   if (id === BUNDLE_ID) {
     return {
       id,
