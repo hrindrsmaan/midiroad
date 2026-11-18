@@ -2,13 +2,13 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function sendEmail(to: string, sessionId: string) {
+export async function sendEmail(to: string, sessionId: string, productName: string) {
   const downloadLink = `${process.env.BASE_URL || "https://midiroad.com"}/api/download?session_id=${encodeURIComponent(sessionId)}`;
 
   const { data, error } = await resend.emails.send({
     from: "MidiRoad <noreply@midiroad.com>",
     to: [to],
-    subject: "Your MidiRoad Bundle is Ready! 🎵",
+    subject: `Your download is ready: ${productName} 🎵`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -32,9 +32,9 @@ export async function sendEmail(to: string, sessionId: string) {
             </div>
             <div class="content">
               <h1>Payment Confirmed! 🎉</h1>
-              <p>Thanks for your purchase! Your MidiRoad Bundle is ready to download.</p>
+              <p>Thanks for your purchase! <strong>${productName}</strong> is ready to download.</p>
               <p>Click the button below to get your files:</p>
-              <a href="${downloadLink}" class="button">Download Your Bundle</a>
+              <a href="${downloadLink}" class="button">Download Your Files</a>
               <p style="font-size: 14px; color: #666;">Keep this email — you can re-download from this link anytime.</p>
             </div>
             <div class="footer">

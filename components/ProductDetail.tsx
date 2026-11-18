@@ -1,19 +1,14 @@
-"use client";
-
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { BuyButton, BUY_BUTTON_CLASS } from "@/components/BuyButton";
 import { PriceStack } from "@/components/PriceStack";
 import { Reassurance } from "@/components/Reassurance";
 import { AudioPreviews } from "@/components/AudioPreviews";
 import { PRICING, formatUSD } from "@/lib/pricing";
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
+import { BUNDLE_ID, BUNDLE_NAME, KIT_PRODUCTS } from "@/lib/products";
 
-type Props = {
-  onBuy: (label: string) => void;
-  loading?: boolean;
-};
-
-export function ProductDetail({ onBuy, loading }: Props) {
+export function ProductDetail() {
   return (
     <section
       id="main-cta"
@@ -48,38 +43,50 @@ export function ProductDetail({ onBuy, loading }: Props) {
             <div className="bg-[#18181b] rounded-md p-6 sm:p-8 space-y-6">
               <div>
                 <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
-                  The Ultimate MIDI Multikit
+                  {BUNDLE_NAME} · Best value
                 </p>
                 <h1 className="text-2xl md:text-3xl leading-tight">
                   Finish beats faster
                 </h1>
                 <p className="mt-4 text-base font-light leading-relaxed tracking-wide text-gray-300">
-                  {MIDI_PATTERN_COUNT} drag-and-drop MIDI drum patterns and{" "}
-                  {ONE_SHOT_COUNT} one-shots for dark trap, RnB and soul. Drag,
-                  drop, and sound professional.
+                  Every kit in the store: {MIDI_PATTERN_COUNT} drag-and-drop MIDI
+                  drum patterns plus {ONE_SHOT_COUNT} one-shots for dark trap, RnB
+                  and soul. Drag, drop, and sound professional.
                 </p>
+                <ul className="mt-4 flex flex-wrap gap-2" aria-label="Kits included">
+                  {KIT_PRODUCTS.map((kit) => (
+                    <li key={kit.id}>
+                      <Link
+                        href={`/kits/${kit.slug}`}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-gray-300 hover:border-white/40 hover:text-white transition-colors"
+                      >
+                        <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: kit.accent }} />
+                        {kit.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <div className="h-px bg-white/10" />
 
               <div className="space-y-4">
                 <PriceStack />
-                <Button
-                  size="lg"
-                  className="group relative w-full bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide rounded-full px-8 py-6 text-base shadow-[5px_5px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-                  onClick={() => onBuy("Product Section Button")}
-                  disabled={loading}
-                  aria-label={`Get instant access to the MidiRoad bundle for ${formatUSD(PRICING.currentPrice)}`}
+                <p className="-mt-2 text-xs text-gray-400">
+                  All 6 kits bought separately cost {formatUSD(PRICING.originalPrice)}. The bundle adds{" "}
+                  {ONE_SHOT_COUNT} one-shots you can&apos;t get anywhere else.
+                </p>
+                <BuyButton
+                  product={BUNDLE_ID}
+                  label="Product Section Button"
+                  className={BUY_BUTTON_CLASS}
+                  aria-label={`Get instant access to ${BUNDLE_NAME} for ${formatUSD(PRICING.currentPrice)}`}
                 >
-                  {loading ? (
-                    "Redirecting…"
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      Get Instant Access
-                      <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-                    </span>
-                  )}
-                </Button>
+                  <span className="flex items-center gap-2">
+                    Get the Bundle
+                    <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+                  </span>
+                </BuyButton>
                 <Reassurance />
               </div>
             </div>

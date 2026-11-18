@@ -18,6 +18,7 @@ import {
   type MidiNotes,
   type MidiPattern,
 } from "@/lib/midi-kits";
+import { kitDisplayName } from "@/lib/products";
 
 /** Patterns shown per part before "Show all". */
 const VISIBLE = 12;
@@ -59,7 +60,17 @@ function Chip({
   );
 }
 
-export function MidiKits() {
+/**
+ * Playable MIDI patterns. With `kitId`, shows only that kit (for its
+ * product page); otherwise every kit with a kit filter.
+ */
+export function MidiKits({ kitId: onlyKit }: { kitId?: string } = {}) {
+  const PARTS = onlyKit
+    ? MIDI_PARTS.map((p) => ({ ...p, patterns: p.patterns.filter((x) => x.kitId === onlyKit) })).filter(
+        (p) => p.patterns.length > 0,
+      )
+    : MIDI_PARTS;
+  const total = PARTS.reduce((n, p) => n + p.patterns.length, 0);
   const ctxRef = useRef<AudioContext | null>(null);
   const notesRef = useRef<Promise<MidiNotes> | null>(null);
   const samplesRef = useRef(new Map<string, Promise<AudioBuffer>>());
@@ -68,14 +79,14 @@ export function MidiKits() {
   // Bumped on every play/stop so a pattern that finishes loading late is dropped.
   const requestRef = useRef(0);
 
-  const [partId, setPartId] = useState(MIDI_PARTS[0].id);
+  const [partId, setPartId] = useState(PARTS[0].id);
   /** null shows the part from every kit. */
   const [kitId, setKitId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
-  const part = MIDI_PARTS.find((p) => p.id === partId) ?? MIDI_PARTS[0];
+  const part = PARTS.find((p) => p.id === partId) ?? PARTS[0];
   const partKits = MIDI_KITS.filter((k) => part.patterns.some((p) => p.kitId === k.id));
   const filtered = kitId
     ? part.patterns.filter((p) => p.kitId === kitId)
@@ -200,7 +211,7 @@ export function MidiKits() {
   const selectPart = (id: string) => {
     setPartId(id);
     // Keep the kit filter when that kit has this part too.
-    if (kitId && !MIDI_PARTS.find((p) => p.id === id)!.patterns.some((p) => p.kitId === kitId)) {
+    if (kitId && !PARTS.find((p) => p.id === id)!.patterns.some((p) => p.kitId === kitId)) {
       setKitId(null);
     }
     setExpanded(false);
@@ -220,20 +231,22 @@ export function MidiKits() {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
           <div>
             <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
-              {MIDI_PATTERN_COUNT} MIDI patterns · {MIDI_KITS.length} kits
+              {onlyKit
+                ? `${total} MIDI patterns`
+                : `${MIDI_PATTERN_COUNT} MIDI patterns · ${MIDI_KITS.length} kits`}
             </p>
             <h2 className="text-2xl md:text-3xl leading-tight">
-              Hear every MIDI drum kit
+              {onlyKit ? "Hear every pattern in this kit" : "Hear every MIDI drum kit"}
             </h2>
           </div>
           <p className="text-sm font-light tracking-wide text-gray-400 max-w-sm">
-            Press play on any pattern. Each MIDI is played with the drum kit
-            samples included in the bundle.
+            Press play on any pattern. Each MIDI is played with drum samples
+            from the bundle&apos;s one-shot kit.
           </p>
         </div>
 
-        <div role="tablist" aria-label="Drum parts" className="flex flex-wrap gap-2 mb-3">
-          {MIDI_PARTS.map((p) => (
+        <div role="tablist" aria-label="Drum parts" className={`flex flex-wrap gap-2 ${onlyKit ? "mb-8" : "mb-3"}`}>
+          {PARTS.map((p) => (
             <Chip
               key={p.id}
               selected={p.id === part.id}
@@ -244,7 +257,7 @@ export function MidiKits() {
           ))}
         </div>
 
-        <div role="tablist" aria-label={`${part.label} by kit`} className="flex flex-wrap gap-x-5 gap-y-2 mb-8 border-b border-white/10">
+        {!onlyKit && <div role="tablist" aria-label={`${part.label} by kit`} className="flex flex-wrap gap-x-5 gap-y-2 mb-8 border-b border-white/10">
           {[{ id: null, name: "All kits" }, ...partKits].map((k) => {
             const selected = k.id === kitId;
             const count = k.id
@@ -263,11 +276,11 @@ export function MidiKits() {
                     : "border-transparent text-gray-500 hover:text-gray-300"
                 }`}
               >
-                {k.name} <span className="text-gray-500">{count}</span>
+                {k.id ? kitDisplayName(k.id, k.name) : k.name} <span className="text-gray-500">{count}</span>
               </button>
             );
           })}
-        </div>
+        </div>}
 
         <div role="tabpanel" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
           {patterns.map((pattern) => {
@@ -278,7 +291,7 @@ export function MidiKits() {
                   <button
                     type="button"
                     onClick={() => void toggle(pattern)}
-                    aria-label={`${active ? "Stop" : "Play"} ${pattern.kitName} ${pattern.name}`}
+                    aria-label={`${active ? "Stop" : "Play"} ${kitDisplayName(pattern.kitId, pattern.kitName)} ${pattern.name}`}
                     aria-pressed={active}
                     className={`shrink-0 transition-colors cursor-pointer hover:text-[#2bd96b] ${active ? "text-[#2bd96b]" : "text-white"}`}
                   >
@@ -293,7 +306,7 @@ export function MidiKits() {
                 <p className="mt-2 pl-10 text-sm font-light tracking-wider text-gray-300">
                   {pattern.name}
                   <span className="block text-xs text-gray-500">
-                    {pattern.kitName} · {pattern.bpm} BPM
+                    {onlyKit ? `${pattern.bpm} BPM` : `${kitDisplayName(pattern.kitId, pattern.kitName)} · ${pattern.bpm} BPM`}
                   </span>
                 </p>
               </div>
