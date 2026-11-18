@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { sendEmail } from "@/lib/email";
 import logger from "@/lib/logger";
+import { BUNDLE_ID, sellable } from "@/lib/products";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,8 @@ export async function POST(req: Request) {
       if (email) {
         logger.info({ email }, "Sending fulfillment email");
         try {
-          await sendEmail(email, session.id);
+          const product = sellable(session.metadata?.product ?? BUNDLE_ID);
+          await sendEmail(email, session.id, product?.name ?? "MidiRoad Bundle");
           logger.info({ email }, "Email sent successfully");
         } catch (emailError) {
           logger.error(

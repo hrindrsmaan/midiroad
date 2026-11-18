@@ -1,6 +1,5 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
+import { BuyButton, BUY_BUTTON_CLASS } from "@/components/BuyButton";
+import { BUNDLE_ID, BUNDLE_NAME } from "@/lib/products";
 import { PriceStack } from "@/components/PriceStack";
 import { Reassurance } from "@/components/Reassurance";
 import {
@@ -11,15 +10,11 @@ import {
 } from "@/lib/bundle";
 import { PRICING, formatUSD } from "@/lib/pricing";
 
-type Props = {
-  onBuy: (label: string) => void;
-  loading?: boolean;
-};
-
 /** Short recap; the full breakdown lives in "What's inside". */
 const INCLUDED = [
-  `${MIDI_PATTERN_COUNT} MIDI drum patterns across ${MIDI_KIT_COUNT} MIDI kits`,
-  `${ONE_SHOT_COUNT} one-shot WAVs from the ${DRUM_KIT_NAME}`,
+  `All ${MIDI_KIT_COUNT} MIDI kits: ${MIDI_PATTERN_COUNT} MIDI drum patterns`,
+  `${ONE_SHOT_COUNT} one-shot WAVs from the ${DRUM_KIT_NAME} (bundle only)`,
+  `${formatUSD(PRICING.originalPrice)} worth of kits if bought separately`,
 ];
 
 function CheckIcon({ className }: { className?: string }) {
@@ -41,7 +36,7 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
-export function PricingTable({ onBuy, loading }: Props) {
+export function PricingTable() {
   return (
     <section
       id="pricing"
@@ -73,22 +68,17 @@ export function PricingTable({ onBuy, loading }: Props) {
               One-time payment · lifetime access
             </p>
           </div>
-          <Button
-            size="lg"
-            className="group relative w-full bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide rounded-full px-8 py-6 text-base shadow-[5px_5px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            onClick={() => onBuy("Pricing Section Button")}
-            disabled={loading}
-            aria-label={`Get instant access to the MidiRoad bundle for ${formatUSD(PRICING.currentPrice)}`}
+          <BuyButton
+            product={BUNDLE_ID}
+            label="Pricing Section Button"
+            className={BUY_BUTTON_CLASS}
+            aria-label={`Get instant access to ${BUNDLE_NAME} for ${formatUSD(PRICING.currentPrice)}`}
           >
-            {loading ? (
-              "Redirecting…"
-            ) : (
-              <span className="flex items-center gap-2">
-                Get Instant Access
-                <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-              </span>
-            )}
-          </Button>
+            <span className="flex items-center gap-2">
+              Get the Bundle
+              <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+            </span>
+          </BuyButton>
           <Reassurance />
         </div>
       </div>

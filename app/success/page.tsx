@@ -1,18 +1,32 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  DRUM_KIT_NAME,
-  MIDI_KIT_COUNT,
-  MIDI_PATTERN_COUNT,
-  ONE_SHOT_COUNT,
-} from "@/lib/bundle";
+import { stripe } from "@/lib/stripe";
+import { BUNDLE_ID, sellable } from "@/lib/products";
 
-const bundleInfo = {
-  name: "MidiRoad MIDI Drum Kit Bundle",
-  description: `Your complete download: ${MIDI_PATTERN_COUNT} MIDI drum patterns across ${MIDI_KIT_COUNT} MIDI kits, plus ${ONE_SHOT_COUNT} one-shot WAVs from the ${DRUM_KIT_NAME}.`,
-  highlights: ["MIDI Drum Patterns", "808 MIDIs", "Drum One-Shots"],
-};
+export const dynamic = "force-dynamic";
+
+/** The purchased product, from the session's metadata (old links: bundle). */
+async function purchased(sessionId?: string) {
+  let id = BUNDLE_ID;
+  if (sessionId?.startsWith("cs_")) {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      id = session.metadata?.product ?? BUNDLE_ID;
+    } catch {
+      // Show the generic copy; the download link verifies payment itself.
+    }
+  }
+  const product = sellable(id) ?? sellable(BUNDLE_ID)!;
+  return {
+    name: product.name,
+    description: product.description,
+    highlights:
+      id === BUNDLE_ID
+        ? ["MIDI Drum Patterns", "808 MIDIs", "Drum One-Shots"]
+        : ["MIDI Drum Patterns", "Royalty-free"],
+  };
+}
 
 export default async function Success({
   searchParams,
@@ -20,6 +34,7 @@ export default async function Success({
   searchParams: Promise<{ session_id?: string }>;
 }) {
   const { session_id: sessionId } = await searchParams;
+  const bundleInfo = await purchased(sessionId);
   const downloadHref = sessionId
     ? `/api/download?session_id=${encodeURIComponent(sessionId)}`
     : null;
@@ -46,7 +61,7 @@ export default async function Success({
               Payment successful.
             </h1>
             <p className="mt-6 text-xl font-medium text-black max-w-2xl leading-relaxed">
-              Your bundle is now unlocked. Download the files below.
+              Your files are unlocked. Download them below.
             </p>
 
             <div className="mt-14">
@@ -79,7 +94,7 @@ export default async function Success({
                         size="lg"
                         className="shrink-0 bg-black hover:bg-gray-800 text-white font-bold uppercase tracking-wider"
                       >
-                        Download Bundle
+                        Download Files
                       </Button>
                     </a>
                   ) : (
