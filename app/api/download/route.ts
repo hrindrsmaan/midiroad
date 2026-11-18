@@ -14,7 +14,8 @@ export async function GET(req: Request) {
   let productId: string;
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    if (session.payment_status !== "paid") {
+    // $0 orders (the test kit) complete as "no_payment_required".
+    if (session.status !== "complete" || session.payment_status === "unpaid") {
       return new Response("Payment not completed", { status: 402 });
     }
     // Older Payment Link purchases carry no metadata: they bought the bundle.

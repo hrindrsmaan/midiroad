@@ -12,6 +12,8 @@ type Props = {
   className?: string;
   size?: ButtonProps["size"];
   "aria-label"?: string;
+  /** Extra form fields sent to /api/checkout, e.g. the original order. */
+  fields?: Record<string, string>;
   children: React.ReactNode;
 };
 
@@ -24,7 +26,7 @@ export const BUY_BUTTON_CLASS =
  * Stripe. It works before hydration; JS only adds analytics and the
  * "Redirecting…" state.
  */
-export function BuyButton({ product, label, className, size = "lg", children, ...rest }: Props) {
+export function BuyButton({ product, label, className, size = "lg", fields, children, ...rest }: Props) {
   const [loading, setLoading] = useState(false);
 
   // Coming back from Stripe with the back button restores the page from
@@ -47,6 +49,9 @@ export function BuyButton({ product, label, className, size = "lg", children, ..
       }}
     >
       <input type="hidden" name="product" value={product} />
+      {Object.entries(fields ?? {}).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
       <Button type="submit" size={size} disabled={loading} className={className} aria-label={rest["aria-label"]}>
         {loading ? "Redirecting…" : children}
       </Button>

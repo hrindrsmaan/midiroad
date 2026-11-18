@@ -1,5 +1,5 @@
 import { stripe } from "@/lib/stripe";
-import { sellable } from "@/lib/products";
+import { sellable, upgradeBase } from "@/lib/products";
 import logger from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +14,25 @@ export async function POST(req: Request) {
   const product = sellable(String(form.get("product") ?? ""));
   if (!product) {
     return new Response("Unknown product", { status: 400 });
+  }
+
+  // An upgrade is only sold against a completed order for the kit it
+  // upgrades from, so the discounted bundle can't be bought on its own.
+  const base = upgradeBase(product.id);
+  if (base) {
+    const from = String(form.get("from") ?? "");
+    let ok = false;
+    if (from.startsWith("cs_")) {
+      try {
+        const original = await stripe.checkout.sessions.retrieve(from);
+        ok = original.status === "complete" && original.metadata?.product === base.id;
+      } catch {
+        ok = false;
+      }
+    }
+    if (!ok) {
+      return new Response("This upgrade needs the original order.", { status: 400 });
+    }
   }
 
   try {
@@ -35,7 +54,10 @@ export async function POST(req: Request) {
       metadata: { product: product.id },
       allow_promotion_codes: true,
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}${product.path}`,
+      // A cancelled upgrade returns to the order page that offered it.
+      cancel_url: base
+        ? `${origin}/success?session_id=${encodeURIComponent(String(form.get("from")))}`
+        : `${origin}${product.path}`,
     });
     if (!session.url) throw new Error("Checkout session has no URL");
     return Response.redirect(session.url, 303);
