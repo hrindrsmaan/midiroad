@@ -8,6 +8,8 @@ const NAV_LINKS = [
   { href: "/#kits", label: "MIDI Packs" },
   { href: "/#midi-kits", label: "Listen" },
   { href: "/#generator", label: "Beat Maker" },
+  { href: "/library", label: "Library" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
 ];
 

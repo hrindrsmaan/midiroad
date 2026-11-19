@@ -74,15 +74,3 @@ export function midiFileName(pattern: GeneratedPattern, index: number) {
   const key = pattern.kind === "808" || pattern.kind === "beat" ? `-${["C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs", "A", "As", "B"][pattern.key]}min` : "";
   return `midiroad-${kind}-${pattern.bpm}bpm${key}-${index + 1}.mid`;
 }
-
-export function downloadMidi(pattern: GeneratedPattern, index: number) {
-  const blob = new Blob([patternToMidi(pattern) as BlobPart], { type: "audio/midi" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = midiFileName(pattern, index);
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
