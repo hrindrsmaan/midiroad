@@ -21,6 +21,8 @@ export type KitProduct = {
   tagline: string;
   description: string;
   price: number;
+  /** Optional real "was" price, shown struck through on cards. */
+  originalPrice?: number;
   /** Cover colors until real artwork is added. */
   accent: string;
   accent2: string;

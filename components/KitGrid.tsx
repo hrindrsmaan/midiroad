@@ -1,75 +1,88 @@
 import Link from "next/link";
-import { KitCover } from "@/components/KitCover";
-import { KIT_PRODUCTS, KITS_TOTAL, BUNDLE_PRICE, kitStats } from "@/lib/products";
+import { BundleCover, KitCover } from "@/components/KitCover";
+import { AddToCartButton } from "@/components/cart/CartButtons";
+import { BUNDLE_ID, KIT_PRODUCTS, BUNDLE_NAME, BUNDLE_PRICE, KITS_TOTAL } from "@/lib/products";
 import { formatUSD } from "@/lib/pricing";
+import { Section, SectionHeader, type Tone } from "@/components/Section";
+
+type Card = {
+  key: string;
+  product: string;
+  href: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  cover: React.ReactNode;
+};
 
 /**
- * The six kits as cards linking to their own pages. The footer line keeps
- * the bundle in view: all six bought separately cost more than the bundle.
+ * Store-style grid of MIDI packs: the bundle first, then each kit, with a
+ * centered title and a strikethrough price where there is a real anchor.
  */
 export function KitGrid({
   excludeId,
-  title = "Or pick a single kit",
-  eyebrow = "6 MIDI kits",
+  title = "MIDI Packs",
+  eyebrow = "Shop",
+  tone = "canvas",
 }: {
   excludeId?: string;
   title?: string;
   eyebrow?: string;
+  tone?: Tone;
 }) {
-  const kits = KIT_PRODUCTS.filter((k) => k.id !== excludeId);
+  const cards: Card[] = [
+    {
+      key: "bundle",
+      product: BUNDLE_ID,
+      href: "/#main-cta",
+      name: `${BUNDLE_NAME} Bundle`,
+      price: BUNDLE_PRICE,
+      originalPrice: KITS_TOTAL,
+      cover: <BundleCover />,
+    },
+    ...KIT_PRODUCTS.filter((k) => k.id !== excludeId).map((kit) => ({
+      key: kit.id,
+      product: kit.id,
+      href: `/kits/${kit.slug}`,
+      name: kit.name,
+      price: kit.price,
+      originalPrice: kit.originalPrice,
+      cover: <KitCover kit={kit} />,
+    })),
+  ];
 
   return (
-    <section
-      id="kits"
-      className="py-16 md:py-24 px-6 bg-[#0e1014] border-t border-white/10 text-white scroll-mt-24"
-    >
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
-          <div>
-            <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
-              {eyebrow}
-            </p>
-            <h2 className="text-2xl md:text-3xl leading-tight">{title}</h2>
-          </div>
-          <p className="text-sm font-light tracking-wide text-gray-400 max-w-sm">
-            All 6 bought separately: <span className="line-through">{formatUSD(KITS_TOTAL)}</span>.{" "}
-            <Link href="/#main-cta" className="text-white underline underline-offset-4 hover:text-[#2bd96b]">
-              The full bundle is {formatUSD(BUNDLE_PRICE)}
-            </Link>{" "}
-            and adds 77 one-shots.
-          </p>
-        </div>
+    <Section id="kits" tone={tone}>
+      <SectionHeader eyebrow={eyebrow} title={title} />
 
-        <ul className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {kits.map((kit) => {
-            const stats = kitStats(kit);
-            return (
-              <li key={kit.id}>
-                <Link
-                  href={`/kits/${kit.slug}`}
-                  className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#2bd96b]"
-                >
-                  <div className="transition-transform duration-200 group-hover:-translate-y-1">
-                    <KitCover kit={kit} />
-                  </div>
-                  <div className="mt-3 flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="text-base md:text-lg leading-tight group-hover:text-[#2bd96b] transition-colors">
-                        {kit.name}
-                      </h3>
-                      <p className="mt-1 text-xs text-gray-400">
-                        {kit.vibe} · {stats.patterns} MIDIs
-                      </p>
-                    </div>
-                    <span className="shrink-0 text-sm font-black">{formatUSD(kit.price)}</span>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </section>
+      <ul className="grid grid-cols-2 gap-x-5 gap-y-12 md:gap-x-8 lg:grid-cols-4">
+        {cards.map((card) => (
+          <li key={card.key}>
+            <Link
+              href={card.href}
+              className="group block rounded-2xl text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+            >
+              <div className="mx-auto max-w-[260px] drop-shadow-[0_14px_14px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1.5">
+                {card.cover}
+              </div>
+              <h3 className="mt-5 text-[15px] font-bold leading-snug tracking-normal md:text-base">{card.name}</h3>
+              <p className="mt-1.5 text-[15px]">
+                {card.originalPrice !== undefined && (
+                  <span className="mr-2 text-muted line-through">{formatUSD(card.originalPrice)}</span>
+                )}
+                <span className="font-semibold text-brand">{formatUSD(card.price)}</span>
+              </p>
+            </Link>
+            <div className="mt-3 text-center">
+              <AddToCartButton
+                product={card.product}
+                className="h-9 rounded-full border border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-ink hover:text-white"
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }
 

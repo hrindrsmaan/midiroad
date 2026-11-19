@@ -40,12 +40,20 @@ export type WaveformProps = {
   progress: number;
   /** Height in px. Defaults to WAVE_HEIGHT. */
   height?: number;
+  /** Stretch to the container's width instead of a fixed bar width. */
+  fluid?: boolean;
+  /** Bar colors, unplayed and played. */
+  color?: string;
+  playedColor?: string;
 };
 
 export function Waveform({
   peaks,
   progress,
   height = WAVE_HEIGHT,
+  fluid = false,
+  color = "#3a3835",
+  playedColor = "#b3261e",
 }: WaveformProps) {
   const width = peaks.length * (BAR_WIDTH + BAR_GAP) - BAR_GAP;
   const played = progress * peaks.length;
@@ -53,9 +61,10 @@ export function Waveform({
     <svg
       aria-hidden
       viewBox={`0 0 ${width} ${height}`}
-      width={width}
+      width={fluid ? "100%" : width}
       height={height}
-      className="shrink-0"
+      preserveAspectRatio={fluid ? "none" : undefined}
+      className={fluid ? "min-w-0 flex-1" : "shrink-0"}
     >
       {peaks.map((peak, i) => {
         const h = Math.max(1, peak * height);
@@ -67,7 +76,7 @@ export function Waveform({
             width={BAR_WIDTH}
             height={h}
             rx={1}
-            fill={i < played ? "#2bd96b" : "#9ca3af"}
+            fill={i < played ? playedColor : color}
           />
         );
       })}
@@ -142,10 +151,10 @@ export function AudioPreviews() {
 
   const renderGroup = (title: string, previews: Preview[]) => (
     <div>
-      <p className="mb-4 text-[11px] font-black uppercase tracking-widest text-gray-500">
+      <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
         {title}
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
         {previews.map((preview) => {
           const active = playingId === preview.id;
           return (
@@ -156,19 +165,21 @@ export function AudioPreviews() {
                   onClick={() => toggle(preview)}
                   aria-label={`${active ? "Stop" : "Play"} ${preview.label}`}
                   aria-pressed={active}
-                  className={`shrink-0 transition-colors cursor-pointer hover:text-[#2bd96b] ${active ? "text-[#2bd96b]" : "text-white"}`}
+                  className={`shrink-0 cursor-pointer transition-colors hover:text-brand [&_svg]:h-6 [&_svg]:w-6 ${active ? "text-brand" : "text-ink"}`}
                 >
                   {active ? <PauseIcon /> : <PlayIcon />}
                 </button>
                 <Waveform
                   peaks={previewPeaks(preview.id)}
                   progress={active ? progress : 0}
+                  height={24}
+                  fluid
                 />
               </div>
-              <p className="mt-2 pl-10 text-sm font-light tracking-wider text-gray-300">
+              <p className="mt-1.5 pl-9 text-sm font-medium text-ink">
                 {preview.label}
                 {preview.detail && (
-                  <span className="block text-xs text-gray-500">
+                  <span className="block text-xs font-normal text-muted">
                     {preview.detail}
                   </span>
                 )}
@@ -181,8 +192,8 @@ export function AudioPreviews() {
   );
 
   return (
-    <div className="space-y-8">
-      {renderGroup("Full MIDI groove — played with the kit's drums", MIDI_PREVIEWS)}
+    <div className="space-y-7 rounded-2xl border border-line p-5 sm:p-6">
+      {renderGroup("Full MIDI groove, played with the kit's drums", MIDI_PREVIEWS)}
       {renderGroup("One-shot samples", ONE_SHOT_PREVIEWS)}
     </div>
   );

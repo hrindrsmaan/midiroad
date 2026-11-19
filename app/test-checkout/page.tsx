@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { BuyButton, BUY_BUTTON_CLASS } from "@/components/BuyButton";
+import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
-import { BUNDLE_ID, TEST_ID } from "@/lib/products";
+import { TEST_ID } from "@/lib/products";
 
 /**
  * Unlisted page for testing the live purchase flow with a $0 order:
@@ -21,20 +22,18 @@ const STEPS = [
 
 export default function TestCheckoutPage() {
   return (
-    <main className="min-h-screen bg-[#0e1014] text-white font-sans">
-      <SiteNav product={BUNDLE_ID} cta="Get the Bundle" />
-      <section className="pt-32 md:pt-40 pb-24 px-6">
-        <div className="max-w-xl mx-auto bg-[#18181b] rounded-md p-6 sm:p-8 space-y-6">
+    <main className="min-h-screen bg-canvas">
+      <SiteNav />
+      <section className="px-5 py-16 md:py-24">
+        <div className="mx-auto max-w-xl space-y-6 rounded-2xl border border-line bg-white p-6 sm:p-8">
           <div>
-            <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
-              Free · $0.00
-            </p>
+            <Eyebrow className="mb-3">Free · $0.00</Eyebrow>
             <h1 className="text-2xl md:text-3xl leading-tight">Test checkout</h1>
-            <p className="mt-3 text-sm font-light leading-relaxed text-gray-400">
+            <p className="mt-3 text-sm leading-relaxed text-muted">
               Runs a real order through the live site without charging anything.
             </p>
           </div>
-          <ol className="space-y-3 list-decimal pl-5 text-sm text-gray-300">
+          <ol className="list-decimal space-y-3 pl-5 text-sm text-muted">
             {STEPS.map((step) => (
               <li key={step}>{step}</li>
             ))}

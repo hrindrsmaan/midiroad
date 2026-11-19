@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BuyButton, BUY_BUTTON_CLASS } from "@/components/BuyButton";
+import { SECONDARY_BUTTON_CLASS } from "@/components/BuyButton";
+import { AddToCartButton } from "@/components/cart/CartButtons";
 import { KitCover } from "@/components/KitCover";
 import { KitGrid } from "@/components/KitGrid";
+import { KitPreviews } from "@/components/KitPreviews";
 import { MidiKits } from "@/components/MidiKits";
 import { FAQSection } from "@/components/FAQSection";
-import { PricingTable } from "@/components/PricingTable";
-import { Reassurance } from "@/components/Reassurance";
+import { HeroBlock, ProductHero } from "@/components/ProductHero";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { ONE_SHOT_COUNT } from "@/lib/bundle";
 import {
@@ -15,6 +16,7 @@ import {
   BUNDLE_NAME,
   BUNDLE_PRICE,
   KIT_PRODUCTS,
+  KITS_TOTAL,
   kitBySlug,
   kitStats,
   midiKitFor,
@@ -47,107 +49,74 @@ export default async function KitPage({ params }: Params) {
   const parts = midiKitFor(kit).parts;
   const upgradeCost = BUNDLE_PRICE - kit.price;
 
+  const specs = [
+    ["Files", `${stats.patterns} MIDI`],
+    ["Parts", parts.map((p) => `${p.patterns.length} ${p.label}`).join(" · ")],
+    ["Tempo", `${stats.minBpm}–${stats.maxBpm} BPM`],
+    ["Works in", "FL Studio, Ableton, Logic and any DAW"],
+    ["License", "100% royalty-free"],
+  ];
+
   return (
-    <main className="min-h-screen bg-[#0e1014] text-white font-sans selection:bg-[#ff90e8] selection:text-black overflow-x-hidden pb-24 md:pb-0">
-      <SiteNav product={kit.id} cta={`Buy · ${formatUSD(kit.price)}`} />
+    <main className="min-h-screen overflow-x-hidden bg-white pb-24 md:pb-0">
+      <SiteNav />
 
-      <section className="pt-28 md:pt-36 pb-16 md:pb-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <Link
-            href="/#kits"
-            className="inline-block mb-6 text-[12px] uppercase tracking-wider text-gray-400 hover:text-white transition-colors"
-          >
-            ← All kits
-          </Link>
+      <ProductHero
+        product={kit.id}
+        label="Kit Page Button"
+        cover={<KitCover kit={kit} size="lg" priority />}
+        eyebrow={`${kit.vibe} · MIDI kit`}
+        title={kit.name}
+        price={kit.price}
+        originalPrice={kit.originalPrice}
+        backLink={{ href: "/#kits", label: "All MIDI packs" }}
+      >
+        <KitPreviews kitId={kit.id} kitName={kit.name} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
-            <div className="w-full max-w-md mx-auto md:mx-0 md:max-w-none">
-              <KitCover kit={kit} size="lg" priority />
-            </div>
+        <HeroBlock title={kit.tagline}>
+          <p className="text-[16px] leading-relaxed text-ink/80">{kit.description}</p>
+        </HeroBlock>
 
-            <div className="space-y-6">
-              <div className="bg-[#18181b] rounded-md p-6 sm:p-8 space-y-6">
-                <div>
-                  <p className="mb-3 text-[11px] font-black uppercase tracking-widest" style={{ color: kit.accent }}>
-                    {kit.vibe} · MIDI kit
-                  </p>
-                  <h1 className="text-3xl md:text-4xl leading-tight">{kit.name}</h1>
-                  <p className="mt-3 text-lg font-light text-gray-200">{kit.tagline}</p>
-                  <p className="mt-4 text-sm font-light leading-relaxed tracking-wide text-gray-400">
-                    {kit.description}
-                  </p>
-                </div>
-
-                <ul className="grid grid-cols-3 sm:grid-cols-5 gap-2" aria-label="What's in this kit">
-                  {parts.map((part) => (
-                    <li key={part.id} className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-2">
-                      <span className="block text-lg font-black">{part.patterns.length}</span>
-                      <span className="block text-[11px] text-gray-400">{part.label}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-xs text-gray-500">
-                  {stats.patterns} MIDI files · {stats.minBpm}–{stats.maxBpm} BPM · Works in FL Studio,
-                  Ableton, Logic and any DAW
-                </p>
-
-                <div className="h-px bg-white/10" />
-
-                <div className="space-y-4">
-                  <p className="text-4xl font-black tracking-tight">{formatUSD(kit.price)}</p>
-                  <BuyButton
-                    product={kit.id}
-                    label="Kit Page Button"
-                    className={BUY_BUTTON_CLASS}
-                    aria-label={`Buy ${kit.name} for ${formatUSD(kit.price)}`}
-                  >
-                    <span className="flex items-center gap-2">
-                      Get {kit.name}
-                      <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-                    </span>
-                  </BuyButton>
-                  <Reassurance />
-                </div>
+        <HeroBlock title="Specs">
+          <dl className="divide-y divide-line rounded-2xl border border-line text-sm">
+            {specs.map(([term, value]) => (
+              <div key={term} className="flex gap-4 px-4 py-3">
+                <dt className="w-24 shrink-0 text-muted">{term}</dt>
+                <dd className="font-medium">{value}</dd>
               </div>
+            ))}
+          </dl>
+        </HeroBlock>
 
-              {/* Bundle upsell: the whole store for a few dollars more */}
-              <div className="rounded-md border-2 border-dashed border-[#2bd96b]/50 p-5 sm:p-6">
-                <p className="text-[11px] font-black uppercase tracking-widest text-[#2bd96b]">
-                  Better deal
-                </p>
-                <p className="mt-2 text-base">
-                  Get <strong>all 6 kits + {ONE_SHOT_COUNT} one-shots</strong> for{" "}
-                  {formatUSD(BUNDLE_PRICE)}, only{" "}
-                  <strong className="text-[#2bd96b]">{formatUSD(upgradeCost)} more</strong> than this kit.
-                </p>
-                <div className="mt-4 flex flex-wrap items-center gap-4">
-                  <BuyButton
-                    product={BUNDLE_ID}
-                    label={`Kit Page Upsell · ${kit.id}`}
-                    size="default"
-                    className="rounded-full border-2 border-[#2bd96b] bg-transparent px-5 text-[13px] font-black uppercase tracking-wider text-[#2bd96b] hover:bg-[#2bd96b] hover:text-black"
-                  >
-                    Get {BUNDLE_NAME} · {formatUSD(BUNDLE_PRICE)}
-                  </BuyButton>
-                  <Link href="/" className="text-xs text-gray-400 underline underline-offset-4 hover:text-white">
-                    See what&apos;s in it
-                  </Link>
-                </div>
-              </div>
-            </div>
+        {/* Bundle upsell: the whole store for a few dollars more */}
+        <div className="rounded-2xl bg-canvas p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">Better deal</p>
+          <p className="mt-2 text-[15px] leading-relaxed">
+            Get <strong>all {KIT_PRODUCTS.length} kits + {ONE_SHOT_COUNT} one-shots</strong> for{" "}
+            <span className="text-muted line-through">{formatUSD(KITS_TOTAL)}</span>{" "}
+            <strong className="text-brand">{formatUSD(BUNDLE_PRICE)}</strong>, only {formatUSD(upgradeCost)} more
+            than this kit.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <AddToCartButton
+              product={BUNDLE_ID}
+              label={`Add ${BUNDLE_NAME} to cart`}
+              className={SECONDARY_BUTTON_CLASS}
+            />
+            <Link href="/" className="text-sm text-muted underline underline-offset-4 hover:text-ink">
+              See what&apos;s in it
+            </Link>
           </div>
         </div>
-      </section>
+      </ProductHero>
 
-      <MidiKits kitId={kit.id} />
+      <MidiKits kitId={kit.id} tone="canvas" />
 
-      <KitGrid excludeId={kit.id} title="More kits" eyebrow="Keep exploring" />
+      <KitGrid excludeId={kit.id} title="More MIDI packs" eyebrow="Keep exploring" tone="white" />
 
-      <FAQSection />
+      <FAQSection tone="canvas" />
 
-      <PricingTable />
-
-      <StickyBuyBar product={kit.id} price={kit.price} cta={`Get ${kit.name}`} />
+      <StickyBuyBar product={kit.id} price={kit.price} originalPrice={kit.originalPrice} />
 
       <SiteFooter />
     </main>
