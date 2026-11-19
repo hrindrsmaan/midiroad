@@ -6,6 +6,7 @@ import { formatUSD } from "@/lib/pricing";
 const NAV_LINKS = [
   { href: "/#kits", label: "MIDI Packs" },
   { href: "/#midi-kits", label: "Listen" },
+  { href: "/#generator", label: "Beat Maker" },
   { href: "/#faq", label: "FAQ" },
 ];
 

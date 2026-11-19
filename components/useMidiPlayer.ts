@@ -6,9 +6,15 @@ import {
   MIDI_NOTES_SRC,
   MIDI_TAIL,
   midiSampleSrc,
+  type MidiHit,
   type MidiNotes,
-  type MidiPattern,
 } from "@/lib/midi-kits";
+
+/** One sample and the hits that play it. */
+export type MidiLayer = { sample: string; hits: MidiHit[] };
+
+/** Anything playable: an id to track it by and its length in seconds. */
+type Playable = { id: string; duration: number };
 
 /** Fade applied when a hit is cut short or playback is stopped. */
 const FADE = 0.01;
@@ -16,7 +22,8 @@ const FADE = 0.01;
 type Voice = { id: string; master: GainNode };
 
 /**
- * Plays MIDI patterns in the browser with the bundle's own one-shots.
+ * Plays MIDI patterns in the browser with the bundle's own one-shots: a
+ * pattern from midi-notes.json, or given `layers` (e.g. generated ones).
  * One pattern sounds at a time, and starting any other player on the page
  * stops this one.
  */
@@ -79,7 +86,11 @@ export function useMidiPlayer() {
     [],
   );
 
-  const toggle = async (pattern: MidiPattern) => {
+  /**
+   * Starts `pattern`, or stops it if it is playing. With `loop` (seconds per
+   * cycle) it repeats until stopped, scheduling each cycle just ahead of time.
+   */
+  const toggle = async (pattern: Playable, layers?: MidiLayer[], loop?: number) => {
     const wasPlaying = playingId === pattern.id;
     stop();
     if (wasPlaying) return;
@@ -91,11 +102,12 @@ export function useMidiPlayer() {
     if (ctx.state === "suspended") void ctx.resume();
     setPlayingId(pattern.id);
 
-    let hits, buffer;
+    let voices: { hits: MidiHit[]; buffer: AudioBuffer }[];
     try {
-      const notes = (await loadNotes())[pattern.id];
-      hits = notes.hits;
-      buffer = await loadSample(ctx, notes.sample);
+      const resolved = layers ?? [(await loadNotes())[pattern.id]];
+      voices = await Promise.all(
+        resolved.map(async (l) => ({ hits: l.hits, buffer: await loadSample(ctx, l.sample) })),
+      );
     } catch {
       notesRef.current = null;
       setPlayingId((id) => (id === pattern.id ? null : id));
@@ -108,40 +120,52 @@ export function useMidiPlayer() {
     master.connect(ctx.destination);
     const t0 = ctx.currentTime + 0.05;
     const end = t0 + pattern.duration;
-    // Fade the ring-out tail, as in the offline render.
-    master.gain.setValueAtTime(1, end - MIDI_TAIL);
-    master.gain.linearRampToValueAtTime(0, end);
-
-    for (const [at, semitones, gain, cut] of hits) {
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      source.playbackRate.value = 2 ** (semitones / 12);
-      const amp = ctx.createGain();
-      amp.gain.value = gain;
-      source.connect(amp).connect(master);
-      const start = t0 + at;
-      source.start(start);
-      if (cut !== undefined) {
-        // 808s hold for the note length, then cut with a short fade.
-        const fade = Math.min(FADE, cut);
-        amp.gain.setValueAtTime(gain, start + cut - fade);
-        amp.gain.linearRampToValueAtTime(0, start + cut);
-        source.stop(start + cut);
-      } else {
-        source.stop(end);
-      }
+    if (!loop) {
+      // Fade the ring-out tail, as in the offline render.
+      master.gain.setValueAtTime(1, end - MIDI_TAIL);
+      master.gain.linearRampToValueAtTime(0, end);
     }
+
+    const schedule = (offset: number) => {
+      for (const { hits, buffer } of voices) for (const [at, semitones, gain, cut] of hits) {
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.playbackRate.value = 2 ** (semitones / 12);
+        const amp = ctx.createGain();
+        amp.gain.value = gain;
+        source.connect(amp).connect(master);
+        const start = offset + at;
+        source.start(start);
+        if (cut !== undefined) {
+          // 808s hold for the note length, then cut with a short fade.
+          const fade = Math.min(FADE, cut);
+          amp.gain.setValueAtTime(gain, start + cut - fade);
+          amp.gain.linearRampToValueAtTime(0, start + cut);
+          source.stop(start + cut);
+        } else if (!loop) {
+          source.stop(end);
+        }
+      }
+    };
+    schedule(t0);
+    let cycles = 1;
 
     const voice: Voice = { id: pattern.id, master };
     voiceRef.current = voice;
     const tick = () => {
       if (voiceRef.current !== voice) return;
-      const elapsed = ctx.currentTime - t0;
-      if (elapsed >= pattern.duration) {
-        stop();
-        return;
+      const elapsed = Math.max(0, ctx.currentTime - t0);
+      if (loop) {
+        // Queue the next cycle half a second before it starts.
+        if (elapsed > cycles * loop - 0.5) schedule(t0 + cycles++ * loop);
+        setProgress((elapsed % loop) / loop);
+      } else {
+        if (elapsed >= pattern.duration) {
+          stop();
+          return;
+        }
+        setProgress(elapsed / pattern.duration);
       }
-      setProgress(Math.max(0, elapsed / pattern.duration));
       frameRef.current = requestAnimationFrame(tick);
     };
     tick();
