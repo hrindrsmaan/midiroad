@@ -33,12 +33,16 @@ export type GenNote = {
 
 export type GenTrack = { part: DrumPart; notes: GenNote[] };
 
+/** A style for full beats: shapes hats, kicks, snares and the 808 line. */
+export type Vibe = "dark" | "rage" | "drill" | "melodic";
+
 export type GeneratedPattern = {
   id: string;
   /** What it was generated from, so it can be re-made at another tempo or key. */
   seed: number;
   hatBase: number;
   kind: GenKind;
+  vibe: Vibe;
   name: string;
   tags: string[];
   bpm: number;
@@ -91,6 +95,123 @@ function weighted<T>(rng: Rng, items: readonly [T, number][]): T {
 
 const humanize = (rng: Rng, vel: number, amount = 6) =>
   Math.max(1, Math.min(127, Math.round(vel + (rng() * 2 - 1) * amount)));
+
+/* ------------------------------------------------------------------ */
+/* Vibes                                                               */
+/* ------------------------------------------------------------------ */
+
+type VibeStyle = {
+  label: string;
+  /** Tempo it sounds best at. */
+  bpm: number;
+  /** Chance of a 16th hat pulse rather than 8ths, when a take doesn't set one. */
+  sixteenths: number;
+  /** How often each roll is chosen. */
+  rolls: Record<RollKind, number>;
+  /** Pitch climbs for big rolls, in semitones. */
+  bigPitch: number[];
+  /** Chance of dropping a hat before a downbeat, per bar. */
+  gaps: number;
+  /** Kick cells, by weight multiplier: >1 favours busier cells. */
+  busy: number;
+  /** Chance the 808 line uses octave jumps. */
+  octaves: number;
+  /** Extra weight on in-key passing notes in the 808. */
+  movement: number;
+  /** Longest an 808 note holds, in 16ths. */
+  hold: number;
+  progressions: [number[], number][];
+  /** Extra snares per bar, in beats (0–4), on top of beat 3. */
+  ghostSnares: (rng: Rng, bar: number) => number[];
+  openHats: number;
+};
+
+export const VIBES: Record<Vibe, VibeStyle> = {
+  dark: {
+    label: "Dark Trap",
+    bpm: 140,
+    sixteenths: 0.45,
+    rolls: { double: 3, triplet: 3, sixlet: 2, quad: 2 },
+    bigPitch: [0, 3, 5, 7],
+    gaps: 0.3,
+    busy: 1,
+    octaves: 0.6,
+    movement: 1,
+    hold: 8,
+    progressions: [
+      [[0, 0, 0, 0], 3],
+      [[0, 8, 0, 8], 3],
+      [[0, 5, 0, 8], 2],
+      [[0, 8, 0, 10], 2],
+      [[0, 3, 0, 8], 1],
+      [[0, 0, 0, 8], 2],
+    ],
+    ghostSnares: (rng, bar) => (bar === 3 && rng() < 0.5 ? pick(rng, [[3.5, 3.75], [3.75], [3.25, 3.75]]) : []),
+    openHats: 0.6,
+  },
+  rage: {
+    label: "Rage",
+    bpm: 160,
+    sixteenths: 1,
+    rolls: { double: 1, triplet: 1, sixlet: 3, quad: 4 },
+    bigPitch: [5, 7, 12],
+    gaps: 0.1,
+    busy: 2.5,
+    octaves: 1,
+    movement: 0.4,
+    hold: 4,
+    progressions: [
+      [[0, 0, 0, 0], 3],
+      [[0, 0, 8, 8], 2],
+      [[0, 10, 8, 7], 1],
+    ],
+    ghostSnares: (rng, bar) => (bar % 2 === 1 && rng() < 0.6 ? [3.75] : []),
+    openHats: 0.2,
+  },
+  drill: {
+    label: "Drill",
+    bpm: 142,
+    sixteenths: 0,
+    rolls: { double: 1, triplet: 5, sixlet: 1, quad: 0.5 },
+    bigPitch: [0, 0, 3],
+    gaps: 0.8,
+    busy: 0.6,
+    octaves: 0.3,
+    movement: 3,
+    hold: 6,
+    progressions: [
+      [[0, 1, 0, 8], 2],
+      [[0, 8, 7, 8], 2],
+      [[0, 3, 1, 0], 2],
+      [[0, 0, 8, 7], 2],
+    ],
+    // The off-beat second snare that drill bounces on.
+    ghostSnares: (rng, bar) => (bar % 2 === 1 ? [pick(rng, [3.5, 3.75])] : rng() < 0.3 ? [3.75] : []),
+    openHats: 0.1,
+  },
+  melodic: {
+    label: "Melodic",
+    bpm: 130,
+    sixteenths: 0.2,
+    rolls: { double: 3, triplet: 3, sixlet: 0.5, quad: 0.5 },
+    bigPitch: [0, 3],
+    gaps: 0.2,
+    busy: 0.4,
+    octaves: 0.3,
+    movement: 0.6,
+    hold: 16,
+    progressions: [
+      [[0, 8, 3, 10], 3],
+      [[0, 5, 8, 7], 2],
+      [[0, 8, 5, 7], 2],
+      [[0, 3, 8, 10], 2],
+    ],
+    ghostSnares: (rng, bar) => (bar === 3 && rng() < 0.4 ? [3.75] : []),
+    openHats: 0.8,
+  },
+};
+
+export const VIBE_IDS = Object.keys(VIBES) as Vibe[];
 
 /* ------------------------------------------------------------------ */
 /* Hi-hats                                                             */
@@ -146,22 +267,23 @@ function hatBar(rng: Rng, base: number, rolls: Roll[], gapBefore: number[]): Gen
   return notes.sort((a, b) => a.beat - b.beat);
 }
 
-function makeRoll(rng: Rng, base: number, feelBpm: number, end: number, big: boolean): Roll {
+function makeRoll(rng: Rng, base: number, feelBpm: number, end: number, big: boolean, vibe: VibeStyle): Roll {
   // A roll faster than ~45 ms per hit smears into a buzz.
   const ok = (kind: RollKind) => (60 / feelBpm) * ROLL_DIV[kind](base) >= 0.045;
   const kind = weighted<RollKind>(rng, [
-    ["double", 3],
-    ["triplet", 3],
-    ["sixlet", ok("sixlet") ? 2 : 0],
-    ["quad", ok("quad") ? (big ? 3 : 1.5) : 0],
+    ["double", vibe.rolls.double],
+    ["triplet", vibe.rolls.triplet],
+    ["sixlet", ok("sixlet") ? vibe.rolls.sixlet : 0],
+    ["quad", ok("quad") ? vibe.rolls.quad * (big ? 1.5 : 0.75) : 0],
   ]);
   // Length in base steps; triplets need an even span to come out whole.
   const steps = kind === "triplet" ? (big && rng() < 0.4 ? 4 : 2) : big && rng() < 0.5 ? 2 : pick(rng, [1, 2]);
-  const pitchUp = kind === "quad" || kind === "sixlet" ? (big ? pick(rng, [0, 3, 5, 7]) : pick(rng, [0, 0, 3])) : 0;
+  const pitchUp = kind === "quad" || kind === "sixlet" ? (big ? pick(rng, vibe.bigPitch) : pick(rng, [0, 0, 3])) : 0;
   return { kind, end, len: steps * base, pitchUp, fade: kind === "triplet" && rng() < 0.4 ? "down" : "up" };
 }
 
-function hatPhrase(rng: Rng, feelBpm: number, base: number) {
+function hatPhrase(rng: Rng, feelBpm: number, base: number, vibe: VibeStyle) {
+  const makeRoll_ = (end: number, big: boolean) => makeRoll(rng, base, feelBpm, end, big, vibe);
   // Where rolls land: right before beat 2, 3 or the next bar.
   const endsA = weighted<number[]>(rng, [
     [[4], 3],
@@ -169,21 +291,22 @@ function hatPhrase(rng: Rng, feelBpm: number, base: number) {
     [[2, 4], 2],
     [[3], 1],
   ]);
-  const rollsA = endsA.map((e) => makeRoll(rng, base, feelBpm, e, false));
+  const rollsA = endsA.map((e) => makeRoll_(e, false));
   // A′ keeps A's pulse but moves or swaps one roll.
   const rollsA2 = rollsA
-    .map((r) => (rng() < 0.6 ? makeRoll(rng, base, feelBpm, r.end === 4 ? pick(rng, [4, 2]) : 4, false) : r))
+    .map((r) => (rng() < 0.6 ? makeRoll_(r.end === 4 ? pick(rng, [4, 2]) : 4, false) : r))
     .filter((r, i, all) => all.findIndex((o) => o.end === r.end) === i);
   // Fill bar: a mid roll plus a bigger one into the loop point.
-  const rollsFill = [makeRoll(rng, base, feelBpm, pick(rng, [2, 3]), false), makeRoll(rng, base, feelBpm, 4, true)];
+  const rollsFill = [makeRoll_(pick(rng, [2, 3]), false), makeRoll_(4, true)];
   if (rollsFill[0].end > 4 - rollsFill[1].len - 1e-6) rollsFill.shift();
 
   // A short breath before a downbeat now and then.
-  const gap = rng() < 0.3 ? [3 - base] : [];
+  const gap = () => (rng() < vibe.gaps ? [pick(rng, [1, 3]) - base] : []);
+  const gapA = gap();
   const bars = [
-    hatBar(rng, base, rollsA, []),
-    hatBar(rng, base, rollsA2, gap),
-    hatBar(rng, base, rollsA, []),
+    hatBar(rng, base, rollsA, gapA),
+    hatBar(rng, base, rollsA2, gap()),
+    hatBar(rng, base, rollsA, gapA),
     hatBar(rng, base, rollsFill, []),
   ];
   const kinds = [...new Set([...rollsA, ...rollsA2, ...rollsFill].map((r) => r.kind))];
@@ -227,22 +350,17 @@ const FILL_SECOND_HALF: [number[], number][] = [
 ];
 
 /** Kick onsets for four bars, in 16th steps from the start of each bar. */
-function kickPhrase(rng: Rng): number[][] {
-  const a = [...weighted(rng, FIRST_HALF), ...weighted(rng, SECOND_HALF).map((s) => s + 8)];
-  const a2 = rng() < 0.5 ? [...a] : [...a.filter((s) => s < 8), ...weighted(rng, SECOND_HALF).map((s) => s + 8)];
+function kickPhrase(rng: Rng, vibe: VibeStyle): number[][] {
+  // Busier vibes lean on cells with more hits, sparser ones on fewer.
+  const lean = (cells: [number[], number][]): [number[], number][] =>
+    cells.map(([c, w]) => [c, w * vibe.busy ** (c.length - 1.5)]);
+  const first = lean(FIRST_HALF);
+  const second = lean(SECOND_HALF);
+  const a = [...weighted(rng, first), ...weighted(rng, second).map((s) => s + 8)];
+  const a2 = rng() < 0.5 ? [...a] : [...a.filter((s) => s < 8), ...weighted(rng, second).map((s) => s + 8)];
   const fill = [...a.filter((s) => s < 8), ...weighted(rng, FILL_SECOND_HALF).map((s) => s + 8)];
   return [a, a2, a, fill];
 }
-
-/** Common minor-key root movement, as semitones from the key. */
-const PROGRESSIONS: [number[], number][] = [
-  [[0, 0, 0, 0], 3],
-  [[0, 8, 0, 8], 3],
-  [[0, 5, 0, 8], 2],
-  [[0, 8, 0, 10], 2],
-  [[0, 3, 0, 8], 1],
-  [[0, 0, 0, 8], 2],
-];
 
 /** Folds a pitch into an octave around the sample's own pitch, -7 to +4. */
 const fold = (p: number) => ((((p + 7) % 12) + 12) % 12) - 7;
@@ -255,9 +373,10 @@ const inKey = (p: number, key: number) => {
 /** Highest an 808 is pitched up before it turns thin and clicky. */
 const MAX_808 = 14;
 
-function bassLine(rng: Rng, phrase: number[][], key: number, beatsPerStep: number): GenNote[] {
-  const roots = weighted(rng, PROGRESSIONS);
-  const octaveFlavour = rng() < 0.6;
+function bassLine(rng: Rng, phrase: number[][], key: number, beatsPerStep: number, vibe: VibeStyle): GenNote[] {
+  const roots = weighted(rng, vibe.progressions);
+  const octaveFlavour = rng() < vibe.octaves;
+  const m = vibe.movement;
   const notes: GenNote[] = [];
 
   // Bars 1 and 3 share pitches, as they share rhythm.
@@ -276,8 +395,8 @@ function bassLine(rng: Rng, phrase: number[][], key: number, beatsPerStep: numbe
           [root, 6],
           [octave, octaveFlavour ? (last ? 3 : 2) : 0.5],
           [root + 7 <= MAX_808 ? root + 7 : root - 5, 1.5],
-          [inKey(root + 3, key), bar === 3 ? 1.5 : 0.5],
-          [inKey(root - 2, key), bar === 3 && last ? 2 : 0.3],
+          [inKey(root + 3, key), (bar === 3 ? 1.5 : 0.5) * m],
+          [inKey(root - 2, key), (bar === 3 && last ? 2 : 0.3) * m],
         ]);
       });
       barPitches.set(cacheKey, pitches);
@@ -285,7 +404,7 @@ function bassLine(rng: Rng, phrase: number[][], key: number, beatsPerStep: numbe
     steps.forEach((s, i) => {
       // Hold until the next note, or to the end of the bar.
       const next = i + 1 < steps.length ? steps[i + 1] : 16;
-      const hold = Math.min(next - s, 8);
+      const hold = Math.min(next - s, vibe.hold);
       notes.push({
         beat: (bar * 16 + s) * beatsPerStep,
         dur: Math.max(1, hold - 0.25) * beatsPerStep,
@@ -301,14 +420,22 @@ function bassLine(rng: Rng, phrase: number[][], key: number, beatsPerStep: numbe
 /* Patterns                                                            */
 /* ------------------------------------------------------------------ */
 
-export function generatePattern(kind: GenKind, bpm: number, key: number, seed: number, hatBase?: number): GeneratedPattern {
+export function generatePattern(
+  kind: GenKind,
+  bpm: number,
+  key: number,
+  seed: number,
+  hatBase?: number,
+  vibeId: Vibe = "dark",
+): GeneratedPattern {
   const rng = mulberry32(seed);
+  const vibe = VIBES[vibeId];
   // Write slow tempos in half time: generate at double, then compress.
   const half = bpm < 105;
   const feelBpm = half ? bpm * 2 : bpm;
   const scale = half ? 0.5 : 1;
   const step = 0.25 * scale; // a 16th of the feel, in real beats
-  const base = hatBase ?? (rng() < 0.55 ? 0.5 : 0.25);
+  const base = hatBase ?? (rng() < vibe.sixteenths ? 0.25 : 0.5);
 
   const tracks: GenTrack[] = [];
   const tags: string[] = [];
@@ -317,10 +444,10 @@ export function generatePattern(kind: GenKind, bpm: number, key: number, seed: n
     notes.map((n) => ({ ...n, beat: (bar * 4 + n.beat) * scale, dur: n.dur * scale }));
 
   if (kind === "hihat" || kind === "beat") {
-    const { bars, kinds, pitched } = hatPhrase(rng, feelBpm, base);
+    const { bars, kinds, pitched } = hatPhrase(rng, feelBpm, base, vibe);
     let hats = bars.flatMap((b, i) => shift(b, i));
     const opens: GenNote[] = [];
-    if (kind === "beat" && rng() < 0.6) {
+    if (kind === "beat" && rng() < vibe.openHats) {
       // An open hat on the "and" of 4 in bars 2 and 4, replacing the closed one.
       for (const bar of [1, 3]) {
         const at = (bar * 4 + 3.5) * scale;
@@ -341,7 +468,7 @@ export function generatePattern(kind: GenKind, bpm: number, key: number, seed: n
   }
 
   if (kind === "kick" || kind === "808" || kind === "beat") {
-    const phrase = kickPhrase(rng);
+    const phrase = kickPhrase(rng, vibe);
     if (kind !== "808") {
       tracks.unshift({
         part: "kick",
@@ -356,19 +483,16 @@ export function generatePattern(kind: GenKind, bpm: number, key: number, seed: n
       });
     }
     if (kind === "808" || kind === "beat") {
-      tracks.push({ part: "808", notes: bassLine(rng, phrase, key, step) });
+      tracks.push({ part: "808", notes: bassLine(rng, phrase, key, step, vibe) });
     }
     if (kind === "beat") {
-      // Half-time backbeat on beat 3, with a little pickup into the loop now and then.
-      const snares: GenNote[] = [0, 1, 2, 3].map((bar) => ({
-        beat: (bar * 4 + 2) * scale,
-        dur: step,
-        pitch: 0,
-        vel: humanize(rng, 118, 3),
-      }));
-      if (rng() < 0.5) {
-        for (const at of pick(rng, [[3.5, 3.75], [3.75], [3.25, 3.75]])) {
-          snares.push({ beat: (12 + at) * scale, dur: step, pitch: 0, vel: humanize(rng, 70, 6) });
+      // Half-time backbeat on beat 3, plus the vibe's extra hits.
+      const snares: GenNote[] = [];
+      for (const bar of [0, 1, 2, 3]) {
+        snares.push({ beat: (bar * 4 + 2) * scale, dur: step, pitch: 0, vel: humanize(rng, 118, 3) });
+        for (const at of vibe.ghostSnares(rng, bar)) {
+          const loud = vibeId === "drill" && bar % 2 === 1;
+          snares.push({ beat: (bar * 4 + at) * scale, dur: step, pitch: 0, vel: humanize(rng, loud ? 104 : 70, 6) });
         }
       }
       tracks.splice(1, 0, { part: "snare", notes: snares });
@@ -376,17 +500,18 @@ export function generatePattern(kind: GenKind, bpm: number, key: number, seed: n
     const hits = phrase.reduce((n, b) => n + b.length, 0);
     if (kind === "kick") tags.push(`${hits} hits`, hits / BARS > 3.5 ? "busy" : "bouncy");
     if (kind === "808") tags.push(`${KEY_NAMES[key]} minor`, `${hits} notes`);
-    if (kind === "beat") tags.unshift(`${KEY_NAMES[key]} minor`);
+    if (kind === "beat") tags.unshift(`${KEY_NAMES[key]} minor`, vibe.label);
   }
 
   if (half) tags.push("half-time");
   const name = { hihat: "Hi-Hat", "808": "808", kick: "Kick", beat: "Beat" }[kind];
 
   return {
-    id: `gen-${kind}-${bpm}-${key}-${seed}-${base}`,
+    id: `gen-${kind}-${vibeId}-${bpm}-${key}-${seed}-${base}`,
     seed,
     hatBase: base,
     kind,
+    vibe: vibeId,
     name,
     tags,
     bpm,
@@ -400,15 +525,20 @@ const randomSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 /** The same take at another tempo or key: same seed, same moves. */
 export const retunePattern = (p: GeneratedPattern, bpm: number, key: number) =>
-  generatePattern(p.kind, bpm, key, p.seed, p.hatBase);
+  generatePattern(p.kind, bpm, key, p.seed, p.hatBase, p.vibe);
 
 /** A new pattern with the same part, tempo and key. */
-export const rerollPattern = (old: GeneratedPattern) => generatePattern(old.kind, old.bpm, old.key, randomSeed());
+export const rerollPattern = (old: GeneratedPattern) => generatePattern(old.kind, old.bpm, old.key, randomSeed(), undefined, old.vibe);
 
 /** A fresh batch, with hats spread across 8th and 16th pulses so the three differ. */
-export function generateBatch(kind: GenKind, bpm: number, key: number, count = 3): GeneratedPattern[] {
-  const bases = [0.5, 0.25, Math.random() < 0.5 ? 0.5 : 0.25].sort(() => Math.random() - 0.5);
+export function generateBatch(kind: GenKind, bpm: number, key: number, count = 3, vibe: Vibe = "dark"): GeneratedPattern[] {
+  // Spread hat pulses across the takes so they differ, within what the vibe allows.
+  const s = VIBES[vibe].sixteenths;
+  const bases =
+    s === 0 || s === 1
+      ? [0, 0, 0].map(() => (s === 1 ? 0.25 : 0.5))
+      : [0.5, 0.25, Math.random() < s ? 0.25 : 0.5].sort(() => Math.random() - 0.5);
   return Array.from({ length: count }, (_, i) =>
-    generatePattern(kind, bpm, key, randomSeed(), bases[i % bases.length]),
+    generatePattern(kind, bpm, key, randomSeed(), bases[i % bases.length], vibe),
   );
 }
