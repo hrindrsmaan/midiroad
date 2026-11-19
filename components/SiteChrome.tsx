@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AccountLink } from "@/components/auth/AccountLink";
 import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
 import { Logo } from "@/components/Logo";
 import { formatUSD } from "@/lib/pricing";
@@ -28,6 +29,7 @@ export function SiteNav() {
               </li>
             ))}
           </ul>
+          <AccountLink />
           <CartButton />
         </div>
       </div>
