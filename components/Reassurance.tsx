@@ -21,12 +21,12 @@ const REASSURANCE = [
   },
 ];
 
-export function Reassurance() {
+export function Reassurance({ className = "" }: { className?: string }) {
   return (
-    <ul className="flex flex-wrap gap-x-4 gap-y-2">
+    <ul className={`flex flex-wrap justify-center gap-x-5 gap-y-2 ${className}`}>
       {REASSURANCE.map((r) => (
-        <li key={r.label} className="flex items-center gap-1.5 text-xs text-gray-400">
-          <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0 text-gray-500" aria-hidden>
+        <li key={r.label} className="flex items-center gap-1.5 text-xs text-muted">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 shrink-0" aria-hidden>
             <path d={r.icon} />
           </svg>
           {r.label}

@@ -1,27 +1,37 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { stripe } from "@/lib/stripe";
-import { BUNDLE_ID, sellable } from "@/lib/products";
+import { sellable } from "@/lib/products";
+import { orderProductIds } from "@/lib/cart";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Downloads one product from a paid order. `product` picks which one when
+ * the order has several; without it, the order's first product.
+ */
 export async function GET(req: Request) {
-  const sessionId = new URL(req.url).searchParams.get("session_id");
+  const params = new URL(req.url).searchParams;
+  const sessionId = params.get("session_id");
   if (!sessionId || !sessionId.startsWith("cs_")) {
     return new Response("Missing or invalid session", { status: 400 });
   }
 
-  let productId: string;
+  let productIds: string[];
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     // $0 orders (the test kit) complete as "no_payment_required".
     if (session.status !== "complete" || session.payment_status === "unpaid") {
       return new Response("Payment not completed", { status: 402 });
     }
-    // Older Payment Link purchases carry no metadata: they bought the bundle.
-    productId = session.metadata?.product ?? BUNDLE_ID;
+    productIds = orderProductIds(session.metadata);
   } catch {
     return new Response("Could not verify payment", { status: 403 });
+  }
+
+  const productId = params.get("product") ?? productIds[0];
+  if (!productIds.includes(productId)) {
+    return new Response("That product isn't part of this order", { status: 403 });
   }
 
   const product = sellable(productId);

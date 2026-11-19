@@ -1,115 +1,101 @@
-import Image from "next/image";
 import Link from "next/link";
-import { BuyButton } from "@/components/BuyButton";
+import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
+import { Logo } from "@/components/Logo";
 import { formatUSD } from "@/lib/pricing";
 
-/** Fixed top bar: logo, kit link and one buy button. */
-export function SiteNav({
-  product,
-  cta = "Get Instant Access",
-}: {
-  product: string;
-  cta?: string;
-}) {
+const NAV_LINKS = [
+  { href: "/#kits", label: "MIDI Packs" },
+  { href: "/#midi-kits", label: "Listen" },
+  { href: "/#faq", label: "FAQ" },
+];
+
+/** Sticky top bar: logo, section links and the cart. */
+export function SiteNav() {
   return (
-    <nav className="flex items-center justify-between gap-4 px-6 py-5 md:px-8 w-full border-b-2 border-black bg-black fixed top-0 z-50">
-      <Link
-        href="/"
-        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-        aria-label="MidiRoad Home"
-      >
-        <Image src="/logo-white.png" alt="MidiRoad" width={640} height={640} priority className="h-10 w-auto" />
-      </Link>
-      <div className="flex items-center gap-5">
-        <Link
-          href="/#kits"
-          className="hidden sm:block text-[12px] uppercase tracking-wider text-gray-300 hover:text-white transition-colors"
-        >
-          Kits
+    <nav className="sticky top-0 z-50 border-b border-line bg-white/90 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5">
+        <Link href="/" className="flex items-center" aria-label="MidiRoad home">
+          <Logo />
         </Link>
-        <BuyButton
-          product={product}
-          label="Nav Button"
-          size="default"
-          className="bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase text-[13px] tracking-wider rounded-full px-5 shadow-[2px_2px_0_0_#fff]"
-        >
-          {cta}
-        </BuyButton>
+        <div className="flex items-center gap-5 md:gap-7">
+          <ul className="hidden items-center gap-7 md:flex">
+            {NAV_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="text-sm font-medium text-muted transition-colors hover:text-ink">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <CartButton />
+        </div>
       </div>
     </nav>
   );
 }
 
-/** Sticky buy bar on mobile, so the CTA is always one tap away. */
+/** Sticky bar on mobile, so adding to the cart is always one tap away. */
 export function StickyBuyBar({
   product,
   price,
   originalPrice,
-  badge,
-  cta = "Get Instant Access",
 }: {
   product: string;
   price: number;
   originalPrice?: number;
-  badge?: string;
-  cta?: string;
 }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t-2 border-black md:hidden z-50 shadow-[0_-4px_0_0_#000]">
-      <div className="flex items-center justify-between gap-2 mb-2">
-        {originalPrice ? (
-          <span className="text-[11px] font-black uppercase tracking-wider text-gray-500 line-through">
-            {formatUSD(originalPrice)}
-          </span>
-        ) : (
-          <span />
-        )}
-        {badge && (
-          <span className="bg-black text-[#ff90e8] text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded">
-            {badge}
-          </span>
-        )}
-        <span className="text-sm font-black text-black">{formatUSD(price)}</span>
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white/95 px-4 py-3 backdrop-blur md:hidden">
+      <div className="flex items-center gap-4">
+        <p className="shrink-0 leading-tight">
+          {originalPrice !== undefined && (
+            <span className="block text-xs text-muted line-through">{formatUSD(originalPrice)}</span>
+          )}
+          <span className="text-lg font-bold text-brand">{formatUSD(price)}</span>
+        </p>
+        <AddToCartButton
+          product={product}
+          className="h-12 flex-1 rounded-full bg-brand text-sm font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-hover"
+        />
       </div>
-      <BuyButton
-        product={product}
-        label="Mobile Sticky Bar"
-        className="w-full bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide shadow-[3px_3px_0_0_#000]"
-      >
-        {cta}
-      </BuyButton>
     </div>
   );
 }
 
 export function SiteFooter() {
   return (
-    <footer className="bg-black text-white py-16">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="text-center md:text-left">
-            <Image
-              src="/logo-white.png"
-              alt="MidiRoad"
-              width={640}
-              height={640}
-              className="h-10 w-auto mb-4 mx-auto md:mx-0"
-            />
-            <p className="text-gray-400 text-sm max-w-xs">
-              Drag-and-drop MIDI drum kits and trap one-shots.
-            </p>
-          </div>
-          <div className="text-center md:text-right">
-            <p className="text-gray-400 text-sm">
-              <a href="mailto:support@midiroad.com" className="hover:text-white transition-colors">
+    <footer className="bg-ink text-white">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 md:flex-row md:items-start md:justify-between">
+        <div className="max-w-xs">
+          <Logo inverted />
+          <p className="mt-4 text-sm leading-relaxed text-white/60">
+            Drag-and-drop MIDI drum kits and trap one-shots for producers.
+          </p>
+        </div>
+        <div className="flex gap-16 text-sm">
+          <ul className="space-y-3">
+            {NAV_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="text-white/60 transition-colors hover:text-white">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <ul className="space-y-3">
+            <li className="text-white/40">Support</li>
+            <li>
+              <a href="mailto:support@midiroad.com" className="text-white/60 transition-colors hover:text-white">
                 support@midiroad.com
               </a>
-            </p>
-            <p className="text-gray-500 text-xs mt-2">
-              © {new Date().getFullYear()} MidiRoad. All rights reserved.
-            </p>
-          </div>
+            </li>
+          </ul>
         </div>
+      </div>
+      <div className="border-t border-white/10">
+        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-white/40">
+          © {new Date().getFullYear()} MidiRoad. All rights reserved.
+        </p>
       </div>
     </footer>
   );

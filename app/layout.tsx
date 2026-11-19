@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, Black_Ops_One } from "next/font/google";
+import { Inter, Space_Grotesk, Black_Ops_One, Montserrat, Anton } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
 import "./globals.css";
+import { CartProvider } from "@/components/cart/CartProvider";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 
 const inter = Inter({
@@ -13,6 +15,20 @@ const inter = Inter({
 
 const blackOpsOne = Black_Ops_One({
   variable: "--font-black-ops",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const anton = Anton({
+  variable: "--font-anton",
   subsets: ["latin"],
   weight: "400",
   display: "swap",
@@ -81,7 +97,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${blackOpsOne.variable} ${spaceGrotesk.variable} ${inter.variable} antialiased font-sans`}
+        className={`${blackOpsOne.variable} ${montserrat.variable} ${anton.variable} ${spaceGrotesk.variable} ${inter.variable} antialiased font-sans`}
       >
         {/* Conditionally render Google Analytics based on IP */}
         {!isDevIP ? (
@@ -113,7 +129,10 @@ export default async function RootLayout({
             }}
           />
         )}
-        {children}
+        <CartProvider>
+          {children}
+          <CartDrawer />
+        </CartProvider>
       </body>
     </html>
   );

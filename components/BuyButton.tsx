@@ -17,9 +17,13 @@ type Props = {
   children: React.ReactNode;
 };
 
-/** Primary green CTA style shared by the big buy buttons. */
+/** Primary buy button: the one red call to action used across the store. */
 export const BUY_BUTTON_CLASS =
-  "group relative w-full bg-[#2bd96b] hover:bg-[#22c55e] text-black border-2 border-black font-black uppercase tracking-wide rounded-full px-8 py-6 text-base shadow-[5px_5px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all";
+  "w-full h-14 rounded-full bg-brand hover:bg-brand-hover text-white text-[15px] font-semibold uppercase tracking-[0.16em] shadow-none transition-colors";
+
+/** Secondary action: outlined, for upsells next to a primary button. */
+export const SECONDARY_BUTTON_CLASS =
+  "h-11 rounded-full border border-ink bg-transparent px-6 text-[13px] font-semibold uppercase tracking-[0.12em] text-ink shadow-none hover:bg-ink hover:text-white transition-colors";
 
 /**
  * A buy button is a form that POSTs to /api/checkout, which redirects to
