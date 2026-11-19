@@ -1,16 +1,92 @@
 "use client";
 
 import { useState } from "react";
-import { PauseIcon, PlayIcon, Waveform } from "@/components/AudioPreviews";
+import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
 import { Section, SectionHeader, type Tone } from "@/components/Section";
 import { useMidiPlayer } from "@/components/useMidiPlayer";
-import { MIDI_KITS, MIDI_PARTS, MIDI_PATTERN_COUNT } from "@/lib/midi-kits";
+import { MIDI_KITS, MIDI_PARTS, MIDI_PATTERN_COUNT, type MidiPattern } from "@/lib/midi-kits";
 import { kitDisplayName } from "@/lib/products";
 
 /** Patterns shown per part before "Show all". */
 const VISIBLE = 12;
-/** Waveform height in px, shorter than the product-section previews. */
-const WAVE_HEIGHT = 18;
+/** Below this a bucket is drawn as a rest dot, not a hit. */
+const HIT_THRESHOLD = 0.08;
+/** One palette for every kit: ink at rest, brand red while playing. */
+const INK = "linear-gradient(to bottom, #4a4743, #141414)";
+const BRAND = "#b3261e";
+const BRAND_FILL = "linear-gradient(to bottom, #e0453b, #8f1c16)";
+
+/**
+ * A pattern drawn like a lane in a MIDI editor: hits as pills, faint bar
+ * lines from the BPM, and a playhead while it plays.
+ */
+function MidiLane({
+  pattern,
+  progress,
+  active,
+}: {
+  pattern: MidiPattern;
+  progress: number;
+  active: boolean;
+}) {
+  const barSeconds = (4 * 60) / pattern.bpm;
+  const bars = Math.floor(pattern.duration / barSeconds);
+  const played = progress * pattern.peaks.length;
+
+  return (
+    <div
+      aria-hidden
+      className="relative h-8 overflow-hidden rounded-lg border border-line/70 bg-gradient-to-b from-canvas to-white"
+      style={active ? { boxShadow: `inset 0 0 0 1px ${BRAND}33, 0 0 18px -6px ${BRAND}` } : undefined}
+    >
+      {/* bar lines */}
+      {Array.from({ length: bars }, (_, i) => (
+        <span
+          key={i}
+          className="absolute inset-y-1.5 w-px bg-ink/[0.07]"
+          style={{ left: `${(((i + 1) * barSeconds) / pattern.duration) * 100}%` }}
+        />
+      ))}
+      {/* centre line */}
+      <span className="absolute inset-x-2 top-1/2 h-px -translate-y-1/2 bg-ink/[0.06]" />
+
+      <div className="absolute inset-x-1.5 inset-y-1 flex items-center">
+        {pattern.peaks.map((peak, i) => {
+          const isHit = peak >= HIT_THRESHOLD;
+          const lit = !active || i < played;
+          return (
+            <span key={i} className="flex h-full flex-1 items-center justify-center">
+              {isHit ? (
+                <span
+                  className="block w-[3px] rounded-full transition-[opacity,box-shadow] duration-150 sm:w-1"
+                  style={{
+                    height: `${Math.max(28, peak * 100)}%`,
+                    background: active && lit ? BRAND_FILL : INK,
+                    opacity: lit ? 1 : 0.25,
+                    boxShadow: active && lit ? `0 0 8px ${BRAND}99` : undefined,
+                  }}
+                />
+              ) : (
+                <span className="block h-[3px] w-[3px] rounded-full bg-ink/10" />
+              )}
+            </span>
+          );
+        })}
+      </div>
+
+      {active && (
+        <span
+          className="absolute inset-y-0 w-0.5 rounded-full"
+          style={{
+            left: `${progress * 100}%`,
+            background: BRAND,
+            boxShadow: `0 0 10px 1px ${BRAND}`,
+          }}
+        />
+      )}
+    </div>
+  );
+}
 
 function Chip({
   selected,
@@ -159,8 +235,12 @@ export function MidiKits({ kitId: onlyKit, tone = "white" }: { kitId?: string; t
                   {!onlyKit && (
                     <p className="truncate text-xs text-muted">{kitDisplayName(pattern.kitId, pattern.kitName)}</p>
                   )}
-                  <div className="mt-1.5 flex">
-                    <Waveform peaks={pattern.peaks} progress={active ? progress : 0} height={WAVE_HEIGHT} fluid />
+                  <div className="mt-2">
+                    <MidiLane
+                      pattern={pattern}
+                      progress={active ? progress : 0}
+                      active={active}
+                    />
                   </div>
                 </div>
               </div>
