@@ -89,7 +89,7 @@ export default async function RootLayout({
   }
 
   // Prevent Google Analytics for excluded IPs (owner) or Localhost
-  const EXCLUDED_IPS = ["99.245.213.180"];
+  const EXCLUDED_IPS = ["99.246.255.197"];
   const isDevIP =
     process.env.NODE_ENV === "development" ||
     EXCLUDED_IPS.some((ip) => userIP.includes(ip));
