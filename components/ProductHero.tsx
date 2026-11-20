@@ -21,6 +21,7 @@ export function ProductHero({
   originalPrice,
   badge,
   backLink,
+  compact = false,
   children,
 }: {
   id?: string;
@@ -34,10 +35,15 @@ export function ProductHero({
   originalPrice?: number;
   badge?: string;
   backLink?: { href: string; label: string };
+  /** Less padding and a smaller cover, for when the hero sits mid-page. */
+  compact?: boolean;
   children?: ReactNode;
 }) {
   return (
-    <section id={id} className="bg-white px-5 pt-8 pb-20 md:pt-12 md:pb-28 scroll-mt-16">
+    <section
+      id={id}
+      className={`scroll-mt-16 bg-white px-5 ${compact ? "py-12 md:py-16" : "pt-8 pb-20 md:pt-12 md:pb-28"}`}
+    >
       <div className="mx-auto max-w-6xl">
         {backLink && (
           <Link href={backLink.href} className="mb-6 inline-block text-sm text-muted transition-colors hover:text-ink">
@@ -45,10 +51,14 @@ export function ProductHero({
           </Link>
         )}
 
-        <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-2 md:gap-14">
+        <div className={`grid grid-cols-1 items-start md:grid-cols-2 ${compact ? "gap-8 md:gap-12" : "gap-10 md:gap-14"}`}>
           <div className="md:sticky md:top-24">
-            <div className="rounded-3xl bg-canvas p-8 md:p-12">
-              <div className="mx-auto max-w-md drop-shadow-[0_24px_24px_rgba(0,0,0,0.28)]">{cover}</div>
+            <div className={`rounded-3xl bg-canvas ${compact ? "p-6 md:p-8" : "p-8 md:p-12"}`}>
+              <div
+                className={`mx-auto max-w-md ${compact ? "" : "drop-shadow-[0_24px_24px_rgba(0,0,0,0.28)]"}`}
+              >
+                {cover}
+              </div>
             </div>
           </div>
 
@@ -85,7 +95,7 @@ export function ProductHero({
               <Reassurance className="pt-1" />
             </div>
 
-            {children && <div className="mt-10 space-y-10">{children}</div>}
+            {children && <div className={compact ? "mt-8 space-y-8" : "mt-10 space-y-10"}>{children}</div>}
           </div>
         </div>
       </div>

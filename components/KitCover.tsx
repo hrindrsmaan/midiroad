@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 import { KIT_PRODUCTS, kitStats, type KitProduct } from "@/lib/products";
@@ -530,6 +531,31 @@ export function BundleCover() {
           <BundleFront />
         </Box>
       </div>
+    </div>
+  );
+}
+
+/**
+ * The bundle's poster for its product section: every kit's cover face-on,
+ * in a 3 × 2 grid, each linking to its kit page.
+ */
+export function BundleSpread() {
+  return (
+    <div className="grid grid-cols-3 gap-3 md:gap-4">
+      {KIT_PRODUCTS.map((kit) => (
+        <Link
+          key={kit.id}
+          href={`/kits/${kit.slug}`}
+          aria-label={`${kit.name}: ${kitStats(kit).patterns} MIDI patterns`}
+          className="group relative block aspect-[3/4] overflow-hidden rounded-md shadow-[0_10px_24px_-8px_rgba(0,0,0,0.45)] ring-1 ring-black/10 transition-transform duration-200 hover:-translate-y-1"
+        >
+          {kit.image ? (
+            <Image src={kit.image} alt="" fill sizes="200px" className="object-cover" />
+          ) : (
+            <Front kit={kit} id={`ks-${kit.id}`} />
+          )}
+        </Link>
+      ))}
     </div>
   );
 }
