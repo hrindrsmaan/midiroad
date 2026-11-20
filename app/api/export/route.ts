@@ -31,8 +31,15 @@ export async function POST(req: Request) {
   if (!user) return creditError(401);
 
   const pattern = generatePattern(kind, bpm, key, seed, hatBase, vibe);
+  // Muted parts are left out of the file; the credit covers the whole pattern.
+  const parts: unknown = body?.parts;
+  const kept = Array.isArray(parts)
+    ? { ...pattern, tracks: pattern.tracks.filter((t) => parts.includes(t.part)) }
+    : pattern;
+  if (!kept.tracks.length) return new Response("No parts to export", { status: 400 });
+
   const spent = await spendCredit(user.id, `gen:${pattern.id}`);
   if (!spent.ok) return creditError(402, spent.credits);
 
-  return midiResponse(patternToMidi(pattern), midiFileName(pattern, index), spent.credits, spent.charged);
+  return midiResponse(patternToMidi(kept), midiFileName(pattern, index), spent.credits, spent.charged);
 }

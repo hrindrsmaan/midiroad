@@ -1,0 +1,192 @@
+{
+ "hihat": [
+  {
+   "id": "heist",
+   "name": "Heist",
+   "src": "/previews/sounds/hihat/heist.mp3",
+   "tune": 0
+  },
+  {
+   "id": "europe",
+   "name": "Europe",
+   "src": "/previews/sounds/hihat/europe.mp3",
+   "tune": 0
+  },
+  {
+   "id": "travis",
+   "name": "Travis",
+   "src": "/previews/sounds/hihat/travis.mp3",
+   "tune": 0
+  },
+  {
+   "id": "over-it",
+   "name": "Over It",
+   "src": "/previews/sounds/hihat/over-it.mp3",
+   "tune": 0
+  },
+  {
+   "id": "life-is-good",
+   "name": "Life Is Good",
+   "src": "/previews/sounds/hihat/life-is-good.mp3",
+   "tune": 0
+  },
+  {
+   "id": "blood-bath",
+   "name": "Blood Bath",
+   "src": "/previews/sounds/hihat/blood-bath.mp3",
+   "tune": 0
+  }
+ ],
+ "snare": [
+  {
+   "id": "toronto",
+   "name": "Toronto",
+   "src": "/previews/sounds/snare/toronto.mp3",
+   "tune": 0
+  },
+  {
+   "id": "prada",
+   "name": "Prada",
+   "src": "/previews/sounds/snare/prada.mp3",
+   "tune": 0
+  },
+  {
+   "id": "wheezy",
+   "name": "Wheezy",
+   "src": "/previews/sounds/snare/wheezy.mp3",
+   "tune": 0
+  },
+  {
+   "id": "zay",
+   "name": "Zay",
+   "src": "/previews/sounds/snare/zay.mp3",
+   "tune": 0
+  },
+  {
+   "id": "glock",
+   "name": "Glock",
+   "src": "/previews/sounds/snare/glock.mp3",
+   "tune": 0
+  },
+  {
+   "id": "millions",
+   "name": "Millions",
+   "src": "/previews/sounds/snare/millions.mp3",
+   "tune": 0
+  }
+ ],
+ "clap": [
+  {
+   "id": "astroworld",
+   "name": "Astroworld",
+   "src": "/previews/sounds/clap/astroworld.mp3",
+   "tune": 0
+  },
+  {
+   "id": "versace",
+   "name": "Versace",
+   "src": "/previews/sounds/clap/versace.mp3",
+   "tune": 0
+  },
+  {
+   "id": "standard",
+   "name": "Standard",
+   "src": "/previews/sounds/clap/standard.mp3",
+   "tune": 0
+  },
+  {
+   "id": "tsunami",
+   "name": "Tsunami",
+   "src": "/previews/sounds/clap/tsunami.mp3",
+   "tune": 0
+  },
+  {
+   "id": "cardo",
+   "name": "Cardo",
+   "src": "/previews/sounds/clap/cardo.mp3",
+   "tune": 0
+  },
+  {
+   "id": "hyperpop",
+   "name": "Hyperpop",
+   "src": "/previews/sounds/clap/hyperpop.mp3",
+   "tune": 0
+  }
+ ],
+ "kick": [
+  {
+   "id": "vice-city",
+   "name": "Vice City",
+   "src": "/previews/sounds/kick/vice-city.mp3",
+   "tune": 0
+  },
+  {
+   "id": "goated",
+   "name": "Goated",
+   "src": "/previews/sounds/kick/goated.mp3",
+   "tune": 0
+  },
+  {
+   "id": "classic",
+   "name": "Classic",
+   "src": "/previews/sounds/kick/classic.mp3",
+   "tune": 0
+  },
+  {
+   "id": "views",
+   "name": "Views",
+   "src": "/previews/sounds/kick/views.mp3",
+   "tune": 0
+  },
+  {
+   "id": "popstar",
+   "name": "Popstar",
+   "src": "/previews/sounds/kick/popstar.mp3",
+   "tune": 0
+  },
+  {
+   "id": "melo",
+   "name": "Melo",
+   "src": "/previews/sounds/kick/melo.mp3",
+   "tune": 0
+  }
+ ],
+ "808": [
+  {
+   "id": "holy-grail",
+   "name": "Holy Grail",
+   "src": "/previews/sounds/808/holy-grail.mp3",
+   "tune": 0
+  },
+  {
+   "id": "pierre",
+   "name": "Pierre",
+   "src": "/previews/sounds/808/pierre.mp3",
+   "tune": 0
+  },
+  {
+   "id": "suge",
+   "name": "Suge",
+   "src": "/previews/sounds/808/suge.mp3",
+   "tune": -2
+  },
+  {
+   "id": "wheezy-wave",
+   "name": "Wheezy Wave",
+   "src": "/previews/sounds/808/wheezy-wave.mp3",
+   "tune": 0
+  },
+  {
+   "id": "trapsoul",
+   "name": "Trapsoul",
+   "src": "/previews/sounds/808/trapsoul.mp3",
+   "tune": 0
+  },
+  {
+   "id": "short-spinz",
+   "name": "Short Spinz",
+   "src": "/previews/sounds/808/short-spinz.mp3",
+   "tune": 0
+  }
+ ]
+}

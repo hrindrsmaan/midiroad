@@ -3,74 +3,111 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
 import { useMidiPlayer, type MidiLayer } from "@/components/useMidiPlayer";
+import { BEAT_SOUNDS, type BeatSound, type SoundGroup } from "@/lib/beat-sounds";
 import { event } from "@/lib/gtag";
 import { paidDownload, type PaidDownload } from "@/lib/paid-download";
 import { SIGNUP_CREDITS } from "@/lib/plans";
 import {
   KEY_NAMES,
-  VIBES,
-  VIBE_IDS,
-  generateBatch,
   generatePattern,
-  rerollPattern,
+  newPattern,
   retunePattern,
   type DrumPart,
   type GenNote,
   type GeneratedPattern,
-  type Vibe,
 } from "@/lib/midi-generator";
 
 const MIN_BPM = 60;
 const MAX_BPM = 180;
 const START_BPM = 140;
 const START_KEY = 5; // F minor
-/** The takes shown before anyone presses New beat; fixed so server and client agree. */
-const START_TAKES: [number, number][] = [
-  [11, 0.5],
-  [23, 0.25],
-  [37, 0.5],
-];
+/** How many beats the history keeps. */
+const HISTORY = 50;
 
 /** Mix levels, matching the kit previews. */
 const MIX: Record<DrumPart, number> = { kick: 1, snare: 0.8, hihat: 0.45, "open-hat": 0.4, "808": 0.85 };
 
-/* DAW palette: slate panels, an LCD green readout, green drum notes, red 808s. */
-const LCD = "#9ff06b";
-const NOTE = "#8fd46a";
-const RED = "#e5392f";
-const RED_FILL = "linear-gradient(to bottom, #ff6a5f, #c42a21)";
+const DRUM = "#e7e5e4";
+const BASS = "#e5392f";
+
+type LaneId = "hats" | "snare" | "kick" | "808";
+
+type Lane = {
+  id: LaneId;
+  label: string;
+  parts: DrumPart[];
+  height: string;
+  color: string;
+  /** Sounds to pick from; the first one is the default. */
+  sounds: SoundGroup[];
+};
 
 /** Channels top to bottom, high to low like a DAW. */
-const LANES: { label: string; parts: DrumPart[]; height: string; color: string }[] = [
-  { label: "Hats", parts: ["hihat", "open-hat"], height: "h-11 md:h-12", color: NOTE },
-  { label: "Snare", parts: ["snare"], height: "h-8 md:h-9", color: NOTE },
-  { label: "Kick", parts: ["kick"], height: "h-8 md:h-9", color: NOTE },
-  { label: "808", parts: ["808"], height: "h-20 md:h-24", color: RED },
+const LANES: Lane[] = [
+  {
+    id: "hats",
+    label: "Hats",
+    parts: ["hihat", "open-hat"],
+    height: "h-12",
+    color: DRUM,
+    sounds: [{ label: "Hi-hats", sounds: BEAT_SOUNDS.hihat }],
+  },
+  {
+    id: "snare",
+    label: "Snare",
+    parts: ["snare"],
+    height: "h-11",
+    color: DRUM,
+    sounds: [
+      { label: "Snares", sounds: BEAT_SOUNDS.snare },
+      { label: "Claps", sounds: BEAT_SOUNDS.clap },
+    ],
+  },
+  {
+    id: "kick",
+    label: "Kick",
+    parts: ["kick"],
+    height: "h-11",
+    color: DRUM,
+    sounds: [{ label: "Kicks", sounds: BEAT_SOUNDS.kick }],
+  },
+  { id: "808", label: "808", parts: ["808"], height: "h-24", color: BASS, sounds: [{ label: "808s", sounds: BEAT_SOUNDS["808"] }] },
 ];
+
+/** The sound picked for each lane. */
+type Kit = Record<LaneId, BeatSound>;
+
+const DEFAULT_KIT = Object.fromEntries(LANES.map((l) => [l.id, l.sounds[0].sounds[0]])) as Kit;
+
+/** What the player tracks a beat by: the pattern and the sounds it plays with. */
+const playKey = (p: GeneratedPattern, kit: Kit) => `${p.id}|${LANES.map((l) => kit[l.id].src).join("|")}`;
+
+const laneOf = (part: DrumPart) => LANES.find((l) => l.parts.includes(part))!;
+
+const mutedParts = (muted: Set<LaneId>) => LANES.filter((l) => muted.has(l.id)).flatMap((l) => l.parts);
 
 const spb = (p: GeneratedPattern) => 60 / p.bpm;
 const loopSeconds = (p: GeneratedPattern) => p.beats * spb(p);
 
-function toLayers(p: GeneratedPattern): MidiLayer[] {
-  return p.tracks.map((t) => ({
-    sample: t.part,
-    hits: t.notes.map((n) => {
-      const gain = (MIX[t.part] * n.vel) / 127;
-      return t.part === "808"
-        ? [n.beat * spb(p), n.pitch, gain, n.dur * spb(p)]
-        : [n.beat * spb(p), n.pitch, gain];
-    }),
-  }));
+function toLayers(p: GeneratedPattern, kit: Kit): MidiLayer[] {
+  return p.tracks.map((t) => {
+    // Open hats keep the kit's own open hat; every other part plays the lane's pick.
+    const sound = t.part === "open-hat" ? undefined : kit[laneOf(t.part).id];
+    const tune = sound?.tune ?? 0;
+    return {
+      sample: t.part,
+      src: sound?.src,
+      hits: t.notes.map((n) => {
+        const gain = (MIX[t.part] * n.vel) / 127;
+        const at = n.beat * spb(p);
+        return t.part === "808" ? [at, n.pitch + tune, gain, n.dur * spb(p)] : [at, n.pitch + tune, gain];
+      }),
+    };
+  });
 }
 
-const initialTakes = () =>
-  START_TAKES.map(([seed, base]) => generatePattern("beat", START_BPM, START_KEY, seed, base));
-
-/** Bar:beat:step of the loop, like a DAW's song position. */
-function position(progress: number) {
-  const step = Math.floor(progress * 64);
-  return `${Math.floor(step / 16) + 1}:${(Math.floor(step / 4) % 4) + 1}:${(step % 4) + 1}`;
-}
+/** The beat shown before anyone presses New beat; fixed so server and client agree. */
+const firstBeat = () => generatePattern("beat", START_BPM, START_KEY, 11, 0.5, "dark");
 
 /* ------------------------------------------------------------------ */
 /* Piano roll                                                          */
@@ -85,118 +122,164 @@ function laneNotes(p: GeneratedPattern, parts: DrumPart[]) {
   return notes.map((n, i) => ({ ...n, room: (notes[i + 1]?.beat ?? p.beats) - n.beat }));
 }
 
-function BeatRoll({ pattern, progress, playing }: { pattern: GeneratedPattern; progress: number; playing: boolean }) {
+function BeatRoll({
+  pattern,
+  progress,
+  playing,
+  muted,
+  onToggleMute,
+  kit,
+  onPickSound,
+}: {
+  pattern: GeneratedPattern;
+  progress: number;
+  playing: boolean;
+  muted: Set<LaneId>;
+  onToggleMute: (lane: LaneId) => void;
+  kit: Kit;
+  onPickSound: (lane: LaneId, sound: BeatSound) => void;
+}) {
   const pct = (beat: number) => (beat / pattern.beats) * 100;
   const now = progress * pattern.beats;
   // How long a note glows after it plays: about a 16th of the feel.
   const glow = pattern.beats / 64;
   const barBeats = pattern.beats / 4;
-  const sixteenths = 64;
   const currentBar = Math.min(3, Math.floor(progress * 4));
   const isHot = (n: GenNote) => playing && n.beat <= now && now - n.beat < glow;
 
-  const noteStyle = (n: GenNote, color: string, fill?: string): CSSProperties => {
-    const played = playing && n.beat <= now;
-    const hot = isHot(n);
+  const noteStyle = (n: GenNote, color: string, off: boolean): CSSProperties => {
+    const hot = isHot(n) && !off;
     return {
       left: `${pct(n.beat)}%`,
-      animationDelay: `${Math.round((n.beat / pattern.beats) * 420)}ms`,
-      background: fill ?? color,
-      opacity: !playing ? 0.95 : hot ? 1 : played ? 0.85 : 0.4,
-      boxShadow: hot
-        ? `0 0 12px 2px ${color}cc, inset 0 0 0 1px rgba(0,0,0,0.35)`
-        : "inset 0 0 0 1px rgba(0,0,0,0.35)",
-      transform: hot ? "scaleY(1.12)" : undefined,
+      animationDelay: `${Math.round((n.beat / pattern.beats) * 360)}ms`,
+      background: color,
+      opacity: off ? 0.12 : !playing ? 0.9 : hot ? 1 : n.beat <= now ? 0.8 : 0.45,
+      boxShadow: hot ? `0 0 10px ${color}aa` : undefined,
     };
   };
 
   const lanes = LANES.map((lane) => ({ ...lane, notes: laneNotes(pattern, lane.parts) }));
 
   return (
-    <div className="relative grid grid-cols-[4.5rem_1fr] md:grid-cols-[6rem_1fr]">
+    <div className="grid grid-cols-[6.75rem_1fr] md:grid-cols-[9.5rem_1fr]">
       {/* Bar ruler */}
-      <div className="h-7 border-b border-r border-black/40 bg-[#3a4046]" />
-      <div className="relative h-7 border-b border-black/40 bg-[#3a4046]">
+      <div className="h-7 border-b border-r border-white/[0.06]" />
+      <div className="relative h-7 border-b border-white/[0.06]">
         {[0, 1, 2, 3].map((bar) => (
           <span
             key={bar}
-            className={`absolute top-1/2 -translate-y-1/2 border-l border-white/20 pl-1.5 font-mono text-[11px] font-bold tabular-nums transition-colors ${
-              playing && bar === currentBar ? "text-[#ffb347]" : "text-white/55"
+            className={`absolute inset-y-0 flex items-center border-l border-white/10 pl-1.5 font-mono text-[11px] tabular-nums transition-colors ${
+              playing && bar === currentBar ? "text-white" : "text-white/35"
             }`}
             style={{ left: `${pct(bar * barBeats)}%` }}
           >
             {bar + 1}
           </span>
         ))}
-        {playing && (
-          <span
-            className="absolute top-0 h-0 w-0 -translate-x-1/2 border-x-[6px] border-t-[8px] border-x-transparent border-t-[#ffb347]"
-            style={{ left: `${progress * 100}%` }}
-          />
-        )}
       </div>
 
-      {/* Channel buttons, each with an LED that lights on its hits */}
-      <div className="flex flex-col gap-px border-r border-black/40 bg-[#2a2f34] p-1">
+      {/* Channel strips: name, sound picker, hit light, mute */}
+      <div className="flex flex-col border-r border-white/[0.06]">
         {lanes.map((lane) => {
-          const lit = lane.notes.some(isHot);
+          const off = muted.has(lane.id);
+          const lit = !off && lane.notes.some(isHot);
+          const all = lane.sounds.flatMap((g) => g.sounds);
           return (
             <div
-              key={lane.label}
-              className={`flex items-center gap-2 rounded-[3px] bg-gradient-to-b from-[#535b62] to-[#41484e] px-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_1px_0_rgba(0,0,0,0.4)] ${lane.height}`}
+              key={lane.id}
+              className={`flex items-center gap-2 border-b border-white/[0.06] px-2.5 md:px-3 last:border-b-0 ${lane.height}`}
             >
               <span
-                className="h-2 w-2 shrink-0 rounded-full transition-[background,box-shadow] duration-75"
-                style={{
-                  background: lit ? LCD : "#1f2a1a",
-                  boxShadow: lit ? `0 0 8px ${LCD}` : "inset 0 1px 1px rgba(0,0,0,0.6)",
-                }}
+                aria-hidden
+                className="hidden h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-75 md:block"
+                style={{ background: lit ? lane.color : "rgba(255,255,255,0.12)" }}
               />
-              <span className="truncate text-[11px] font-semibold text-[#e3e7ea] md:text-xs">{lane.label}</span>
+              <div className={`flex min-w-0 flex-1 flex-col gap-0.5 ${off ? "opacity-40" : ""}`}>
+                <span className="text-[9px] font-semibold uppercase leading-none tracking-[0.14em] text-white/40">
+                  {BEAT_SOUNDS.clap.includes(kit[lane.id]) ? "Clap" : lane.label}
+                </span>
+                <label className="group/pick relative flex min-w-0 items-center">
+                  <span className="sr-only">{lane.label} sound</span>
+                  <select
+                    value={kit[lane.id].src}
+                    onChange={(e) => onPickSound(lane.id, all.find((s) => s.src === e.target.value)!)}
+                    title={`Change ${lane.label.toLowerCase()} sound`}
+                    className="w-full min-w-0 cursor-pointer appearance-none truncate bg-transparent pr-3.5 text-xs font-medium leading-tight text-white/85 hover:text-white focus:outline-none focus-visible:underline"
+                  >
+                    {lane.sounds.map((group) => (
+                      <optgroup key={group.label} label={group.label} className="bg-[#131315]">
+                        {group.sounds.map((s) => (
+                          <option key={s.src} value={s.src} className="bg-[#131315]">
+                            {s.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="pointer-events-none absolute right-0 h-3 w-3 text-white/35 group-hover/pick:text-white/70"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    aria-hidden
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </label>
+              </div>
+              <button
+                type="button"
+                onClick={() => onToggleMute(lane.id)}
+                aria-pressed={off}
+                aria-label={`${off ? "Unmute" : "Mute"} ${lane.label}`}
+                title={off ? "Unmute" : "Mute"}
+                className={`grid h-5 w-5 shrink-0 cursor-pointer place-items-center rounded font-mono text-[10px] font-semibold transition-colors ${
+                  off ? "bg-[#e5392f] text-white" : "bg-white/[0.06] text-white/45 hover:bg-white/10 hover:text-white/80"
+                }`}
+              >
+                M
+              </button>
             </div>
           );
         })}
       </div>
 
       {/* Roll */}
-      <div className="relative overflow-hidden bg-[#2c3238]">
-        {/* Alternate bar shading, then the 16th, beat and bar grid */}
+      <div className="relative overflow-hidden">
         {[1, 3].map((bar) => (
           <span
             key={bar}
-            className="absolute inset-y-0 bg-black/[0.12]"
+            className="absolute inset-y-0 bg-white/[0.015]"
             style={{ left: `${pct(bar * barBeats)}%`, width: `${pct(barBeats)}%` }}
           />
         ))}
-        {Array.from({ length: sixteenths - 1 }, (_, i) => {
+        {Array.from({ length: 63 }, (_, i) => {
           const step = i + 1;
-          const strength = step % 16 === 0 ? "bg-black/60" : step % 4 === 0 ? "bg-black/35" : "bg-black/15";
-          return (
-            <span key={step} className={`absolute inset-y-0 w-px ${strength}`} style={{ left: `${(step / sixteenths) * 100}%` }} />
-          );
+          const strength = step % 16 === 0 ? "bg-white/[0.12]" : step % 4 === 0 ? "bg-white/[0.06]" : "bg-white/[0.025]";
+          return <span key={step} className={`absolute inset-y-0 w-px ${strength}`} style={{ left: `${(step / 64) * 100}%` }} />;
         })}
 
         {lanes.map((lane) => {
-          const is808 = lane.label === "808";
+          const off = muted.has(lane.id);
           const pitches = lane.notes.map((n) => n.pitch);
           const lo = Math.min(...pitches);
           const span = Math.max(1, Math.max(...pitches) - lo);
           return (
-            <div key={lane.label} className={`relative border-b border-black/30 last:border-b-0 ${lane.height}`}>
+            <div key={lane.id} className={`relative border-b border-white/[0.06] last:border-b-0 ${lane.height}`}>
               {lane.notes.map((n, i) => {
-                if (is808) {
-                  const name = KEY_NAMES[((n.pitch % 12) + 12) % 12];
+                if (lane.id === "808") {
                   return (
                     <span
                       key={i}
-                      className="animate-note-in absolute flex h-[20%] min-h-[9px] origin-left items-center overflow-hidden rounded-[2px] pl-1 font-mono text-[8px] font-bold leading-none text-black/60 transition-[opacity,box-shadow] duration-150 md:text-[9px]"
+                      className="animate-note-in absolute flex h-[18%] min-h-[9px] origin-left items-center overflow-hidden rounded-[2px] pl-1 font-mono text-[9px] font-semibold leading-none text-black/55 transition-opacity duration-150"
                       style={{
-                        ...noteStyle(n, RED, RED_FILL),
+                        ...noteStyle(n, lane.color, off),
                         width: `calc(${pct(n.dur)}% - 2px)`,
-                        top: `${8 + (1 - (n.pitch - lo) / span) * 62}%`,
+                        top: `${10 + (1 - (n.pitch - lo) / span) * 62}%`,
                       }}
                     >
-                      {pct(n.dur) > 2.5 ? name : ""}
+                      {pct(n.dur) > 2.5 ? KEY_NAMES[((n.pitch % 12) + 12) % 12] : ""}
                     </span>
                   );
                 }
@@ -205,13 +288,12 @@ function BeatRoll({ pattern, progress, playing }: { pattern: GeneratedPattern; p
                 return (
                   <span
                     key={i}
-                    className="animate-note-in absolute bottom-[14%] origin-bottom rounded-[2px] transition-[opacity,box-shadow] duration-150"
+                    className="animate-note-in absolute bottom-[16%] origin-bottom rounded-[1.5px] transition-opacity duration-150"
                     style={{
-                      ...noteStyle(n, lane.color, open ? "transparent" : undefined),
+                      ...noteStyle(n, lane.color, off),
+                      ...(open && { background: "transparent", outline: `1.5px solid ${lane.color}`, outlineOffset: "-1.5px" }),
                       width: `max(2px, calc(${pct(width)}% - 1px))`,
-                      height: `${lane.parts.includes("hihat") ? 22 + (n.vel / 127) * 56 : 72}%`,
-                      outline: open ? `1.5px solid ${lane.color}` : undefined,
-                      outlineOffset: "-1.5px",
+                      height: `${lane.id === "hats" ? 22 + (n.vel / 127) * 54 : 68}%`,
                     }}
                   />
                 );
@@ -220,10 +302,9 @@ function BeatRoll({ pattern, progress, playing }: { pattern: GeneratedPattern; p
           );
         })}
 
-        {/* Playhead */}
         {playing && (
           <span
-            className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-[#ffb347] shadow-[0_0_8px_#ffb347]"
+            className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-white/90"
             style={{ left: `${progress * 100}%` }}
           />
         )}
@@ -236,56 +317,33 @@ function BeatRoll({ pattern, progress, playing }: { pattern: GeneratedPattern; p
 /* Bits                                                                */
 /* ------------------------------------------------------------------ */
 
-function RerollIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M3 12a9 9 0 0 1 15.5-6.2L21 8" />
-      <path d="M21 3v5h-5" />
-      <path d="M21 12a9 9 0 0 1-15.5 6.2L3 16" />
-      <path d="M3 21v-5h5" />
-    </svg>
-  );
-}
+const icon = (path: ReactNode) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    {path}
+  </svg>
+);
+const ChevronLeft = () => icon(<path d="m15 6-6 6 6 6" />);
+const ChevronRight = () => icon(<path d="m9 6 6 6-6 6" />);
+const DownloadIcon = () => icon(<><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" /></>);
+const ShuffleIcon = () =>
+  icon(<><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></>);
 
-function DownloadIcon() {
+/** A small caption over a control, as on a hardware panel. */
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M12 3v12" />
-      <path d="m7 10 5 5 5-5" />
-      <path d="M5 21h14" />
-    </svg>
-  );
-}
-
-function SparkIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2zm6.5 11l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9.9-2.6z" />
-    </svg>
-  );
-}
-
-/** A dark LCD readout with a tiny caption, as on a DAW's toolbar. */
-function Lcd({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
-  return (
-    <div
-      className={`flex h-11 flex-col justify-center rounded-[4px] border border-black/60 bg-[#12181b] px-2.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.7)] ${className}`}
-    >
-      <span className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-[#9ff06b]/45">{label}</span>
-      <span className="font-mono text-lg font-bold leading-none tabular-nums" style={{ color: LCD, textShadow: `0 0 6px ${LCD}66` }}>
-        {children}
-      </span>
+    <div className="flex flex-col gap-1">
+      <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-white/40">{label}</span>
+      {children}
     </div>
   );
 }
 
-/** Raised slate button, as on a DAW toolbar. */
-const PANEL_BTN =
-  "cursor-pointer rounded-[4px] border border-black/50 bg-gradient-to-b from-[#58616a] to-[#434b52] text-[#e3e7ea] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-[filter] hover:brightness-110 active:brightness-95";
+const GHOST_BTN =
+  "grid cursor-pointer place-items-center text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent";
 
 function Kbd({ children }: { children: string }) {
   return (
-    <kbd className="rounded-[3px] border border-white/15 bg-black/30 px-1.5 py-0.5 font-mono text-[10px] text-white/55">
+    <kbd className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-px font-mono text-[10px] text-white/50">
       {children}
     </kbd>
   );
@@ -296,80 +354,115 @@ function Kbd({ children }: { children: string }) {
 /* ------------------------------------------------------------------ */
 
 /**
- * The home page's opening: a free trap beat maker styled like a DAW. Pick a
- * vibe, tempo and key, loop three takes, re-roll and download each as .mid.
+ * The home page's opening: a free trap beat maker. Each new beat comes in a
+ * random style; earlier ones stay in a history to step back through. Parts
+ * can be muted live, and muted parts are left out of the download.
  */
 export function MidiGenerator() {
-  const [vibe, setVibe] = useState<Vibe>("dark");
   const [bpm, setBpm] = useState(START_BPM);
+  /** What's in the tempo field while it's being typed; null shows `bpm`. */
+  const [bpmText, setBpmText] = useState<string | null>(null);
   const [key, setKey] = useState(START_KEY);
-  const [takes, setTakes] = useState<GeneratedPattern[]>(initialTakes);
-  const [selected, setSelected] = useState(0);
-  const { playingId, progress, toggle } = useMidiPlayer();
+  const [history, setHistory] = useState<GeneratedPattern[]>(() => [firstBeat()]);
+  const [index, setIndex] = useState(0);
+  const [muted, setMutedLanes] = useState<Set<LaneId>>(() => new Set());
+  const [kit, setKit] = useState<Kit>(DEFAULT_KIT);
+  const { playingId, progress, toggle, setMuted } = useMidiPlayer();
   const restartRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const sectionRef = useRef<HTMLElement>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [downloadState, setDownload] = useState<PaidDownload | "busy" | null>(null);
 
-  const current = takes[selected];
-  const playing = playingId === current.id;
-  const anyPlaying = takes.some((t) => t.id === playingId);
+  const current = history[index];
+  const playing = playingId === playKey(current, kit);
+  /** Whether a beat is sounding, or about to restart after a retune. */
+  const isLive = () => playingId !== null || restartRef.current !== undefined;
 
-  const play = (p: GeneratedPattern) => {
+  /** Starts `p` with kit `k` (or stops it, if that's what's playing). */
+  const play = (p: GeneratedPattern, k: Kit = kit) => {
     setHasPlayed(true);
-    void toggle({ id: p.id, duration: loopSeconds(p) }, toLayers(p), loopSeconds(p));
+    void toggle({ id: playKey(p, k), duration: loopSeconds(p) }, toLayers(p, k), loopSeconds(p));
   };
 
-  const createWith = (nextVibe: Vibe, nextBpm: number) => {
+  /** If a beat is playing, restarts it with `start` once quick changes settle. */
+  const restartIfLive = (start: () => void, delay: number) => {
+    const wasPlaying = isLive();
     clearTimeout(restartRef.current);
     restartRef.current = undefined;
-    const batch = generateBatch("beat", nextBpm, key, 3, nextVibe);
-    setTakes(batch);
-    setSelected(0);
-    play(batch[0]);
-    event({ action: "generate_midi", category: "midi_generator", label: `${nextVibe}-${nextBpm}` });
-  };
-
-  const create = () => createWith(vibe, bpm);
-
-  /** A new vibe brings its own tempo and a fresh batch, straight into playback. */
-  const chooseVibe = (v: Vibe) => {
-    setVibe(v);
-    setBpm(VIBES[v].bpm);
-    createWith(v, VIBES[v].bpm);
-  };
-
-  /** Switches take, keeping the beat going if one was playing. */
-  const selectTake = (i: number) => {
-    setSelected(i);
-    if (anyPlaying && takes[i].id !== playingId) play(takes[i]);
-  };
-
-  const reroll = () => {
-    const next = rerollPattern(current);
-    setTakes((ts) => ts.map((t, i) => (i === selected ? next : t)));
-    play(next);
-  };
-
-  /** Re-makes every take at the new tempo or key and, if one was playing, carries on. */
-  const retune = (nextBpm: number, nextKey: number) => {
-    // Still "playing" while a restart is queued but not yet started.
-    const wasPlaying = anyPlaying || restartRef.current !== undefined;
-    const next = takes.map((t) => retunePattern(t, nextBpm, nextKey));
-    setTakes(next);
-    clearTimeout(restartRef.current);
-    restartRef.current = undefined;
-    // Let quick clicks or typing settle before restarting the audio.
     if (wasPlaying) {
       restartRef.current = setTimeout(() => {
         restartRef.current = undefined;
-        play(next[selected]);
-      }, 180);
+        start();
+      }, delay);
     }
+    return wasPlaying;
+  };
+
+  /** Swaps a lane's sound: live if a beat is playing, otherwise a one-shot preview. */
+  const pickSound = (lane: LaneId, sound: BeatSound) => {
+    const next = { ...kit, [lane]: sound };
+    setKit(next);
+    if (!restartIfLive(() => play(current, next), 60)) {
+      try {
+        const audio = new Audio(sound.src);
+        audio.volume = 0.7;
+        void audio.play().catch(() => {});
+      } catch {}
+    }
+    event({ action: "pick_sound", category: "midi_generator", label: `${lane}-${sound.id}` });
+  };
+
+  /** Makes `p` current and, if something was playing or `start` is set, plays it. */
+  const show = (p: GeneratedPattern, start: boolean) => {
+    const live = isLive();
+    clearTimeout(restartRef.current);
+    restartRef.current = undefined;
+    setDownload(null);
+    if ((start || live) && playingId !== playKey(p, kit)) play(p);
+  };
+
+  const create = () => {
+    const next = newPattern("beat", bpm, key, current.vibe);
+    const kept = [...history.slice(0, index + 1), next].slice(-HISTORY);
+    setHistory(kept);
+    setIndex(kept.length - 1);
+    show(next, true);
+    event({ action: "generate_midi", category: "midi_generator", label: `${next.vibe}-${bpm}` });
+  };
+
+  const step = (by: number) => {
+    const i = index + by;
+    if (i < 0 || i >= history.length) return;
+    setIndex(i);
+    show(history[i], false);
+  };
+
+  /** Re-makes the history at the new tempo or key and, if a beat was playing, carries on. */
+  const retune = (nextBpm: number, nextKey: number) => {
+    const next = history.map((t) => retunePattern(t, nextBpm, nextKey));
+    setHistory(next);
+    // Let quick clicks or typing settle before restarting the audio.
+    restartIfLive(() => play(next[index]), 180);
+  };
+
+  /** While typing: keep the raw digits, and apply them as soon as they're a valid tempo. */
+  const typeBpm = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 3);
+    setBpmText(digits);
+    const n = Number(digits);
+    if (digits && n >= MIN_BPM && n <= MAX_BPM) changeBpm(n);
+  };
+
+  /** On Enter or leaving the field: settle on the typed tempo, kept in range. */
+  const commitBpm = () => {
+    if (bpmText) changeBpm(Number(bpmText));
+    setBpmText(null);
   };
 
   const changeBpm = (value: number) => {
+    setBpmText(null);
     const clamped = Math.max(MIN_BPM, Math.min(MAX_BPM, Math.round(value) || MIN_BPM));
+    if (clamped === bpm) return;
     setBpm(clamped);
     retune(clamped, key);
   };
@@ -379,27 +472,46 @@ export function MidiGenerator() {
     retune(bpm, value);
   };
 
+  const toggleMute = (lane: LaneId) => {
+    const next = new Set(muted);
+    if (!next.delete(lane)) next.add(lane);
+    // Keep at least one part sounding.
+    if (next.size === LANES.length) return;
+    setMutedLanes(next);
+    setMuted(mutedParts(next));
+  };
+
   /** Exports through the server, which charges 1 credit (re-downloads are free). */
   const download = async () => {
     if (downloadState === "busy") return;
     setDownload("busy");
     const { kind, bpm, key, seed, hatBase, vibe } = current;
+    const off = mutedParts(muted);
     const result = await paidDownload("/api/export", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ kind, bpm, key, seed, hatBase, vibe, index: selected }),
+      body: JSON.stringify({
+        kind,
+        bpm,
+        key,
+        seed,
+        hatBase,
+        vibe,
+        index,
+        parts: current.tracks.map((t) => t.part).filter((p) => !off.includes(p)),
+      }),
     });
     setDownload(result);
     if (result.ok) {
-      event({ action: "downloadStategenerated_midi", category: "midi_generator", label: `${current.vibe}-${current.bpm}` });
+      event({ action: "download_generated_midi", category: "midi_generator", label: `${current.vibe}-${current.bpm}` });
     }
   };
 
   // Keyboard shortcuts, while the beat maker is on screen. The handlers
   // change every render, so the listener reads them through a ref.
-  const keysRef = useRef({ play: () => play(current), create, reroll, selectTake });
+  const keysRef = useRef({ play: () => play(current), create, step });
   useEffect(() => {
-    keysRef.current = { play: () => play(current), create, reroll, selectTake };
+    keysRef.current = { play: () => play(current), create, step };
   });
   useEffect(() => {
     let visible = false;
@@ -416,8 +528,8 @@ export function MidiGenerator() {
         e.preventDefault();
         k.play();
       } else if (e.key === "n" || e.key === "N") k.create();
-      else if (e.key === "r" || e.key === "R") k.reroll();
-      else if (["1", "2", "3"].includes(e.key)) k.selectTake(Number(e.key) - 1);
+      else if (e.key === "ArrowLeft") k.step(-1);
+      else if (e.key === "ArrowRight") k.step(1);
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -431,205 +543,127 @@ export function MidiGenerator() {
       ref={sectionRef}
       id="generator"
       aria-labelledby="generator-heading"
-      className="relative scroll-mt-16 overflow-hidden bg-[#0c0b0b] px-4 pb-16 pt-14 text-white md:px-5 md:pb-24 md:pt-20"
+      className="scroll-mt-16 bg-[#0b0b0c] px-4 pb-16 pt-14 text-white md:px-5 md:pb-24 md:pt-20"
     >
-      {/* Backdrop: a red glow from above and a faint grid fading out */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% -10%, rgba(229,57,47,0.28), transparent 70%), radial-gradient(40% 40% at 85% 110%, rgba(229,57,47,0.10), transparent 70%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(70% 60% at 50% 0%, black, transparent)",
-          WebkitMaskImage: "radial-gradient(70% 60% at 50% 0%, black, transparent)",
-        }}
-      />
-
-      <div className="relative mx-auto max-w-5xl">
-        <div className="mb-10 text-center md:mb-12">
-          <p className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#e5392f] opacity-75" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#e5392f]" />
-            </span>
-            Free trap beat maker
-          </p>
-          <h2 id="generator-heading" className="text-4xl leading-[1.05] md:text-6xl">
-            Make a trap beat
-            <br />
-            <span className="bg-gradient-to-r from-[#ff6a5f] to-[#e5392f] bg-clip-text text-transparent">in one click</span>
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-8 md:mb-10">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#e5392f]">Free beat maker</p>
+          <h2 id="generator-heading" className="text-3xl leading-tight md:text-5xl">
+            Make a trap beat in one click
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/60">
-            Pick a vibe, hear it loop, re-roll what you don&apos;t like, and drag the MIDI straight into your DAW.
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-white/55">
+            Generate a beat, shape it with tempo, key and mutes, then drag the MIDI straight into your DAW.
           </p>
         </div>
 
-        {/* The DAW window */}
-        <div className="overflow-hidden rounded-lg border border-black bg-[#2f353a] shadow-[0_40px_120px_-30px_rgba(229,57,47,0.35),0_0_0_1px_rgba(255,255,255,0.06)]">
-          {/* Title bar: vibe and pattern pickers */}
-          <div className="flex flex-col gap-3 border-b border-black/50 bg-gradient-to-b from-[#454c53] to-[#3a4046] px-3 py-3 md:flex-row md:items-center md:justify-between md:px-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="mr-1 text-sm font-semibold text-[#e3e7ea]">Choose your vibe</span>
-              <div role="radiogroup" aria-label="Vibe" className="flex flex-wrap gap-1.5">
-                {VIBE_IDS.map((v) => {
-                  const active = v === vibe;
-                  return (
-                    <button
-                      key={v}
-                      type="button"
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => chooseVibe(v)}
-                      className={`h-8 cursor-pointer rounded-full px-3.5 text-sm font-medium transition-colors ${
-                        active
-                          ? "bg-[#e5392f]/20 text-[#ff7a70] shadow-[inset_0_0_0_1px_rgba(229,57,47,0.45)]"
-                          : "bg-black/25 text-[#e3e7ea]/85 hover:bg-black/40 hover:text-white"
-                      }`}
-                    >
-                      {VIBES[v].label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div role="tablist" aria-label="Takes" className="flex items-center gap-1">
-              <span className="mr-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">Pattern</span>
-              {takes.map((t, i) => {
-                const active = i === selected;
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    aria-label={`Take ${i + 1}`}
-                    onClick={() => selectTake(i)}
-                    className={`relative h-8 w-9 cursor-pointer rounded-[4px] border font-mono text-sm font-bold transition-colors ${
-                      active
-                        ? "border-black/60 bg-[#12181b] text-[#9ff06b] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"
-                        : "border-black/50 bg-gradient-to-b from-[#58616a] to-[#434b52] text-[#e3e7ea]/80 hover:brightness-110"
-                    }`}
-                  >
-                    {i + 1}
-                    {t.id === playingId && (
-                      <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-[#9ff06b] shadow-[0_0_5px_#9ff06b]" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Transport toolbar */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-black/50 bg-[#353b41] px-3 py-2.5 md:gap-3 md:px-4">
+        <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#131315] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)]">
+          {/* Toolbar */}
+          <div className="flex flex-wrap items-end gap-x-5 gap-y-4 border-b border-white/[0.06] px-4 py-4 md:px-5">
             <button
               type="button"
               onClick={() => play(current)}
-              aria-label={playing ? "Stop beat" : "Play beat"}
+              aria-label={playing ? "Stop" : "Play"}
               aria-pressed={playing}
-              className={`relative grid h-11 w-12 shrink-0 cursor-pointer place-items-center rounded-[4px] border border-black/60 transition-all [&_svg]:h-5 [&_svg]:w-5 ${
-                playing
-                  ? "bg-[#12181b] text-[#ffb347] shadow-[inset_0_2px_6px_rgba(0,0,0,0.7),0_0_14px_rgba(255,179,71,0.35)]"
-                  : "bg-gradient-to-b from-[#58616a] to-[#434b52] text-[#9ff06b] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] hover:brightness-110"
+              title="Play / stop (Space)"
+              className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-full transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
+                playing ? "bg-white/10 text-white hover:bg-white/15" : "bg-white text-black hover:bg-white/90"
               }`}
             >
-              {!hasPlayed && !playing && (
-                <span className="absolute -inset-1 animate-ping rounded-[6px] border-2 border-[#9ff06b]/60" aria-hidden />
-              )}
-              <span className="relative">{playing ? <PauseIcon /> : <PlayIcon />}</span>
+              {playing ? <PauseIcon /> : <span className="translate-x-px"><PlayIcon /></span>}
             </button>
 
-            {/* Tempo LCD with nudge buttons */}
-            <div className="flex items-center gap-1">
-              <Lcd label="Tempo" className="w-[5.5rem]">
-                <input
-                  type="number"
-                  min={MIN_BPM}
-                  max={MAX_BPM}
-                  value={bpm}
-                  onChange={(e) => changeBpm(Number(e.target.value))}
-                  aria-label="Tempo in BPM"
-                  className="w-full appearance-none bg-transparent font-mono text-lg font-bold tabular-nums [-moz-appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                  style={{ color: LCD }}
-                />
-              </Lcd>
-              <div className="flex flex-col gap-px">
-                <button
-                  type="button"
-                  onClick={() => changeBpm(bpm + 1)}
-                  aria-label="Faster"
-                  className={`${PANEL_BTN} grid h-[21px] w-6 place-items-center text-[10px] leading-none`}
-                >
-                  ▲
+            <Field label="Tempo">
+              <div className="flex h-9 items-center rounded-md border border-white/10">
+                <button type="button" onClick={() => changeBpm(bpm - 1)} aria-label="Slower" className={`${GHOST_BTN} h-full w-8 rounded-l-md`}>
+                  −
                 </button>
-                <button
-                  type="button"
-                  onClick={() => changeBpm(bpm - 1)}
-                  aria-label="Slower"
-                  className={`${PANEL_BTN} grid h-[21px] w-6 place-items-center text-[10px] leading-none`}
-                >
-                  ▼
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={3}
+                  value={bpmText ?? bpm}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => typeBpm(e.target.value)}
+                  onBlur={commitBpm}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") e.currentTarget.blur();
+                    else if (e.key === "Escape") {
+                      setBpmText(null);
+                      e.currentTarget.blur();
+                    } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+                      e.preventDefault();
+                      changeBpm(bpm + (e.key === "ArrowUp" ? 1 : -1) * (e.shiftKey ? 10 : 1));
+                    }
+                  }}
+                  aria-label={`Tempo in BPM, ${MIN_BPM} to ${MAX_BPM}`}
+                  className="w-10 appearance-none bg-transparent text-center font-mono text-sm tabular-nums [-moz-appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <button type="button" onClick={() => changeBpm(bpm + 1)} aria-label="Faster" className={`${GHOST_BTN} h-full w-8 rounded-r-md`}>
+                  +
                 </button>
               </div>
-            </div>
+            </Field>
 
-            <Lcd label="Bar:Beat:Step" className="hidden w-[7.5rem] sm:flex">
-              {playing ? position(progress) : "1:1:1"}
-            </Lcd>
+            <Field label="Key">
+              <label className="relative">
+                <span className="sr-only">Key</span>
+                <select
+                  value={key}
+                  onChange={(e) => changeKey(Number(e.target.value))}
+                  className="h-9 cursor-pointer appearance-none rounded-md border border-white/10 bg-transparent pl-3 pr-8 text-sm hover:border-white/20 focus:outline-none"
+                >
+                  {KEY_NAMES.map((name, i) => (
+                    <option key={name} value={i} className="bg-[#131315]">
+                      {name} minor
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  viewBox="0 0 24 24"
+                  className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/50"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </label>
+            </Field>
 
-            {/* Key */}
-            <label className="relative">
-              <span className="sr-only">Key</span>
-              <select
-                value={key}
-                onChange={(e) => changeKey(Number(e.target.value))}
-                className={`${PANEL_BTN} h-11 appearance-none pl-3 pr-8 text-sm font-semibold focus:outline-none`}
-              >
-                {KEY_NAMES.map((name, i) => (
-                  <option key={name} value={i} className="bg-[#2f353a]">
-                    {name} minor
-                  </option>
-                ))}
-              </select>
-              <svg
-                viewBox="0 0 24 24"
-                className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/60"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                aria-hidden
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </label>
-
-            <div className="flex w-full gap-2 sm:ml-auto sm:w-auto [&_svg]:h-4 [&_svg]:w-4">
-              <button
-                type="button"
-                onClick={reroll}
-                aria-label={`Re-roll take ${selected + 1}`}
-                title="Re-roll this take (R)"
-                className={`${PANEL_BTN} grid h-11 w-11 shrink-0 place-items-center`}
-              >
-                <RerollIcon />
-              </button>
+            <div className="grid w-full grid-cols-[auto_1fr_1fr] items-center gap-2 sm:ml-auto sm:flex sm:w-auto [&_svg]:h-4 [&_svg]:w-4">
+              <div className="flex h-10 items-center rounded-md border border-white/10">
+                <button
+                  type="button"
+                  onClick={() => step(-1)}
+                  disabled={index === 0}
+                  aria-label="Previous beat"
+                  title="Previous beat (←)"
+                  className={`${GHOST_BTN} h-full w-9 rounded-l-md`}
+                >
+                  <ChevronLeft />
+                </button>
+                <span className="hidden min-w-[2.75rem] whitespace-nowrap text-center sm:inline font-mono text-xs tabular-nums text-white/55" aria-live="polite">
+                  {index + 1} / {history.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => step(1)}
+                  disabled={index === history.length - 1}
+                  aria-label="Next beat"
+                  title="Next beat (→)"
+                  className={`${GHOST_BTN} h-full w-9 rounded-r-md`}
+                >
+                  <ChevronRight />
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={create}
-                title="New beats (N)"
-                className="flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[4px] border border-black/50 bg-gradient-to-b from-[#ef4237] to-[#b3261e] px-4 text-xs font-bold uppercase tracking-[0.12em] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_8px_24px_-8px_rgba(229,57,47,0.7)] transition-[filter] hover:brightness-110 active:brightness-95 sm:flex-none"
+                title="New beat (N)"
+                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#e5392f] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#d02f25] md:px-4 sm:flex-none"
               >
-                <SparkIcon />
+                <ShuffleIcon />
                 New beat
               </button>
               <button
@@ -637,49 +671,53 @@ export function MidiGenerator() {
                 onClick={download}
                 disabled={downloadState === "busy"}
                 title="Download MIDI (1 credit)"
-                className="flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[4px] border border-black/50 bg-gradient-to-b from-white to-[#dfe3e6] px-4 text-xs font-bold uppercase tracking-[0.12em] text-ink shadow-[inset_0_1px_0_white] transition-[filter] hover:brightness-105 active:brightness-95 sm:flex-none"
+                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border border-white/15 px-3 text-sm md:px-4 font-semibold text-white transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:flex-none"
               >
                 <DownloadIcon />
-                MIDI
+                {downloadState === "busy" ? "Preparing…" : "MIDI"}
               </button>
             </div>
           </div>
 
-          {/* Piano roll: click anywhere on it to play or stop */}
-          <div className="group/roll relative cursor-pointer" onClick={() => play(current)}>
+          {/* Piano roll: click the grid to play or stop */}
+          <div className="relative">
             <BeatRoll
               key={`${current.vibe}-${current.seed}-${current.hatBase}`}
               pattern={current}
               progress={playing ? progress : 0}
               playing={playing}
+              muted={muted}
+              onToggleMute={toggleMute}
+              kit={kit}
+              onPickSound={pickSound}
             />
-            {!playing && (
-              <div className="pointer-events-none absolute inset-0 grid place-items-center transition-colors group-hover/roll:bg-black/20">
-                <span
-                  className={`flex items-center gap-2 rounded-[4px] border border-black/60 bg-[#12181b]/95 px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] shadow-xl transition-opacity [&_svg]:h-3.5 [&_svg]:w-3.5 ${
-                    hasPlayed ? "opacity-0 group-hover/roll:opacity-100" : "opacity-100"
-                  }`}
-                  style={{ color: LCD }}
-                >
+            <button
+              type="button"
+              tabIndex={-1}
+              aria-hidden
+              onClick={() => play(current)}
+              className="absolute inset-y-0 left-[6.75rem] right-0 top-7 cursor-pointer md:left-[9.5rem]"
+            >
+              {!hasPlayed && (
+                <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black shadow-lg [&_svg]:h-3 [&_svg]:w-3">
                   <PlayIcon />
-                  {hasPlayed ? "Play" : "Hear this beat"}
+                  Play beat
                 </span>
-              </div>
-            )}
+              )}
+            </button>
           </div>
 
           {/* Status bar */}
-          <div className="flex items-center justify-between gap-3 border-t border-black/50 bg-[#262b30] px-3 py-1.5 font-mono text-[11px] text-white/50 md:px-4">
-            <span className="truncate">
-              {current.bpm} BPM · {current.tags.join(" · ")}
-            </span>
+          <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-2.5 text-xs text-white/45 md:px-5">
+            <span className="truncate">{[...current.tags, `${current.bpm} BPM`].join("  ·  ")}</span>
             <span className="hidden shrink-0 items-center gap-1.5 md:flex">
-              <Kbd>Space</Kbd> play <Kbd>N</Kbd> new <Kbd>R</Kbd> re-roll
+              <Kbd>Space</Kbd> play <Kbd>N</Kbd> new <Kbd>←</Kbd>
+              <Kbd>→</Kbd> history
             </span>
           </div>
         </div>
 
-        <div className="mt-6 text-center text-sm">
+        <div className="mt-5 text-sm">
           <DownloadNotice state={downloadState} />
         </div>
       </div>
@@ -687,15 +725,14 @@ export function MidiGenerator() {
   );
 }
 
-const NOTICE = "inline-block rounded-full border border-[#e5392f]/30 bg-[#e5392f]/10 px-4 py-2 text-white/80";
-const NOTICE_LINK = "font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white";
+const NOTICE_LINK = "font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white";
 
 /** Under the beat maker: what the last download did, or what each one costs. */
 function DownloadNotice({ state }: { state: PaidDownload | "busy" | null }) {
   if (state && state !== "busy" && !state.ok) {
     if (state.error === "sign_in") {
       return (
-        <p className={NOTICE}>
+        <p className="text-white/70">
           <span className="font-semibold text-white">Sign in to download.</span> New accounts get {SIGNUP_CREDITS} free
           credits.{" "}
           <a href="/login?next=/%23generator" className={NOTICE_LINK}>
@@ -706,7 +743,7 @@ function DownloadNotice({ state }: { state: PaidDownload | "busy" | null }) {
     }
     if (state.error === "no_credits") {
       return (
-        <p className={NOTICE}>
+        <p className="text-white/70">
           <span className="font-semibold text-white">You&apos;re out of credits.</span>{" "}
           <a href="/pricing" className={NOTICE_LINK}>
             Get a plan
@@ -715,24 +752,24 @@ function DownloadNotice({ state }: { state: PaidDownload | "busy" | null }) {
         </p>
       );
     }
-    return <p className={NOTICE}>{state.message}</p>;
+    return <p className="text-white/70">{state.message}</p>;
   }
   if (state && state !== "busy" && state.ok) {
     return (
-      <p className={NOTICE}>
+      <p className="text-white/70">
         <span className="font-semibold text-white">Saved {state.filename}.</span> Drag it into your DAW.{" "}
         {state.charged ? "1 credit used" : "Already yours, no credit used"} · {state.credits} left.
       </p>
     );
   }
   return (
-    <p className="text-white/50">
-      Each MIDI download uses 1 credit. Want patterns written by hand?{" "}
-      <a href="/library" className="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">
+    <p className="text-white/45">
+      Each download uses 1 credit, and muted parts are left out of the file. Want patterns written by hand?{" "}
+      <a href="/library" className={NOTICE_LINK}>
         Browse the library
       </a>{" "}
       or{" "}
-      <a href="#main-cta" className="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">
+      <a href="#main-cta" className={NOTICE_LINK}>
         get the bundle
       </a>
       .

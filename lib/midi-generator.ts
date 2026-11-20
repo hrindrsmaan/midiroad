@@ -527,18 +527,9 @@ const randomSeed = () => Math.floor(Math.random() * 2 ** 31);
 export const retunePattern = (p: GeneratedPattern, bpm: number, key: number) =>
   generatePattern(p.kind, bpm, key, p.seed, p.hatBase, p.vibe);
 
-/** A new pattern with the same part, tempo and key. */
-export const rerollPattern = (old: GeneratedPattern) => generatePattern(old.kind, old.bpm, old.key, randomSeed(), undefined, old.vibe);
-
-/** A fresh batch, with hats spread across 8th and 16th pulses so the three differ. */
-export function generateBatch(kind: GenKind, bpm: number, key: number, count = 3, vibe: Vibe = "dark"): GeneratedPattern[] {
-  // Spread hat pulses across the takes so they differ, within what the vibe allows.
-  const s = VIBES[vibe].sixteenths;
-  const bases =
-    s === 0 || s === 1
-      ? [0, 0, 0].map(() => (s === 1 ? 0.25 : 0.5))
-      : [0.5, 0.25, Math.random() < s ? 0.25 : 0.5].sort(() => Math.random() - 0.5);
-  return Array.from({ length: count }, (_, i) =>
-    generatePattern(kind, bpm, key, randomSeed(), bases[i % bases.length], vibe),
-  );
+/** A fresh pattern in a random vibe, never the same vibe twice in a row. */
+export function newPattern(kind: GenKind, bpm: number, key: number, previous?: Vibe): GeneratedPattern {
+  const vibes = VIBE_IDS.filter((v) => v !== previous);
+  const vibe = vibes[Math.floor(Math.random() * vibes.length)];
+  return generatePattern(kind, bpm, key, randomSeed(), undefined, vibe);
 }

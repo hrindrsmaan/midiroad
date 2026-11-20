@@ -11,7 +11,11 @@ import {
 } from "@/lib/midi-kits";
 
 /** One sample and the hits that play it. */
-export type MidiLayer = { sample: string; hits: MidiHit[] };
+/**
+ * One sample and the hits that play it. `sample` names the layer (and is
+ * what muting goes by); `src` overrides the kit sample it plays.
+ */
+export type MidiLayer = { sample: string; src?: string; hits: MidiHit[] };
 
 /** Anything playable: an id to track it by and its length in seconds. */
 type Playable = { id: string; duration: number };
@@ -19,7 +23,8 @@ type Playable = { id: string; duration: number };
 /** Fade applied when a hit is cut short or playback is stopped. */
 const FADE = 0.01;
 
-type Voice = { id: string; master: GainNode };
+/** A playing pattern: its master fader and one fader per sample, for muting. */
+type Voice = { id: string; master: GainNode; faders: Map<string, GainNode> };
 
 /**
  * Plays MIDI patterns in the browser with the bundle's own one-shots: a
@@ -36,6 +41,9 @@ export function useMidiPlayer() {
   // Bumped on every play/stop so a pattern that finishes loading late is dropped.
   const requestRef = useRef(0);
 
+  // Samples kept silent, applied to what's playing and to what plays next.
+  const mutedRef = useRef(new Set<string>());
+
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -45,15 +53,15 @@ export function useMidiPlayer() {
       return r.json();
     }));
 
-  const loadSample = (ctx: AudioContext, sample: string) => {
-    let buffer = samplesRef.current.get(sample);
+  const loadSample = (ctx: AudioContext, src: string) => {
+    let buffer = samplesRef.current.get(src);
     if (!buffer) {
-      buffer = fetch(midiSampleSrc(sample))
+      buffer = fetch(src)
         .then((r) => r.arrayBuffer())
         .then((data) => ctx.decodeAudioData(data));
       // Let a failed download be retried on the next play.
-      buffer.catch(() => samplesRef.current.delete(sample));
-      samplesRef.current.set(sample, buffer);
+      buffer.catch(() => samplesRef.current.delete(src));
+      samplesRef.current.set(src, buffer);
     }
     return buffer;
   };
@@ -102,11 +110,15 @@ export function useMidiPlayer() {
     if (ctx.state === "suspended") void ctx.resume();
     setPlayingId(pattern.id);
 
-    let voices: { hits: MidiHit[]; buffer: AudioBuffer }[];
+    let voices: { sample: string; hits: MidiHit[]; buffer: AudioBuffer }[];
     try {
       const resolved = layers ?? [(await loadNotes())[pattern.id]];
       voices = await Promise.all(
-        resolved.map(async (l) => ({ hits: l.hits, buffer: await loadSample(ctx, l.sample) })),
+        resolved.map(async (l) => ({
+          sample: l.sample,
+          hits: l.hits,
+          buffer: await loadSample(ctx, l.src ?? midiSampleSrc(l.sample)),
+        })),
       );
     } catch {
       notesRef.current = null;
@@ -118,6 +130,17 @@ export function useMidiPlayer() {
 
     const master = ctx.createGain();
     master.connect(ctx.destination);
+    const faders = new Map<string, GainNode>();
+    const fader = (sample: string) => {
+      let node = faders.get(sample);
+      if (!node) {
+        node = ctx.createGain();
+        node.gain.value = mutedRef.current.has(sample) ? 0 : 1;
+        node.connect(master);
+        faders.set(sample, node);
+      }
+      return node;
+    };
     const t0 = ctx.currentTime + 0.05;
     const end = t0 + pattern.duration;
     if (!loop) {
@@ -127,13 +150,13 @@ export function useMidiPlayer() {
     }
 
     const schedule = (offset: number) => {
-      for (const { hits, buffer } of voices) for (const [at, semitones, gain, cut] of hits) {
+      for (const { sample, hits, buffer } of voices) for (const [at, semitones, gain, cut] of hits) {
         const source = ctx.createBufferSource();
         source.buffer = buffer;
         source.playbackRate.value = 2 ** (semitones / 12);
         const amp = ctx.createGain();
         amp.gain.value = gain;
-        source.connect(amp).connect(master);
+        source.connect(amp).connect(fader(sample));
         const start = offset + at;
         source.start(start);
         if (cut !== undefined) {
@@ -150,7 +173,7 @@ export function useMidiPlayer() {
     schedule(t0);
     let cycles = 1;
 
-    const voice: Voice = { id: pattern.id, master };
+    const voice: Voice = { id: pattern.id, master, faders };
     voiceRef.current = voice;
     const tick = () => {
       if (voiceRef.current !== voice) return;
@@ -171,5 +194,16 @@ export function useMidiPlayer() {
     tick();
   };
 
-  return { playingId, progress, toggle };
+  /** Silences these samples, live on what's playing and on anything played next. */
+  const setMuted = (samples: Iterable<string>) => {
+    mutedRef.current = new Set(samples);
+    const voice = voiceRef.current;
+    const ctx = ctxRef.current;
+    if (!voice || !ctx) return;
+    for (const [sample, node] of voice.faders) {
+      node.gain.setTargetAtTime(mutedRef.current.has(sample) ? 0 : 1, ctx.currentTime, 0.008);
+    }
+  };
+
+  return { playingId, progress, toggle, setMuted };
 }
