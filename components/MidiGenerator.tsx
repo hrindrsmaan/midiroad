@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
 import { useMidiPlayer, type MidiLayer } from "@/components/useMidiPlayer";
 import { event } from "@/lib/gtag";
-import { downloadMidi, midiFileName } from "@/lib/midi-file";
+import { paidDownload, type PaidDownload } from "@/lib/paid-download";
+import { SIGNUP_CREDITS } from "@/lib/plans";
 import {
   KEY_NAMES,
   VIBES,
@@ -308,7 +309,7 @@ export function MidiGenerator() {
   const restartRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const sectionRef = useRef<HTMLElement>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
-  const [downloaded, setDownloaded] = useState<string | null>(null);
+  const [downloadState, setDownload] = useState<PaidDownload | "busy" | null>(null);
 
   const current = takes[selected];
   const playing = playingId === current.id;
@@ -378,10 +379,20 @@ export function MidiGenerator() {
     retune(bpm, value);
   };
 
-  const download = () => {
-    downloadMidi(current, selected);
-    setDownloaded(midiFileName(current, selected));
-    event({ action: "download_generated_midi", category: "midi_generator", label: `${current.vibe}-${current.bpm}` });
+  /** Exports through the server, which charges 1 credit (re-downloads are free). */
+  const download = async () => {
+    if (downloadState === "busy") return;
+    setDownload("busy");
+    const { kind, bpm, key, seed, hatBase, vibe } = current;
+    const result = await paidDownload("/api/export", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ kind, bpm, key, seed, hatBase, vibe, index: selected }),
+    });
+    setDownload(result);
+    if (result.ok) {
+      event({ action: "downloadStategenerated_midi", category: "midi_generator", label: `${current.vibe}-${current.bpm}` });
+    }
   };
 
   // Keyboard shortcuts, while the beat maker is on screen. The handlers
@@ -624,6 +635,8 @@ export function MidiGenerator() {
               <button
                 type="button"
                 onClick={download}
+                disabled={downloadState === "busy"}
+                title="Download MIDI (1 credit)"
                 className="flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[4px] border border-black/50 bg-gradient-to-b from-white to-[#dfe3e6] px-4 text-xs font-bold uppercase tracking-[0.12em] text-ink shadow-[inset_0_1px_0_white] transition-[filter] hover:brightness-105 active:brightness-95 sm:flex-none"
               >
                 <DownloadIcon />
@@ -667,31 +680,63 @@ export function MidiGenerator() {
         </div>
 
         <div className="mt-6 text-center text-sm">
-          {downloaded ? (
-            <p className="inline-block rounded-full border border-[#e5392f]/30 bg-[#e5392f]/10 px-4 py-2 text-white/80">
-              <span className="font-semibold text-white">Saved {downloaded}.</span> Drag it into your DAW. Want
-              hundreds more, written by hand?{" "}
-              <a
-                href="#main-cta"
-                className="font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white"
-              >
-                Get the bundle
-              </a>
-            </p>
-          ) : (
-            <p className="text-white/50">
-              Want patterns written by hand?{" "}
-              <a
-                href="#main-cta"
-                className="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white"
-              >
-                Get every MIDI kit in one bundle
-              </a>
-            </p>
-          )}
+          <DownloadNotice state={downloadState} />
         </div>
       </div>
     </section>
+  );
+}
+
+const NOTICE = "inline-block rounded-full border border-[#e5392f]/30 bg-[#e5392f]/10 px-4 py-2 text-white/80";
+const NOTICE_LINK = "font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white";
+
+/** Under the beat maker: what the last download did, or what each one costs. */
+function DownloadNotice({ state }: { state: PaidDownload | "busy" | null }) {
+  if (state && state !== "busy" && !state.ok) {
+    if (state.error === "sign_in") {
+      return (
+        <p className={NOTICE}>
+          <span className="font-semibold text-white">Sign in to download.</span> New accounts get {SIGNUP_CREDITS} free
+          credits.{" "}
+          <a href="/login?next=/%23generator" className={NOTICE_LINK}>
+            Sign in
+          </a>
+        </p>
+      );
+    }
+    if (state.error === "no_credits") {
+      return (
+        <p className={NOTICE}>
+          <span className="font-semibold text-white">You&apos;re out of credits.</span>{" "}
+          <a href="/pricing" className={NOTICE_LINK}>
+            Get a plan
+          </a>{" "}
+          for up to 1,200 MIDI files a month.
+        </p>
+      );
+    }
+    return <p className={NOTICE}>{state.message}</p>;
+  }
+  if (state && state !== "busy" && state.ok) {
+    return (
+      <p className={NOTICE}>
+        <span className="font-semibold text-white">Saved {state.filename}.</span> Drag it into your DAW.{" "}
+        {state.charged ? "1 credit used" : "Already yours, no credit used"} · {state.credits} left.
+      </p>
+    );
+  }
+  return (
+    <p className="text-white/50">
+      Each MIDI download uses 1 credit. Want patterns written by hand?{" "}
+      <a href="/library" className="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">
+        Browse the library
+      </a>{" "}
+      or{" "}
+      <a href="#main-cta" className="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">
+        get the bundle
+      </a>
+      .
+    </p>
   );
 }
 

@@ -71,3 +71,21 @@ export async function sendEmail(to: string, sessionId: string, items: EmailItem[
 
   return data;
 }
+
+/** Sign-in email for the magic link (passwordless login). */
+export async function sendMagicLinkEmail(to: string, url: string) {
+  const { error } = await resend.emails.send({
+    from: "MidiRoad <noreply@midiroad.com>",
+    to: [to],
+    subject: "Your MidiRoad sign-in link",
+    text: `Sign in to MidiRoad:\n\n${url}\n\nThis link expires in 5 minutes and works once. If you didn't ask for it, ignore this email.`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 20px; color: #141414;">
+        <h1 style="font-size: 22px; margin: 0 0 16px;">Sign in to MidiRoad</h1>
+        <p style="line-height: 1.6; margin: 0 0 24px; color: #333;">Click the button to sign in. The link expires in 5 minutes and works once.</p>
+        <a href="${url}" style="display: inline-block; background: #b3261e; color: #fff; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: bold;">Sign in</a>
+        <p style="font-size: 13px; color: #6b6864; margin: 28px 0 0;">If you didn't ask for this, you can ignore this email.</p>
+      </div>`,
+  });
+  if (error) throw error;
+}

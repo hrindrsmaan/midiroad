@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AccountLink } from "@/components/auth/AccountLink";
 import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
 import { Logo } from "@/components/Logo";
 import { formatUSD } from "@/lib/pricing";
@@ -7,6 +8,8 @@ const NAV_LINKS = [
   { href: "/#kits", label: "MIDI Packs" },
   { href: "/#midi-kits", label: "Listen" },
   { href: "/#generator", label: "Beat Maker" },
+  { href: "/library", label: "Library" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
 ];
 
@@ -28,6 +31,7 @@ export function SiteNav() {
               </li>
             ))}
           </ul>
+          <AccountLink />
           <CartButton />
         </div>
       </div>
