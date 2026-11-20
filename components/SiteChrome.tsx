@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AccountLink } from "@/components/auth/AccountLink";
 import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
 import { Logo } from "@/components/Logo";
+import { TrackedLink } from "@/components/TrackedLink";
 import { formatUSD } from "@/lib/pricing";
 
 const NAV_LINKS = [
@@ -26,9 +27,13 @@ export function SiteNav() {
           />
         </Link>
         <div className="flex items-center gap-3.5 whitespace-nowrap md:gap-7">
-          <Link href="/#generator" className="text-sm font-medium text-muted transition-colors hover:text-ink">
+          <TrackedLink
+            href="/#generator"
+            track={{ action: "click_beat_maker", category: "navigation", label: "header" }}
+            className="text-sm font-medium text-muted transition-colors hover:text-ink"
+          >
             Beat Maker
-          </Link>
+          </TrackedLink>
           <AccountLink />
           <CartButton />
         </div>

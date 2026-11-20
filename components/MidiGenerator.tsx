@@ -369,6 +369,7 @@ export function MidiGenerator() {
   const [kit, setKit] = useState<Kit>(DEFAULT_KIT);
   const { playingId, progress, toggle, setMuted } = useMidiPlayer();
   const restartRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const tempoTrackRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const sectionRef = useRef<HTMLElement>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [downloadState, setDownload] = useState<PaidDownload | "busy" | null>(null);
@@ -382,6 +383,15 @@ export function MidiGenerator() {
   const play = (p: GeneratedPattern, k: Kit = kit) => {
     setHasPlayed(true);
     void toggle({ id: playKey(p, k), duration: loopSeconds(p) }, toLayers(p, k), loopSeconds(p));
+  };
+
+  /** Sends a beat maker event to Google Analytics. */
+  const track = (action: string, label: string) => event({ action, category: "midi_generator", label });
+
+  /** Play / stop from the user (button, grid or Space); only starts are tracked. */
+  const togglePlay = () => {
+    if (!playing) track("play_beat", `${current.vibe}-${current.bpm}`);
+    play(current);
   };
 
   /** If a beat is playing, restarts it with `start` once quick changes settle. */
@@ -409,7 +419,7 @@ export function MidiGenerator() {
         void audio.play().catch(() => {});
       } catch {}
     }
-    event({ action: "pick_sound", category: "midi_generator", label: `${lane}-${sound.id}` });
+    track("pick_sound", `${lane}-${sound.id}`);
   };
 
   /** Makes `p` current and, if something was playing or `start` is set, plays it. */
@@ -427,7 +437,7 @@ export function MidiGenerator() {
     setHistory(kept);
     setIndex(kept.length - 1);
     show(next, true);
-    event({ action: "generate_midi", category: "midi_generator", label: `${next.vibe}-${bpm}` });
+    track("generate_midi", `${next.vibe}-${bpm}`);
   };
 
   const step = (by: number) => {
@@ -435,6 +445,7 @@ export function MidiGenerator() {
     if (i < 0 || i >= history.length) return;
     setIndex(i);
     show(history[i], false);
+    track("history_step", by < 0 ? "previous" : "next");
   };
 
   /** Re-makes the history at the new tempo or key and, if a beat was playing, carries on. */
@@ -465,11 +476,15 @@ export function MidiGenerator() {
     if (clamped === bpm) return;
     setBpm(clamped);
     retune(clamped, key);
+    // One event per settled tempo, not one per click or keystroke.
+    clearTimeout(tempoTrackRef.current);
+    tempoTrackRef.current = setTimeout(() => track("change_tempo", String(clamped)), 1500);
   };
 
   const changeKey = (value: number) => {
     setKey(value);
     retune(bpm, value);
+    track("change_key", `${KEY_NAMES[value]} minor`);
   };
 
   const toggleMute = (lane: LaneId) => {
@@ -479,12 +494,14 @@ export function MidiGenerator() {
     if (next.size === LANES.length) return;
     setMutedLanes(next);
     setMuted(mutedParts(next));
+    track(next.has(lane) ? "mute_lane" : "unmute_lane", lane);
   };
 
   /** Exports through the server, which charges 1 credit (re-downloads are free). */
   const download = async () => {
     if (downloadState === "busy") return;
     setDownload("busy");
+    track("click_download_midi", `${current.vibe}-${current.bpm}`);
     const { kind, bpm, key, seed, hatBase, vibe } = current;
     const off = mutedParts(muted);
     const result = await paidDownload("/api/export", {
@@ -502,16 +519,16 @@ export function MidiGenerator() {
       }),
     });
     setDownload(result);
-    if (result.ok) {
-      event({ action: "download_generated_midi", category: "midi_generator", label: `${current.vibe}-${current.bpm}` });
-    }
+    if (result.ok) track("download_generated_midi", `${current.vibe}-${current.bpm}`);
+    // Why it didn't download: "sign_in", "no_credits" or "failed".
+    else track("download_blocked", result.error);
   };
 
   // Keyboard shortcuts, while the beat maker is on screen. The handlers
   // change every render, so the listener reads them through a ref.
-  const keysRef = useRef({ play: () => play(current), create, step });
+  const keysRef = useRef({ play: togglePlay, create, step });
   useEffect(() => {
-    keysRef.current = { play: () => play(current), create, step };
+    keysRef.current = { play: togglePlay, create, step };
   });
   useEffect(() => {
     let visible = false;
@@ -561,7 +578,7 @@ export function MidiGenerator() {
           <div className="flex flex-wrap items-end gap-x-5 gap-y-4 border-b border-white/[0.06] px-4 py-4 md:px-5">
             <button
               type="button"
-              onClick={() => play(current)}
+              onClick={togglePlay}
               aria-label={playing ? "Stop" : "Play"}
               aria-pressed={playing}
               title="Play / stop (Space)"
@@ -695,7 +712,7 @@ export function MidiGenerator() {
               type="button"
               tabIndex={-1}
               aria-hidden
-              onClick={() => play(current)}
+              onClick={togglePlay}
               className="absolute inset-y-0 left-[6.75rem] right-0 top-7 cursor-pointer md:left-[9.5rem]"
             >
               {!hasPlayed && (
