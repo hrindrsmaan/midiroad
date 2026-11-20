@@ -13,24 +13,22 @@ const NAV_LINKS = [
   { href: "/#faq", label: "FAQ" },
 ];
 
-/** Sticky top bar: logo, section links and the cart. */
+/** Sticky top bar, kept to the essentials: logo, beat maker, account and cart. Every other page is linked from the footer. */
 export function SiteNav() {
   return (
     <nav className="sticky top-0 z-50 border-b border-line bg-white/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5">
-        <Link href="/" className="flex items-center" aria-label="MidiRoad home">
-          <Logo />
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 md:px-5">
+        <Link href="/" className="flex shrink-0 items-center" aria-label="MidiRoad home">
+          {/* A notch smaller on phones, so the links and cart fit beside it. */}
+          <Logo
+            markClassName="h-8 w-8 md:h-9 md:w-9"
+            className="gap-2 md:gap-2.5 [&>span:last-child]:text-lg md:[&>span:last-child]:text-[21px]"
+          />
         </Link>
-        <div className="flex items-center gap-5 md:gap-7">
-          <ul className="hidden items-center gap-7 md:flex">
-            {NAV_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="text-sm font-medium text-muted transition-colors hover:text-ink">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div className="flex items-center gap-3.5 whitespace-nowrap md:gap-7">
+          <Link href="/#generator" className="text-sm font-medium text-muted transition-colors hover:text-ink">
+            Beat Maker
+          </Link>
           <AccountLink />
           <CartButton />
         </div>
