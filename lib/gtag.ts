@@ -38,3 +38,27 @@ export const event = ({ action, category, label, value }: {
     });
   }
 };
+
+export type PurchaseItem = { item_id: string; item_name: string; price: number; quantity: number };
+
+/**
+ * GA4 ecommerce purchase, so revenue shows in reports. gtag.js loads after the
+ * page is interactive, so this waits briefly for it; GA dedupes on transaction_id.
+ */
+export const purchase = (data: {
+  transaction_id: string;
+  value: number;
+  currency: string;
+  items: PurchaseItem[];
+}) => {
+  if (typeof window === "undefined" || process.env.NODE_ENV !== "production") return;
+  let tries = 0;
+  const send = () => {
+    if (window.gtag) {
+      window.gtag("event", "purchase", data);
+    } else if (++tries < 25) {
+      setTimeout(send, 200);
+    }
+  };
+  send();
+};

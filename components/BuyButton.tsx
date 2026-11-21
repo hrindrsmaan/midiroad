@@ -48,7 +48,7 @@ export function BuyButton({ product, label, className, size = "lg", fields, chil
       action="/api/checkout"
       method="POST"
       onSubmit={() => {
-        gtag.event({ action: "click_download", category: "engagement", label: `${product} · ${label}` });
+        gtag.event({ action: "begin_checkout", category: "engagement", label: `${product} · ${label}` });
         setLoading(true);
       }}
     >
