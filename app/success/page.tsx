@@ -6,6 +6,7 @@ import { BundleCover, KitCover } from "@/components/KitCover";
 import { Logo } from "@/components/Logo";
 import { SiteFooter } from "@/components/SiteChrome";
 import { ClearCartOnMount } from "@/components/cart/CartButtons";
+import { TrackPurchase } from "@/components/TrackPurchase";
 import { orderProductIds } from "@/lib/cart";
 import { stripe } from "@/lib/stripe";
 import { ONE_SHOT_COUNT } from "@/lib/bundle";
@@ -34,6 +35,10 @@ type Order = {
   productIds: string[];
   email?: string;
   free: boolean;
+  /** What was actually charged (after any discount), in major units. */
+  amount: number;
+  currency: string;
+  paid: boolean;
 };
 
 /** The order behind a session. Old Payment Link orders carry no product: the bundle. */
@@ -45,6 +50,9 @@ async function loadOrder(sessionId?: string): Promise<Order | null> {
       productIds: orderProductIds(session.metadata),
       email: session.customer_details?.email ?? session.customer_email ?? undefined,
       free: (session.amount_total ?? 0) === 0,
+      amount: (session.amount_total ?? 0) / 100,
+      currency: (session.currency ?? "usd").toUpperCase(),
+      paid: session.payment_status === "paid",
     };
   } catch {
     return null;
@@ -83,6 +91,14 @@ export default async function Success({
   return (
     <main className="min-h-screen bg-canvas">
       {order && <ClearCartOnMount />}
+      {order && sessionId && order.paid && !order.free && (
+        <TrackPurchase
+          transactionId={sessionId}
+          value={order.amount}
+          currency={order.currency}
+          items={products.map((p) => ({ item_id: p.id, item_name: p.name, price: p.price, quantity: 1 }))}
+        />
+      )}
       <nav className="border-b border-line bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center px-5">
           <Link href="/" aria-label="MidiRoad home">
