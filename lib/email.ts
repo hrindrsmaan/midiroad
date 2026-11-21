@@ -22,6 +22,7 @@ export async function sendEmail(to: string, sessionId: string, items: EmailItem[
 
   const { data, error } = await resend.emails.send({
     from: "MidiRoad <noreply@midiroad.com>",
+    replyTo: "MidiRoad Support <support@inbox.midiroad.com>",
     to: [to],
     subject: `Your download is ready: ${productName} 🎵`,
     html: `
@@ -55,7 +56,7 @@ export async function sendEmail(to: string, sessionId: string, items: EmailItem[
               <p style="font-size: 14px; color: #666;">Keep this email — you can re-download from this link anytime.</p>
             </div>
             <div class="footer">
-              <p>Need help? Reply to this email or contact support@midiroad.com</p>
+              <p>Need help? Reply to this email or contact support@inbox.midiroad.com</p>
               <p>© ${new Date().getFullYear()} MidiRoad</p>
             </div>
           </div>
@@ -76,6 +77,7 @@ export async function sendEmail(to: string, sessionId: string, items: EmailItem[
 export async function sendMagicLinkEmail(to: string, url: string) {
   const { error } = await resend.emails.send({
     from: "MidiRoad <noreply@midiroad.com>",
+    replyTo: "MidiRoad Support <support@inbox.midiroad.com>",
     to: [to],
     subject: "Your MidiRoad sign-in link",
     text: `Sign in to MidiRoad:\n\n${url}\n\nThis link expires in 5 minutes and works once. If you didn't ask for it, ignore this email.`,

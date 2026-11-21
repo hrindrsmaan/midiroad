@@ -169,7 +169,7 @@ export default async function Success({
                     </a>
                   ) : (
                     <p className="max-w-[14rem] text-sm text-muted">
-                      Check your email for the download link, or contact support@midiroad.com.
+                      Check your email for the download link, or contact support@inbox.midiroad.com.
                     </p>
                   )}
                 </article>
@@ -226,8 +226,8 @@ export default async function Success({
 
           <p className="text-sm text-muted">
             Need help? Email{" "}
-            <a href="mailto:support@midiroad.com" className="text-ink underline underline-offset-4">
-              support@midiroad.com
+            <a href="mailto:support@inbox.midiroad.com" className="text-ink underline underline-offset-4">
+              support@inbox.midiroad.com
             </a>{" "}
             and we&apos;ll sort it out.{" "}
             <Link href="/" className="text-ink underline underline-offset-4">

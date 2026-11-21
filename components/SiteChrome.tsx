@@ -93,8 +93,8 @@ export function SiteFooter() {
           <ul className="space-y-3">
             <li className="text-white/40">Support</li>
             <li>
-              <a href="mailto:support@midiroad.com" className="text-white/60 transition-colors hover:text-white">
-                support@midiroad.com
+              <a href="mailto:support@inbox.midiroad.com" className="text-white/60 transition-colors hover:text-white">
+                support@inbox.midiroad.com
               </a>
             </li>
           </ul>

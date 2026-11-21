@@ -17,8 +17,8 @@ export function FAQSection({ tone = "white" }: { tone?: Tone }) {
           intro={
             <>
               Anything else? Email{" "}
-              <a href="mailto:support@midiroad.com" className="text-ink underline underline-offset-4 hover:text-brand">
-                support@midiroad.com
+              <a href="mailto:support@inbox.midiroad.com" className="text-ink underline underline-offset-4 hover:text-brand">
+                support@inbox.midiroad.com
               </a>
               .
             </>
