@@ -86,7 +86,7 @@ export async function POST(req: Request) {
       "Failed to create checkout session",
     );
     return new Response(
-      "Checkout is temporarily unavailable. Please email support@midiroad.com.",
+      "Checkout is temporarily unavailable. Please email support@inbox.midiroad.com.",
       { status: 500 },
     );
   }

@@ -28,6 +28,6 @@ export const FAQS: FaqItem[] = [
   },
   {
     q: "What if it's not for me?",
-    a: "Email support@midiroad.com within 30 days of purchase for a full refund.",
+    a: "Email support@inbox.midiroad.com within 30 days of purchase for a full refund.",
   },
 ];
