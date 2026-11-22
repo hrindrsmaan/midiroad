@@ -10,8 +10,9 @@ import { activeSubscription } from "@/lib/subscription";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pricing | MidiRoad",
-  description: "Monthly MIDI credits: download any MIDI file from the library or the beat maker.",
+  title: "Pricing: Monthly MIDI Credits",
+  description: "Monthly MIDI credits: download any MIDI drum pattern from the library or any beat from the free trap beat maker.",
+  alternates: { canonical: "/pricing" },
 };
 
 export default async function PricingPage() {
