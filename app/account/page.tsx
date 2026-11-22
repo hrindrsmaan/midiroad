@@ -38,7 +38,7 @@ export default async function AccountPage({
     <main className="min-h-screen bg-canvas">
       <SiteNav />
       <section className="px-5 py-16 md:py-24">
-        <div className="mx-auto max-w-xl space-y-6 rounded-2xl border border-line bg-white p-6 sm:p-8">
+        <div className="mx-auto max-w-xl space-y-6 rounded-md border border-line bg-white p-6 sm:p-8">
           <div>
             <Eyebrow className="mb-3">Account</Eyebrow>
             <h1 className="text-2xl leading-tight md:text-3xl">
@@ -48,24 +48,24 @@ export default async function AccountPage({
           </div>
 
           {subscribed && (
-            <p className="rounded-xl border border-brand/30 bg-brand/5 p-4 text-sm">
+            <p className="rounded-md border border-brand/30 bg-brand/5 p-4 text-sm">
               <strong>You&apos;re subscribed.</strong> Credits land as soon as Stripe confirms the payment, usually
               within seconds. Refresh if they aren&apos;t here yet.
             </p>
           )}
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-line bg-canvas p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Credits</p>
-              <p className="mt-1 text-3xl font-bold">{credits}</p>
+            <div className="rounded-md border border-line bg-canvas p-5">
+              <p className="text-sm font-semibold text-muted">Credits</p>
+              <p className="mt-1 font-wide text-3xl">{credits}</p>
             </div>
-            <div className="rounded-xl border border-line bg-canvas p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Files unlocked</p>
-              <p className="mt-1 text-3xl font-bold">{unlocks.size}</p>
+            <div className="rounded-md border border-line bg-canvas p-5">
+              <p className="text-sm font-semibold text-muted">Files unlocked</p>
+              <p className="mt-1 font-wide text-3xl">{unlocks.size}</p>
             </div>
           </div>
 
-          <div className="rounded-xl border border-line p-5 text-sm">
+          <div className="rounded-md border border-line p-5 text-sm">
             {sub ? (
               <div className="space-y-3">
                 <p>
@@ -80,7 +80,7 @@ export default async function AccountPage({
                   <ManageBillingButton />
                   <Link
                     href="/pricing"
-                    className="flex h-11 items-center rounded-full px-4 text-sm font-semibold text-muted hover:text-ink"
+                    className="flex h-11 items-center rounded-key px-4 text-sm font-semibold text-muted hover:text-ink"
                   >
                     Change plan
                   </Link>
@@ -93,7 +93,7 @@ export default async function AccountPage({
                 </p>
                 <Link
                   href="/pricing"
-                  className="inline-flex h-11 items-center rounded-full bg-brand px-6 text-sm font-semibold text-white hover:bg-brand-hover"
+                  className="inline-flex h-11 items-center rounded-key bg-brand px-6 text-sm font-semibold text-white hover:bg-brand-hover"
                 >
                   See plans
                 </Link>

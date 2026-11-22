@@ -63,7 +63,7 @@ export function StickyBuyBar({
         </p>
         <AddToCartButton
           product={product}
-          className="h-12 flex-1 rounded-full bg-brand text-sm font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-hover"
+          className="h-12 flex-1 rounded-key bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
         />
       </div>
     </div>

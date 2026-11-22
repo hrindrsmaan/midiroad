@@ -139,7 +139,7 @@ export default async function Success({
               return (
                 <article
                   key={p.id}
-                  className="flex flex-col gap-5 rounded-2xl border border-line bg-white p-5 sm:flex-row sm:items-center sm:p-6"
+                  className="flex flex-col gap-5 rounded-md border border-line bg-white p-5 sm:flex-row sm:items-center sm:p-6"
                 >
                   <div className="w-28 shrink-0">
                     {kit ? (
@@ -147,7 +147,7 @@ export default async function Success({
                     ) : isBundleId(p.id) ? (
                       <BundleCover />
                     ) : (
-                      <div className="grid aspect-square w-full place-items-center rounded-xl bg-canvas text-xs text-muted">
+                      <div className="grid aspect-square w-full place-items-center rounded-md bg-canvas text-xs text-muted">
                         Test
                       </div>
                     )}
@@ -160,7 +160,7 @@ export default async function Success({
                     <a
                       href={href}
                       download
-                      className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-brand px-7 text-sm font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-hover"
+                      className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-key bg-brand px-7 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
                     >
                       <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
                         <path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 16.4 7.3 11.7l1.4-1.4 3.3 3.3V3h2Zm-8 14h16v2H4v-2Z" />
@@ -179,7 +179,7 @@ export default async function Success({
 
           {/* Bundle upgrade at the difference */}
           {upgradeFrom && sessionId && (
-            <article className="rounded-2xl border border-brand/30 bg-white p-5 sm:p-6">
+            <article className="rounded-md border border-brand/30 bg-white p-5 sm:p-6">
               <Eyebrow>Only on this page</Eyebrow>
               <h2 className="mt-2 text-xl md:text-2xl leading-tight">
                 Get everything else for {formatUSD(upgradePrice(upgradeFrom))}
@@ -194,7 +194,7 @@ export default async function Success({
                 {KIT_PRODUCTS.filter((k) => k.id !== product.id).map((k) => (
                   <li
                     key={k.id}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs"
+                    className="inline-flex items-center gap-1.5 rounded-key border border-line px-2.5 py-1 text-xs"
                   >
                     <span aria-hidden className="h-1.5 w-1.5 rounded-full" style={{ background: k.accent }} />
                     {k.name}
@@ -215,7 +215,7 @@ export default async function Success({
           )}
 
           {/* Quick start */}
-          <article className="rounded-2xl border border-line bg-white p-5 sm:p-6">
+          <article className="rounded-md border border-line bg-white p-5 sm:p-6">
             <h2 className="text-lg">Start in 30 seconds</h2>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
               {QUICK_START.map((step) => (

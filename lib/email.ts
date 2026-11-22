@@ -37,9 +37,9 @@ export async function sendEmail(to: string, sessionId: string, items: EmailItem[
             .content { padding: 40px 30px; }
             h1 { color: #000; font-size: 28px; margin: 0 0 20px 0; }
             p { color: #333; line-height: 1.6; margin: 0 0 20px 0; }
-            .button { display: inline-block; background: #b3261e; color: #ffffff; padding: 16px 32px; text-decoration: none; font-weight: bold; border-radius: 50px; margin: 20px 0; }
+            .button { display: inline-block; background: #e0301e; color: #ffffff; padding: 16px 32px; text-decoration: none; font-weight: bold; border-radius: 4px; margin: 20px 0; }
             .item { border: 1px solid #e8e5df; border-radius: 12px; padding: 16px 20px; margin: 0 0 12px 0; }
-            .item-name { font-weight: bold; margin: 0; color: #141414; }
+            .item-name { font-weight: bold; margin: 0; color: #2a2b2e; }
             .item .button { margin: 12px 0 0 0; padding: 12px 24px; }
             .footer { background: #f9f9f9; padding: 20px 30px; text-align: center; font-size: 12px; color: #666; }
           </style>
@@ -82,10 +82,10 @@ export async function sendMagicLinkEmail(to: string, url: string) {
     subject: "Your MidiRoad sign-in link",
     text: `Sign in to MidiRoad:\n\n${url}\n\nThis link expires in 5 minutes and works once. If you didn't ask for it, ignore this email.`,
     html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 20px; color: #141414;">
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 20px; color: #2a2b2e;">
         <h1 style="font-size: 22px; margin: 0 0 16px;">Sign in to MidiRoad</h1>
         <p style="line-height: 1.6; margin: 0 0 24px; color: #333;">Click the button to sign in. The link expires in 5 minutes and works once.</p>
-        <a href="${url}" style="display: inline-block; background: #b3261e; color: #fff; padding: 14px 28px; border-radius: 50px; text-decoration: none; font-weight: bold;">Sign in</a>
+        <a href="${url}" style="display: inline-block; background: #e0301e; color: #fff; padding: 14px 28px; border-radius: 4px; text-decoration: none; font-weight: bold;">Sign in</a>
         <p style="font-size: 13px; color: #6b6864; margin: 28px 0 0;">If you didn't ask for this, you can ignore this email.</p>
       </div>`,
   });

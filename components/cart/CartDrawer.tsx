@@ -88,7 +88,7 @@ export function CartDrawer() {
             <Link
               href="/#kits"
               onClick={close}
-              className="mt-6 inline-flex h-11 items-center rounded-full border border-ink px-6 text-[13px] font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-ink hover:text-white"
+              className="mt-6 inline-flex h-11 items-center rounded-key border border-ink px-6 text-[13px] font-semibold transition-colors hover:bg-ink hover:text-white"
             >
               Browse MIDI packs
             </Link>
@@ -129,7 +129,7 @@ export function CartDrawer() {
             <div className="border-t border-line px-6 py-5">
               {/* Two or more kits: point out the bundle */}
               {kitCount >= 2 && (
-                <div className="mb-5 rounded-2xl bg-canvas p-4">
+                <div className="mb-5 rounded-md bg-canvas p-4">
                   <p className="text-sm leading-relaxed">
                     {total >= BUNDLE_PRICE ? (
                       <>
@@ -146,7 +146,7 @@ export function CartDrawer() {
                   <button
                     type="button"
                     onClick={() => cart.add(BUNDLE_ID)}
-                    className="mt-3 h-9 cursor-pointer rounded-full border border-ink px-4 text-xs font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-ink hover:text-white"
+                    className="mt-3 h-9 cursor-pointer rounded-key border border-ink px-4 text-xs font-semibold transition-colors hover:bg-ink hover:text-white"
                   >
                     Switch to the bundle
                   </button>
@@ -155,7 +155,7 @@ export function CartDrawer() {
 
               <div className="flex items-baseline justify-between">
                 <span className="text-sm text-muted">Subtotal</span>
-                <span className="font-heading text-2xl font-extrabold">{formatUSD(total)}</span>
+                <span className="font-wide text-2xl">{formatUSD(total)}</span>
               </div>
               <p className="mt-1 text-xs text-muted">One-time payment. Promo codes can be added at checkout.</p>
 
@@ -172,7 +172,7 @@ export function CartDrawer() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="h-14 w-full cursor-pointer rounded-full bg-brand text-[15px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand-hover disabled:opacity-60"
+                  className="h-14 w-full cursor-pointer rounded-key bg-brand text-[15px] font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-60"
                 >
                   {submitting ? "Redirecting…" : "Checkout"}
                 </button>

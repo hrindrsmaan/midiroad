@@ -34,13 +34,13 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-center">
-        <div className="inline-flex rounded-full border border-line bg-white p-1 text-sm font-semibold">
+      <div className="flex">
+        <div className="inline-flex rounded-key border border-line bg-white p-1 text-sm font-semibold">
           {[false, true].map((y) => (
             <button
               key={String(y)}
               onClick={() => setYearly(y)}
-              className={`rounded-full px-5 py-2 transition-colors ${yearly === y ? "bg-ink text-white" : "text-muted hover:text-ink"}`}
+              className={`rounded-key px-5 py-2 transition-colors ${yearly === y ? "bg-ink text-white" : "text-muted hover:text-ink"}`}
             >
               {y ? "Yearly · 2 months free" : "Monthly"}
             </button>
@@ -56,17 +56,17 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
           return (
             <div
               key={p.id}
-              className={`relative flex flex-col rounded-2xl border bg-white p-6 ${p.featured ? "border-brand shadow-lg" : "border-line"}`}
+              className={`relative flex flex-col rounded-md border bg-white p-6 ${p.featured ? "border-2 border-brand" : "border-line"}`}
             >
               {p.featured && (
-                <span className="absolute -top-3 left-6 rounded-full bg-brand px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-white">
+                <span className="absolute -top-3 left-6 rounded-key bg-yellow px-3 py-1 text-xs font-bold text-graphite">
                   Most popular
                 </span>
               )}
-              <h2 className="text-xl font-semibold">{p.name}</h2>
+              <h2 className="text-xl">{p.name}</h2>
               <p className="mt-1 text-sm text-muted">{p.blurb}</p>
               <p className="mt-5">
-                <span className="text-4xl font-bold">{formatUSD(price)}</span>
+                <span className="font-wide text-4xl">{formatUSD(price)}</span>
                 <span className="text-sm text-muted">/{yearly ? "year" : "month"}</span>
               </p>
               <p className="mt-1 text-xs text-muted">{(perCredit * 100).toFixed(1)}¢ per MIDI file</p>
@@ -83,8 +83,8 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
               <button
                 onClick={() => choose(p.id)}
                 disabled={busy !== null || isCurrent}
-                className={`mt-6 h-12 rounded-full text-sm font-semibold transition-colors disabled:opacity-60 ${
-                  p.featured ? "bg-brand text-white hover:bg-brand-hover" : "border border-ink hover:bg-canvas"
+                className={`mt-6 h-12 rounded-key text-sm font-semibold transition-colors disabled:opacity-60 ${
+                  p.featured ? "border-b-[3px] border-black/25 bg-brand text-white hover:bg-brand-hover" : "border border-ink hover:bg-canvas"
                 }`}
               >
                 {isCurrent ? "Your plan" : busy === p.id ? "Opening checkout…" : current ? "Switch plan" : "Subscribe"}

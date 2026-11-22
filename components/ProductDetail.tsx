@@ -27,19 +27,19 @@ export function ProductDetail() {
       compact
     >
       <div className="space-y-5">
-        <dl className="grid grid-cols-3 divide-x divide-line overflow-hidden rounded-2xl border border-line">
+        <dl className="grid grid-cols-3 divide-x divide-line overflow-hidden rounded-md border border-line">
           {STATS.map((s) => (
-            <div key={s.label} className="px-3 py-3.5 text-center">
+            <div key={s.label} className="px-3 py-3.5">
               <dt className="sr-only">{s.label}</dt>
-              <dd className="font-heading text-2xl font-extrabold tabular-nums text-ink">{s.value}</dd>
+              <dd className="font-wide text-2xl tabular-nums text-ink">{s.value}</dd>
               <dd className="mt-0.5 text-xs text-muted">{s.label}</dd>
               {s.note && (
-                <dd className="mt-1 text-[9px] font-semibold uppercase tracking-wider text-brand">{s.note}</dd>
+                <dd className="mt-1 text-[11px] font-semibold text-brand">{s.note}</dd>
               )}
             </div>
           ))}
         </dl>
-        <p className="text-center text-[15px] leading-relaxed text-ink/75">
+        <p className="text-[15px] leading-relaxed text-ink/80">
           Every kit in the store in one download, for dark trap, RnB and soul. Bought separately the kits cost{" "}
           {formatUSD(PRICING.originalPrice)}; the one-shots are only in the bundle.
         </p>

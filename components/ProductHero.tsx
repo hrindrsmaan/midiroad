@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { BuyButton, BUY_BUTTON_CLASS } from "@/components/BuyButton";
 import { AddToCartButton } from "@/components/cart/CartButtons";
 import { Reassurance } from "@/components/Reassurance";
+import { Eyebrow } from "@/components/Section";
 import { Testimonials } from "@/components/Testimonials";
 import { formatUSD } from "@/lib/pricing";
 
@@ -54,7 +55,7 @@ export function ProductHero({
 
         <div className={`grid grid-cols-1 items-start md:grid-cols-2 ${compact ? "gap-8 md:gap-12" : "gap-10 md:gap-14"}`}>
           <div className="md:sticky md:top-24">
-            <div className={`rounded-3xl bg-canvas ${compact ? "p-6 md:p-8" : "p-8 md:p-12"}`}>
+            <div className={`rounded-md bg-canvas ${compact ? "p-6 md:p-8" : "p-8 md:p-12"}`}>
               <div
                 className={`mx-auto max-w-md ${compact ? "" : "drop-shadow-[0_24px_24px_rgba(0,0,0,0.28)]"}`}
               >
@@ -64,18 +65,18 @@ export function ProductHero({
           </div>
 
           <div className="mx-auto w-full max-w-[540px] md:mx-0">
-            <div className="text-center">
-              {eyebrow && <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted">{eyebrow}</p>}
-              <h1 className="text-4xl md:text-5xl leading-[1.05]">{title}</h1>
-              <p className="mt-4 flex items-center justify-center gap-3">
+            <div>
+              {eyebrow && <Eyebrow className="mb-3">{eyebrow}</Eyebrow>}
+              <h1 className="text-[34px] leading-[1] tracking-[-0.025em] md:text-[52px]">{title}</h1>
+              <p className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-2">
                 {originalPrice !== undefined && (
-                  <span className="text-2xl text-muted line-through md:text-[28px]">{formatUSD(originalPrice)}</span>
+                  <span className="text-xl tabular-nums text-muted line-through md:text-2xl">{formatUSD(originalPrice)}</span>
                 )}
-                <span className="font-heading text-3xl font-extrabold text-brand md:text-[38px]">
+                <span className="font-wide text-[34px] leading-none text-brand md:text-[44px]">
                   {formatUSD(price)}
                 </span>
                 {badge && (
-                  <span className="rounded-full bg-brand/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-brand">
+                  <span className="self-center rounded-key bg-yellow px-2.5 py-1 text-xs font-bold text-graphite">
                     {badge}
                   </span>
                 )}
@@ -88,7 +89,7 @@ export function ProductHero({
                 product={product}
                 label={label}
                 size="default"
-                className="h-12 w-full rounded-full border border-ink bg-transparent text-[13px] font-semibold uppercase tracking-[0.14em] text-ink shadow-none transition-colors hover:bg-ink hover:text-white"
+                className="h-12 w-full rounded-key border border-ink bg-transparent text-sm font-semibold text-ink shadow-none transition-colors hover:bg-ink hover:text-white"
                 aria-label={`Buy ${title} now for ${formatUSD(price)}`}
               >
                 Buy it now
