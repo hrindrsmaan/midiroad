@@ -6,6 +6,7 @@ import { FAQSection } from "@/components/FAQSection";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { BUNDLE_ID } from "@/lib/products";
 import { PRICING } from "@/lib/pricing";
+import { googleConfigured } from "@/lib/auth";
 
 export default function Page() {
   return (
@@ -13,7 +14,7 @@ export default function Page() {
       <SiteNav />
 
       {/* Free beat maker first: make a beat, hear it, download the MIDI */}
-      <MidiGenerator />
+      <MidiGenerator google={googleConfigured} />
 
       {/* Then the bundle: best value, every kit plus the one-shots */}
       <ProductDetail />
@@ -22,7 +23,7 @@ export default function Page() {
       <KitGrid tone="canvas" />
 
       {/* Every MIDI pattern, playable */}
-      <MidiKits tone="white" />
+      <MidiKits tone="white" google={googleConfigured} />
 
       <FAQSection tone="canvas" />
 
