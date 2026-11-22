@@ -4,7 +4,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
 const BUTTON =
-  "flex h-12 w-full items-center justify-center gap-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-60";
+  "flex h-12 w-full items-center justify-center gap-3 rounded-key text-sm font-semibold transition-colors disabled:opacity-60";
 
 /** Google button first, magic link by email as the fallback. */
 export function SignInForm({ google, callbackURL }: { google: boolean; callbackURL: string }) {
@@ -33,7 +33,7 @@ export function SignInForm({ google, callbackURL }: { google: boolean; callbackU
 
   if (state === "sent") {
     return (
-      <div className="rounded-xl border border-line bg-canvas p-5 text-sm leading-relaxed">
+      <div className="rounded-md border border-line bg-canvas p-5 text-sm leading-relaxed">
         <p className="font-semibold">Check your inbox</p>
         <p className="mt-1 text-muted">
           We sent a sign-in link to <span className="text-ink">{email}</span>. It expires in 5 minutes.
@@ -53,7 +53,7 @@ export function SignInForm({ google, callbackURL }: { google: boolean; callbackU
             <GoogleIcon />
             Continue with Google
           </button>
-          <div className="flex items-center gap-3 text-xs uppercase tracking-[0.14em] text-muted">
+          <div className="flex items-center gap-3 text-xs text-muted">
             <span className="h-px flex-1 bg-line" />
             or
             <span className="h-px flex-1 bg-line" />
@@ -72,7 +72,7 @@ export function SignInForm({ google, callbackURL }: { google: boolean; callbackU
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="h-12 w-full rounded-xl border border-line bg-white px-4 text-sm outline-none focus:border-ink"
+          className="h-12 w-full rounded-md border border-line bg-white px-4 text-sm outline-none focus:border-ink"
         />
         <button
           type="submit"

@@ -18,10 +18,9 @@ const VISIBLE = 12;
 const HIT_THRESHOLD = 0.08;
 /** Query param that resumes a download after sign-in: ?download=<libraryId>. */
 const RESUME_PARAM = "download";
-/** One palette for every kit: ink at rest, brand red while playing. */
-const INK = "linear-gradient(to bottom, #4a4743, #141414)";
-const BRAND = "#b3261e";
-const BRAND_FILL = "linear-gradient(to bottom, #e0453b, #8f1c16)";
+/** One palette for every kit: graphite at rest, signal red while playing. */
+const INK = "#2a2b2e";
+const BRAND = "#e0301e";
 
 /**
  * A pattern drawn like a lane in a MIDI editor: hits as pills, faint bar
@@ -43,7 +42,7 @@ function MidiLane({
   return (
     <div
       aria-hidden
-      className="relative h-8 overflow-hidden rounded-lg border border-line/70 bg-gradient-to-b from-canvas to-white"
+      className="relative h-8 overflow-hidden rounded-[3px] border border-line/70 bg-canvas/60"
       style={active ? { boxShadow: `inset 0 0 0 1px ${BRAND}33, 0 0 18px -6px ${BRAND}` } : undefined}
     >
       {/* bar lines */}
@@ -65,16 +64,16 @@ function MidiLane({
             <span key={i} className="flex h-full flex-1 items-center justify-center">
               {isHit ? (
                 <span
-                  className="block w-[3px] rounded-full transition-[opacity,box-shadow] duration-150 sm:w-1"
+                  className="block w-[3px] rounded-[1px] transition-[opacity,box-shadow] duration-150 sm:w-1"
                   style={{
                     height: `${Math.max(28, peak * 100)}%`,
-                    background: active && lit ? BRAND_FILL : INK,
+                    background: active && lit ? BRAND : INK,
                     opacity: lit ? 1 : 0.25,
                     boxShadow: active && lit ? `0 0 8px ${BRAND}99` : undefined,
                   }}
                 />
               ) : (
-                <span className="block h-[3px] w-[3px] rounded-full bg-ink/10" />
+                <span className="block h-[3px] w-[3px] rounded-key bg-ink/10" />
               )}
             </span>
           );
@@ -112,7 +111,7 @@ function Chip({
       role="tab"
       aria-selected={selected}
       onClick={onClick}
-      className={`cursor-pointer rounded-full border px-4 py-2 text-[13px] font-medium transition-colors ${
+      className={`cursor-pointer rounded-key border px-4 py-2 text-[13px] font-medium transition-colors ${
         selected
           ? "border-ink bg-ink text-white"
           : "border-line bg-white text-ink hover:border-ink"
@@ -280,7 +279,7 @@ export function MidiKits({
         intro="Press play on any pattern. Each MIDI is played with drum samples from the bundle's one-shot kit."
       />
 
-      <div role="tablist" aria-label="Drum parts" className={`flex flex-wrap justify-center gap-2 ${onlyKit ? "mb-10" : "mb-5"}`}>
+      <div role="tablist" aria-label="Drum parts" className={`flex flex-wrap gap-2 ${onlyKit ? "mb-10" : "mb-5"}`}>
         {PARTS.map((p) => (
           <Chip
             key={p.id}
@@ -296,7 +295,7 @@ export function MidiKits({
         <div
           role="tablist"
           aria-label={`${part.label} by kit`}
-          className="mb-10 flex flex-wrap justify-center gap-x-6 gap-y-2 border-b border-line"
+          className="mb-10 flex flex-wrap gap-x-6 gap-y-2 border-b border-line"
         >
           {[{ id: null, name: "All kits" }, ...partKits].map((k) => {
             const selected = k.id === kitId;
@@ -325,7 +324,7 @@ export function MidiKits({
           return (
             <div
               key={pattern.id}
-              className={`min-w-0 rounded-xl border bg-white px-4 py-3.5 transition-colors ${active ? "border-brand" : "border-line"}`}
+              className={`min-w-0 rounded-md border bg-white px-4 py-3.5 transition-colors ${active ? "border-brand" : "border-line"}`}
             >
               <div className="flex items-center gap-3">
                 <button
@@ -376,18 +375,18 @@ export function MidiKits({
       </div>
 
       {filtered.length > VISIBLE && (
-        <div className="mt-10 text-center">
+        <div className="mt-10">
           <button
             type="button"
             onClick={() => setExpanded((e) => !e)}
-            className="h-11 cursor-pointer rounded-full border border-ink px-6 text-[13px] font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-ink hover:text-white"
+            className="h-11 cursor-pointer rounded-key border border-ink px-6 text-sm font-semibold transition-colors hover:bg-ink hover:text-white"
           >
             {expanded ? "Show fewer" : `Show all ${filtered.length}`}
           </button>
         </div>
       )}
 
-      <p className="mt-6 text-center text-xs text-muted">
+      <p className="mt-6 text-xs text-muted">
         Every pattern downloads as a MIDI file for 1 credit.{" "}
         {!isPending && !session && `New accounts get ${SIGNUP_CREDITS} free credits.`}
       </p>
@@ -395,7 +394,7 @@ export function MidiKits({
       {notice && (
         <div
           role="status"
-          className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-sm rounded-xl bg-ink px-4 py-3 text-center text-sm text-white shadow-2xl md:bottom-6"
+          className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-sm rounded-md bg-ink px-4 py-3 text-center text-sm text-white shadow-2xl md:bottom-6"
         >
           {notice.ok ? (
             <>

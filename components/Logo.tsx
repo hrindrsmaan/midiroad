@@ -6,8 +6,8 @@
  * on a 64-unit grid so it stays crisp from a 16px favicon up.
  */
 
-const INK = "#141414";
-const BRAND = "#b3261e";
+const INK = "#2a2b2e";
+const BRAND = "#e0301e";
 
 /** Center-line notes, near to far: [y, height, width]. */
 const NOTES: [number, number, number][] = [
@@ -35,9 +35,9 @@ export function LogoMark({
   inverted?: boolean;
   title?: string;
 }) {
-  const tile = inverted ? "#ffffff" : INK;
-  const road = inverted ? INK : "#ffffff";
-  const side = inverted ? "#c9c5bf" : "#4a4744";
+  const tile = inverted ? "#f1efe8" : INK;
+  const road = inverted ? INK : "#f1efe8";
+  const side = inverted ? "#b9bab6" : "#55575c";
   return (
     <svg
       viewBox="0 0 64 64"
@@ -46,7 +46,7 @@ export function LogoMark({
       aria-label={title}
       aria-hidden={title ? undefined : true}
     >
-      <rect width="64" height="64" rx="15" fill={tile} />
+      <rect width="64" height="64" rx="10" fill={tile} />
       {SIDE_NOTES.map(([x, y, w]) => (
         <rect key={`${x}-${y}`} x={x} y={y} width={w} height={3.4} rx={1.4} fill={side} />
       ))}
@@ -75,9 +75,9 @@ export function Logo({
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <LogoMark className={markClassName} inverted={inverted} />
       <span
-        className={`font-heading text-[21px] font-extrabold leading-none tracking-[-0.03em] ${inverted ? "text-white" : "text-ink"}`}
+        className={`font-wide text-[21px] leading-none tracking-[-0.03em] ${inverted ? "text-ivory" : "text-ink"}`}
       >
-        MIDI<span className={inverted ? "text-[#ff5a4f]" : "text-brand"}>ROAD</span>
+        MIDI<span className={"text-brand"}>ROAD</span>
       </span>
     </span>
   );

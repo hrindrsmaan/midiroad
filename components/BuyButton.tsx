@@ -19,11 +19,11 @@ type Props = {
 
 /** Primary buy button: the one red call to action used across the store. */
 export const BUY_BUTTON_CLASS =
-  "w-full h-14 rounded-full bg-brand hover:bg-brand-hover text-white text-[15px] font-semibold uppercase tracking-[0.16em] shadow-none transition-colors";
+  "w-full h-14 rounded-key border-b-[3px] border-black/25 bg-brand hover:bg-brand-hover text-white text-base font-semibold shadow-none transition-colors";
 
 /** Secondary action: outlined, for upsells next to a primary button. */
 export const SECONDARY_BUTTON_CLASS =
-  "h-11 rounded-full border border-ink bg-transparent px-6 text-[13px] font-semibold uppercase tracking-[0.12em] text-ink shadow-none hover:bg-ink hover:text-white transition-colors";
+  "h-11 rounded-key border border-ink bg-transparent px-6 text-sm font-semibold text-ink shadow-none hover:bg-ink hover:text-white transition-colors";
 
 /**
  * A buy button is a form that POSTs to /api/checkout, which redirects to

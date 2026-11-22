@@ -54,7 +54,7 @@ export function KitPreviews({ kitId, kitName }: { kitId: string; kitName: string
   };
 
   return (
-    <div className="space-y-5 rounded-2xl border border-line p-5 sm:p-6">
+    <div className="space-y-5 rounded-md border border-line p-5 sm:p-6">
       {player(featured, `${kitName} · ${main.label}`, 28)}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-4">
         {rest.map((p) => (

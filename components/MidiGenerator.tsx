@@ -30,8 +30,11 @@ const HISTORY = 50;
 /** Mix levels, matching the kit previews. */
 const MIX: Record<DrumPart, number> = { kick: 1, snare: 0.8, hihat: 0.45, "open-hat": 0.4, "808": 0.85 };
 
-const DRUM = "#e7e5e4";
-const BASS = "#e5392f";
+/** Step-button colors, one per lane: hats ivory, snare yellow, kick amber, 808 red. */
+const HATS = "#f1efe8";
+const SNARE = "#f2c511";
+const KICK = "#f0821a";
+const BASS = "#e0301e";
 
 /** Lanes are the rows the export route knows as tracks. */
 type LaneId = BeatTrack;
@@ -53,7 +56,7 @@ const LANES: Lane[] = [
     label: "Hats",
     parts: ["hihat", "open-hat"],
     height: "h-12",
-    color: DRUM,
+    color: HATS,
     sounds: [{ label: "Hi-hats", sounds: BEAT_SOUNDS.hihat }],
   },
   {
@@ -61,7 +64,7 @@ const LANES: Lane[] = [
     label: "Snare",
     parts: ["snare"],
     height: "h-11",
-    color: DRUM,
+    color: SNARE,
     sounds: [
       { label: "Snares", sounds: BEAT_SOUNDS.snare },
       { label: "Claps", sounds: BEAT_SOUNDS.clap },
@@ -72,7 +75,7 @@ const LANES: Lane[] = [
     label: "Kick",
     parts: ["kick"],
     height: "h-11",
-    color: DRUM,
+    color: KICK,
     sounds: [{ label: "Kicks", sounds: BEAT_SOUNDS.kick }],
   },
   { id: "808", label: "808", parts: ["808"], height: "h-24", color: BASS, sounds: [{ label: "808s", sounds: BEAT_SOUNDS["808"] }] },
@@ -227,7 +230,7 @@ function BeatRoll({
         {[0, 1, 2, 3].map((bar) => (
           <span
             key={bar}
-            className={`absolute inset-y-0 flex items-center border-l border-white/10 pl-1.5 font-mono text-[11px] tabular-nums transition-colors ${
+            className={`absolute inset-y-0 flex items-center border-l border-white/10 pl-1.5 text-[11px] font-semibold tabular-nums transition-colors ${
               playing && bar === currentBar ? "text-white" : "text-white/35"
             }`}
             style={{ left: `${pct(bar * barBeats)}%` }}
@@ -253,11 +256,14 @@ function BeatRoll({
             >
               <span
                 aria-hidden
-                className="hidden h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-75 md:block"
-                style={{ background: lit ? lane.color : "rgba(255,255,255,0.12)" }}
+                className="hidden h-2.5 w-2.5 shrink-0 rounded-[2px] transition-[background-color,box-shadow] duration-75 md:block"
+                style={{
+                  background: lit ? lane.color : `${lane.color}38`,
+                  boxShadow: lit ? `0 0 8px ${lane.color}` : undefined,
+                }}
               />
               <div className={`flex min-w-0 flex-1 flex-col gap-0.5 ${off ? "opacity-40" : ""}`}>
-                <span className="text-[9px] font-semibold uppercase leading-none tracking-[0.14em] text-white/40">
+                <span className="text-[10px] font-semibold leading-none text-white/45">
                   {BEAT_SOUNDS.clap.includes(kit[lane.id]) ? "Clap" : lane.label}
                 </span>
                 <label className="group/pick relative flex min-w-0 items-center">
@@ -269,9 +275,9 @@ function BeatRoll({
                     className="w-full min-w-0 cursor-pointer appearance-none truncate bg-transparent pr-3.5 text-xs font-medium leading-tight text-white/85 hover:text-white focus:outline-none focus-visible:underline"
                   >
                     {lane.sounds.map((group) => (
-                      <optgroup key={group.label} label={group.label} className="bg-[#131315]">
+                      <optgroup key={group.label} label={group.label} className="bg-graphite">
                         {group.sounds.map((s) => (
-                          <option key={s.src} value={s.src} className="bg-[#131315]">
+                          <option key={s.src} value={s.src} className="bg-graphite">
                             {s.name}
                           </option>
                         ))}
@@ -301,7 +307,7 @@ function BeatRoll({
                 }
                 className={`${STRIP_BTN} ${
                   off
-                    ? "bg-[#e5392f] text-white hover:bg-[#d02f25]"
+                    ? "bg-brand text-white hover:bg-brand-hover"
                     : "bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white disabled:hover:bg-white/[0.06] disabled:hover:text-white/60"
                 }`}
               >
@@ -349,7 +355,7 @@ function BeatRoll({
                   return (
                     <span
                       key={i}
-                      className="animate-note-in absolute flex h-[18%] min-h-[9px] origin-left items-center overflow-hidden rounded-[2px] pl-1 font-mono text-[9px] font-semibold leading-none text-black/55 transition-opacity duration-150"
+                      className="animate-note-in absolute flex h-[18%] min-h-[9px] origin-left items-center overflow-hidden rounded-[2px] pl-1 text-[9px] font-bold leading-none text-black/60 transition-opacity duration-150"
                       style={{
                         ...noteStyle(n, lane.color, off),
                         width: `calc(${pct(n.dur)}% - 2px)`,
@@ -381,7 +387,7 @@ function BeatRoll({
 
         {playing && (
           <span
-            className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-white/90"
+            className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-ivory shadow-[0_0_6px_rgba(241,239,232,0.6)]"
             style={{ left: `${progress * 100}%` }}
           />
         )}
@@ -416,7 +422,7 @@ const ShuffleIcon = () =>
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-white/40">{label}</span>
+      <span className="text-[11px] font-medium text-white/50">{label}</span>
       {children}
     </div>
   );
@@ -427,7 +433,7 @@ const GHOST_BTN =
 
 function Kbd({ children }: { children: string }) {
   return (
-    <kbd className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-px font-mono text-[10px] text-white/50">
+    <kbd className="rounded-[3px] border border-white/15 border-b-2 bg-white/[0.05] px-1.5 py-px font-sans text-[10px] font-semibold text-white/60">
       {children}
     </kbd>
   );
@@ -703,20 +709,27 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
       ref={sectionRef}
       id="generator"
       aria-labelledby="generator-heading"
-      className="scroll-mt-16 bg-[#0b0b0c] px-4 pb-16 pt-14 text-white md:px-5 md:pb-24 md:pt-20"
+      className="scroll-mt-16 bg-graphite px-4 pb-16 pt-12 text-ivory md:px-5 md:pb-24 md:pt-20"
     >
       <div className="mx-auto max-w-5xl">
         <div className="mb-8 md:mb-10">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#e5392f]">Free beat maker</p>
-          <h2 id="generator-heading" className="text-3xl leading-tight md:text-5xl">
+          <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-white/60">
+            <span aria-hidden className="flex gap-1">
+              {[HATS, SNARE, KICK, BASS].map((c) => (
+                <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
+              ))}
+            </span>
+            Free beat maker
+          </p>
+          <h2 id="generator-heading" className="max-w-4xl text-[38px] leading-[0.95] tracking-[-0.03em] md:text-[72px]">
             Make a trap beat in one click
           </h2>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-white/55">
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
             Generate a beat, shape it with tempo, key and mutes, then drag the MIDI straight into your DAW.
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#131315] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)]">
+        <div className="overflow-hidden rounded-md border border-black/40 bg-panel shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_24px_60px_-30px_rgba(0,0,0,0.7)]">
           {/* Toolbar */}
           <div className="flex flex-wrap items-end gap-x-5 gap-y-4 border-b border-white/[0.06] px-4 py-4 md:px-5">
             <button
@@ -725,16 +738,18 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
               aria-label={playing ? "Stop" : "Play"}
               aria-pressed={playing}
               title="Play / stop (Space)"
-              className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-full transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
-                playing ? "bg-white/10 text-white hover:bg-white/15" : "bg-white text-black hover:bg-white/90"
+              className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-key border-b-[3px] transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
+                playing
+                  ? "border-black/40 bg-ivory text-graphite hover:bg-white"
+                  : "border-black/30 bg-brand text-white hover:bg-brand-hover"
               }`}
             >
               {playing ? <PauseIcon /> : <span className="translate-x-px"><PlayIcon /></span>}
             </button>
 
             <Field label="Tempo">
-              <div className="flex h-9 items-center rounded-md border border-white/10">
-                <button type="button" onClick={() => changeBpm(bpm - 1)} aria-label="Slower" className={`${GHOST_BTN} h-full w-8 rounded-l-md`}>
+              <div className="flex h-9 items-center rounded-key border border-white/15 bg-black/20">
+                <button type="button" onClick={() => changeBpm(bpm - 1)} aria-label="Slower" className={`${GHOST_BTN} h-full w-8 rounded-l-key`}>
                   −
                 </button>
                 <input
@@ -756,9 +771,9 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                     }
                   }}
                   aria-label={`Tempo in BPM, ${MIN_BPM} to ${MAX_BPM}`}
-                  className="w-10 appearance-none bg-transparent text-center font-mono text-sm tabular-nums [-moz-appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="w-10 appearance-none bg-transparent text-center text-sm font-semibold tabular-nums text-yellow [-moz-appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
-                <button type="button" onClick={() => changeBpm(bpm + 1)} aria-label="Faster" className={`${GHOST_BTN} h-full w-8 rounded-r-md`}>
+                <button type="button" onClick={() => changeBpm(bpm + 1)} aria-label="Faster" className={`${GHOST_BTN} h-full w-8 rounded-r-key`}>
                   +
                 </button>
               </div>
@@ -770,10 +785,10 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                 <select
                   value={key}
                   onChange={(e) => changeKey(Number(e.target.value))}
-                  className="h-9 cursor-pointer appearance-none rounded-md border border-white/10 bg-transparent pl-3 pr-8 text-sm hover:border-white/20 focus:outline-none"
+                  className="h-9 cursor-pointer appearance-none rounded-key border border-white/15 bg-black/20 pl-3 pr-8 text-sm font-semibold text-yellow hover:border-white/25 focus:outline-none"
                 >
                   {KEY_NAMES.map((name, i) => (
-                    <option key={name} value={i} className="bg-[#131315]">
+                    <option key={name} value={i} className="bg-graphite">
                       {name} minor
                     </option>
                   ))}
@@ -792,18 +807,18 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
             </Field>
 
             <div className="grid w-full grid-cols-[auto_1fr_1fr] items-center gap-2 sm:ml-auto sm:flex sm:w-auto [&_svg]:h-4 [&_svg]:w-4">
-              <div className="flex h-10 items-center rounded-md border border-white/10">
+              <div className="flex h-10 items-center rounded-key border border-white/15">
                 <button
                   type="button"
                   onClick={() => step(-1)}
                   disabled={index === 0}
                   aria-label="Previous beat"
                   title="Previous beat (←)"
-                  className={`${GHOST_BTN} h-full w-9 rounded-l-md`}
+                  className={`${GHOST_BTN} h-full w-9 rounded-l-key`}
                 >
                   <ChevronLeft />
                 </button>
-                <span className="hidden min-w-[2.75rem] whitespace-nowrap text-center sm:inline font-mono text-xs tabular-nums text-white/55" aria-live="polite">
+                <span className="hidden min-w-[2.75rem] whitespace-nowrap text-center sm:inline text-xs font-semibold tabular-nums text-white/60" aria-live="polite">
                   {index + 1} / {history.length}
                 </span>
                 <button
@@ -812,7 +827,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                   disabled={index === history.length - 1}
                   aria-label="Next beat"
                   title="Next beat (→)"
-                  className={`${GHOST_BTN} h-full w-9 rounded-r-md`}
+                  className={`${GHOST_BTN} h-full w-9 rounded-r-key`}
                 >
                   <ChevronRight />
                 </button>
@@ -821,7 +836,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                 type="button"
                 onClick={create}
                 title="New beat (N)"
-                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md bg-[#e5392f] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#d02f25] md:px-4 sm:flex-none"
+                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border-b-[3px] border-black/30 bg-ivory px-3 text-sm font-semibold text-graphite transition-colors hover:bg-white md:px-4 sm:flex-none"
               >
                 <ShuffleIcon />
                 New beat
@@ -831,7 +846,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                 onClick={() => download()}
                 disabled={downloading !== null}
                 title="Download the full beat as MIDI, muted parts left out (1 credit)"
-                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border border-white/15 px-3 text-sm md:px-4 font-semibold text-white transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:flex-none"
+                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-white/20 px-3 text-sm md:px-4 font-semibold text-ivory transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:flex-none"
               >
                 <DownloadIcon />
                 {downloading === "all" ? "Preparing…" : "Full MIDI"}
@@ -840,7 +855,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
           </div>
 
           {/* Piano roll: click the grid to play or stop */}
-          <div className="relative">
+          <div className="relative bg-[#232427]">
             <BeatRoll
               key={`${current.vibe}-${current.seed}-${current.hatBase}`}
               pattern={current}
@@ -861,7 +876,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
               className="absolute inset-y-0 left-[8.75rem] right-0 top-7 cursor-pointer md:left-[11.5rem]"
             >
               {!hasPlayed && (
-                <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black shadow-lg [&_svg]:h-3 [&_svg]:w-3">
+                <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-key bg-ivory px-4 py-2 text-xs font-semibold text-graphite shadow-lg [&_svg]:h-3 [&_svg]:w-3">
                   <PlayIcon />
                   Play beat
                 </span>
@@ -870,7 +885,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
           </div>
 
           {/* Status bar */}
-          <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-2.5 text-xs text-white/45 md:px-5">
+          <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-2.5 text-xs text-white/50 md:px-5">
             <span className="truncate">{[...current.tags, `${current.bpm} BPM`].join("  ·  ")}</span>
             <span className="hidden shrink-0 items-center gap-1.5 md:flex">
               <Kbd>Space</Kbd> play <Kbd>N</Kbd> new <Kbd>←</Kbd>

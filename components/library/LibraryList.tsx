@@ -36,7 +36,7 @@ export function LibraryList({
 
   return (
     <div className="space-y-4">
-      <div className="sticky top-16 z-10 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-white/95 px-4 py-3 text-sm backdrop-blur">
+      <div className="sticky top-16 z-10 flex flex-wrap items-center justify-between gap-3 rounded-md border border-line bg-white/95 px-4 py-3 text-sm backdrop-blur">
         {signedIn ? (
           <span>
             <strong>{credits}</strong> credits left · {owned.size} files unlocked
@@ -53,7 +53,7 @@ export function LibraryList({
       </div>
 
       {folders.map(({ folder, items }) => (
-        <details key={folder} className="group rounded-xl border border-line bg-white" open={folders.length < 4}>
+        <details key={folder} className="group rounded-md border border-line bg-white" open={folders.length < 4}>
           <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 font-semibold">
             {folder}
             <span className="text-sm font-normal text-muted">
@@ -70,7 +70,7 @@ export function LibraryList({
                   <button
                     onClick={() => download(item)}
                     disabled={busy !== null}
-                    className={`h-8 shrink-0 rounded-full px-4 text-xs font-semibold transition-colors disabled:opacity-60 ${
+                    className={`h-8 shrink-0 rounded-key px-4 text-xs font-semibold transition-colors disabled:opacity-60 ${
                       have ? "border border-line hover:bg-canvas" : "bg-ink text-white hover:bg-black"
                     }`}
                   >

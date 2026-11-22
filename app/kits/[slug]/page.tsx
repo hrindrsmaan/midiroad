@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { SECONDARY_BUTTON_CLASS } from "@/components/BuyButton";
 import { AddToCartButton } from "@/components/cart/CartButtons";
 import { KitCover } from "@/components/KitCover";
+import { Eyebrow } from "@/components/Section";
 import { KitGrid } from "@/components/KitGrid";
 import { KitPreviews } from "@/components/KitPreviews";
 import { MidiKits } from "@/components/MidiKits";
@@ -88,7 +89,7 @@ export default async function KitPage({ params }: Params) {
         </HeroBlock>
 
         <HeroBlock title="Specs">
-          <dl className="divide-y divide-line rounded-2xl border border-line text-sm">
+          <dl className="divide-y divide-line rounded-md border border-line text-sm">
             {specs.map(([term, value]) => (
               <div key={term} className="flex gap-4 px-4 py-3">
                 <dt className="w-24 shrink-0 text-muted">{term}</dt>
@@ -99,8 +100,8 @@ export default async function KitPage({ params }: Params) {
         </HeroBlock>
 
         {/* Bundle upsell: the whole store for a few dollars more */}
-        <div className="rounded-2xl bg-canvas p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">Better deal</p>
+        <div className="rounded-md bg-canvas p-6">
+          <Eyebrow>Better deal</Eyebrow>
           <p className="mt-2 text-[15px] leading-relaxed">
             Get <strong>all {KIT_PRODUCTS.length} kits + {ONE_SHOT_COUNT} one-shots</strong> for{" "}
             <span className="text-muted line-through">{formatUSD(KITS_TOTAL)}</span>{" "}

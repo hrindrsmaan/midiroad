@@ -24,16 +24,16 @@ export default async function PricingPage() {
       <SiteNav />
       <section className="px-5 py-16 md:py-24">
         <div className="mx-auto max-w-5xl space-y-10">
-          <div className="text-center">
+          <div>
             <Eyebrow className="mb-3">Plans</Eyebrow>
-            <h1 className="text-3xl leading-tight md:text-5xl">MIDI credits, every month</h1>
-            <p className="mx-auto mt-4 max-w-xl text-muted">
+            <h1 className="text-[34px] leading-[1] tracking-[-0.025em] md:text-[56px]">MIDI credits, every month</h1>
+            <p className="mt-5 max-w-xl text-muted">
               1 credit = 1 MIDI file. Spend them on hand-made patterns in the library or on beats you make in the beat
               maker. Every new account starts with {SIGNUP_CREDITS} free credits.
             </p>
           </div>
           <PlanPicker signedIn={!!user} current={sub && { plan: sub.plan, interval: sub.interval }} />
-          <p className="text-center text-sm text-muted">
+          <p className="text-sm text-muted">
             Prefer to own it all once? The one-time kits and bundle are still on the{" "}
             <Link href="/#kits" className="font-semibold text-ink underline underline-offset-4">
               home page

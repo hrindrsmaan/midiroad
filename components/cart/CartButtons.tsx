@@ -20,7 +20,7 @@ export function CartButton() {
         <path d="M9 7V6a3 3 0 0 1 6 0v1" strokeLinecap="round" />
       </svg>
       {count > 0 && (
-        <span className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-brand px-1 text-[10px] font-bold leading-none text-white">
+        <span className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-key bg-brand px-1 text-[10px] font-bold leading-none text-white">
           {count}
         </span>
       )}

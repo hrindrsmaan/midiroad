@@ -20,7 +20,7 @@ export function ManageBillingButton() {
           }
         }}
         disabled={busy}
-        className="h-11 rounded-full border border-ink px-6 text-sm font-semibold transition-colors hover:bg-canvas disabled:opacity-60"
+        className="h-11 rounded-key border border-ink px-6 text-sm font-semibold transition-colors hover:bg-canvas disabled:opacity-60"
       >
         {busy ? "Opening…" : "Manage billing"}
       </button>

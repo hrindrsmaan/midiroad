@@ -52,7 +52,7 @@ export function SignInModal({
         aria-modal="true"
         aria-labelledby="signin-modal-title"
         tabIndex={-1}
-        className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl outline-none sm:max-w-md sm:rounded-2xl sm:p-8"
+        className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl outline-none sm:max-w-md sm:rounded-md sm:p-8"
       >
         <button
           type="button"
@@ -67,7 +67,7 @@ export function SignInModal({
 
         {reason === "sign_in" ? (
           <>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
+            <span className="inline-flex items-center gap-1.5 rounded-key bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" />
               </svg>
@@ -103,14 +103,14 @@ export function SignInModal({
             <div className="mt-6 flex flex-col gap-3">
               <Link
                 href="/pricing"
-                className="flex h-12 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                className="flex h-12 items-center justify-center rounded-key bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
               >
                 See plans
               </Link>
               <Link
                 href="/#main-cta"
                 onClick={onClose}
-                className="flex h-12 items-center justify-center rounded-full border border-line text-sm font-semibold transition-colors hover:bg-canvas"
+                className="flex h-12 items-center justify-center rounded-key border border-line text-sm font-semibold transition-colors hover:bg-canvas"
               >
                 Get the bundle
               </Link>

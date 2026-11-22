@@ -29,7 +29,7 @@ export default async function LoginPage({
     <main className="min-h-screen bg-canvas">
       <SiteNav />
       <section className="px-5 py-16 md:py-24">
-        <div className="mx-auto max-w-md space-y-6 rounded-2xl border border-line bg-white p-6 sm:p-8">
+        <div className="mx-auto max-w-md space-y-6 rounded-md border border-line bg-white p-6 sm:p-8">
           <div>
             <Eyebrow className="mb-3">Account</Eyebrow>
             <h1 className="text-2xl leading-tight md:text-3xl">Sign in to MidiRoad</h1>

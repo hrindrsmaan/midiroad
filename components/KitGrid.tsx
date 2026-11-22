@@ -60,23 +60,23 @@ export function KitGrid({
           <li key={card.key}>
             <Link
               href={card.href}
-              className="group block rounded-2xl text-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+              className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber"
             >
-              <div className="mx-auto max-w-[260px] drop-shadow-[0_14px_14px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1.5">
+              <div className="max-w-[260px] drop-shadow-[0_14px_14px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1.5">
                 {card.cover}
               </div>
-              <h3 className="mt-5 text-[15px] font-bold leading-snug tracking-normal md:text-base">{card.name}</h3>
-              <p className="mt-1.5 text-[15px]">
+              <h3 className="mt-5 text-[15px] leading-snug md:text-base">{card.name}</h3>
+              <p className="mt-1.5 text-[15px] tabular-nums">
                 {card.originalPrice !== undefined && (
                   <span className="mr-2 text-muted line-through">{formatUSD(card.originalPrice)}</span>
                 )}
-                <span className="font-semibold text-brand">{formatUSD(card.price)}</span>
+                <span className="font-bold text-brand">{formatUSD(card.price)}</span>
               </p>
             </Link>
-            <div className="mt-3 text-center">
+            <div className="mt-3">
               <AddToCartButton
                 product={card.product}
-                className="h-9 rounded-full border border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-ink hover:text-white"
+                className="h-9 rounded-key border border-ink px-4 text-[13px] font-semibold transition-colors hover:bg-ink hover:text-white"
               />
             </div>
           </li>
