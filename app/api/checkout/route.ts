@@ -1,6 +1,7 @@
 import { stripe } from "@/lib/stripe";
 import { sellable, upgradeBase, type Sellable } from "@/lib/products";
 import { normalizeCart } from "@/lib/cart";
+import { BLACK_FRIDAY, priceWithCoupon, validCoupon } from "@/lib/pricing";
 import logger from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -59,6 +60,17 @@ export async function POST(req: Request) {
     products = [product];
   }
 
+  // Black Friday coupon: an extra discount on the bundle only. Upgrades are
+  // already priced at the difference, so they never take the coupon.
+  const coupon = validCoupon(String(form.get("coupon") ?? ""));
+  let couponUsed = false;
+  products = products.map((p) => {
+    const price = priceWithCoupon(p.id, p.price, coupon);
+    if (price === p.price) return p;
+    couponUsed = true;
+    return { ...p, price, name: `${p.name} (${coupon}: $${BLACK_FRIDAY.couponAmount} off)` };
+  });
+
   const ids = products.map((p) => p.id);
   try {
     const session = await stripe.checkout.sessions.create({
@@ -73,8 +85,14 @@ export async function POST(req: Request) {
       })),
       // `product` stays set for one-item orders: the upgrade check and old
       // links read it. `products` lists every item for downloads.
-      metadata: { products: ids.join(","), ...(ids.length === 1 ? { product: ids[0] } : {}) },
-      allow_promotion_codes: true,
+      metadata: {
+        products: ids.join(","),
+        ...(ids.length === 1 ? { product: ids[0] } : {}),
+        ...(couponUsed ? { coupon: coupon! } : {}),
+      },
+      // Codes don't stack: with the coupon applied, Stripe's own promo code
+      // field is hidden.
+      allow_promotion_codes: !couponUsed,
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
     });

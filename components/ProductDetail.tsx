@@ -1,9 +1,10 @@
 import { BundlePreviews } from "@/components/BundlePreviews";
 import { BundleSpread } from "@/components/KitCover";
 import { ProductHero } from "@/components/ProductHero";
-import { PRICING, formatUSD } from "@/lib/pricing";
+import { BlackFridayDeal } from "@/components/BlackFriday";
+import { BLACK_FRIDAY, PRICING, formatUSD } from "@/lib/pricing";
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
-import { BUNDLE_ID, BUNDLE_NAME, KIT_PRODUCTS } from "@/lib/products";
+import { BUNDLE_ID, BUNDLE_NAME, KITS_TOTAL, KIT_PRODUCTS } from "@/lib/products";
 
 /** What's in the box, at a glance. The poster beside it shows every kit. */
 const STATS = [
@@ -24,7 +25,7 @@ export function ProductDetail({ variant = "hero" }: { variant?: "hero" | "upsell
       product={BUNDLE_ID}
       label={hero ? "Product Section Button" : "Beat Maker Upsell Button"}
       cover={<BundleSpread />}
-      eyebrow="Best value · Every kit"
+      eyebrow={BLACK_FRIDAY.active ? "Black Friday sale · Every kit" : "Best value · Every kit"}
       title={BUNDLE_NAME}
       headingLevel={hero ? "h1" : "h2"}
       intro={
@@ -34,7 +35,8 @@ export function ProductDetail({ variant = "hero" }: { variant?: "hero" | "upsell
       }
       price={PRICING.currentPrice}
       originalPrice={PRICING.originalPrice}
-      badge={`Save ${PRICING.discountPercent}%`}
+      badge={`${BLACK_FRIDAY.active ? "Black Friday · " : ""}Save ${PRICING.discountPercent}%`}
+      promo={<BlackFridayDeal />}
       compact={!hero}
     >
       <div className="space-y-8">
@@ -53,7 +55,7 @@ export function ProductDetail({ variant = "hero" }: { variant?: "hero" | "upsell
         </dl>
         <p className="text-pretty text-[15px] leading-relaxed text-ink/80">
           Every kit in the store in one download, for dark trap, RnB and soul. Bought separately the kits cost{" "}
-          {formatUSD(PRICING.originalPrice)}; the one-shots are only in the bundle.
+          {formatUSD(KITS_TOTAL)}; the one-shots are only in the bundle.
         </p>
       </div>
     </ProductHero>

@@ -22,6 +22,7 @@ export function ProductHero({
   price,
   originalPrice,
   badge,
+  promo,
   backLink,
   headingLevel = "h1",
   intro,
@@ -38,6 +39,8 @@ export function ProductHero({
   price: number;
   originalPrice?: number;
   badge?: string;
+  /** Sale box under the price, e.g. a coupon. */
+  promo?: ReactNode;
   backLink?: { href: string; label: string };
   /** h1 on a product page; h2 when the hero sits under another page heading. */
   headingLevel?: "h1" | "h2";
@@ -89,6 +92,7 @@ export function ProductHero({
                   </span>
                 )}
               </p>
+              {promo && <div className="mt-5">{promo}</div>}
             </div>
 
             <div className="mt-6 space-y-3">
