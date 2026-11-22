@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { BuyButton, BUY_BUTTON_CLASS } from "@/components/BuyButton";
 import { AddToCartButton } from "@/components/cart/CartButtons";
 import { Reassurance } from "@/components/Reassurance";
+import { Testimonials } from "@/components/Testimonials";
 import { formatUSD } from "@/lib/pricing";
 
 /**
@@ -93,6 +94,7 @@ export function ProductHero({
                 Buy it now
               </BuyButton>
               <Reassurance className="pt-1" />
+              <Testimonials className="!mt-4" />
             </div>
 
             {children && <div className={compact ? "mt-8 space-y-8" : "mt-10 space-y-10"}>{children}</div>}
