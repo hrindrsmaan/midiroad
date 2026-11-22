@@ -4,6 +4,7 @@ import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
 import { Logo } from "@/components/Logo";
 import { TrackedLink } from "@/components/TrackedLink";
 import { formatUSD } from "@/lib/pricing";
+import { BlackFridayBar } from "@/components/BlackFriday";
 
 const NAV_LINKS = [
   { href: "/#kits", label: "MIDI Packs" },
@@ -17,6 +18,8 @@ const NAV_LINKS = [
 /** Sticky top bar, kept to the essentials: logo, beat maker, account and cart. Every other page is linked from the footer. */
 export function SiteNav() {
   return (
+    <>
+    <BlackFridayBar />
     <nav className="sticky top-0 z-50 border-b border-line bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 md:px-5">
         <Link href="/" className="flex shrink-0 items-center" aria-label="MidiRoad home">
@@ -39,6 +42,7 @@ export function SiteNav() {
         </div>
       </div>
     </nav>
+    </>
   );
 }
 

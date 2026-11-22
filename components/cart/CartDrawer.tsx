@@ -7,7 +7,8 @@ import { BundleCover, KitCover } from "@/components/KitCover";
 import { cartItem, cartTotal } from "@/lib/cart";
 import { BUNDLE_ID, BUNDLE_PRICE, KIT_PRODUCTS, kitById } from "@/lib/products";
 import { ONE_SHOT_COUNT } from "@/lib/bundle";
-import { formatUSD } from "@/lib/pricing";
+import { BLACK_FRIDAY, formatUSD, priceWithCoupon } from "@/lib/pricing";
+import { CouponField } from "@/components/BlackFriday";
 import * as gtag from "@/lib/gtag";
 
 /** Slide-over cart: items, bundle suggestion, subtotal and checkout. */
@@ -18,7 +19,9 @@ export function CartDrawer() {
   const [submitting, setSubmitting] = useState(false);
 
   const items = cart.ids.map(cartItem).filter((i) => !!i);
-  const total = cartTotal(cart.ids);
+  const subtotal = cartTotal(cart.ids);
+  const total = cartTotal(cart.ids, cart.coupon);
+  const couponSaving = Math.round((subtotal - total) * 100) / 100;
   const kitCount = cart.hasBundle ? 0 : items.length;
 
   // Escape closes; lock page scroll and move focus into the panel while open.
@@ -120,7 +123,12 @@ export function CartDrawer() {
                         Remove
                       </button>
                     </div>
-                    <p className="shrink-0 font-semibold">{formatUSD(item.price)}</p>
+                    <p className="shrink-0 text-right font-semibold">
+                      {priceWithCoupon(item.id, item.price, cart.coupon) !== item.price && (
+                        <span className="block text-xs font-normal text-muted line-through">{formatUSD(item.price)}</span>
+                      )}
+                      {formatUSD(priceWithCoupon(item.id, item.price, cart.coupon))}
+                    </p>
                   </li>
                 );
               })}
@@ -131,14 +139,14 @@ export function CartDrawer() {
               {kitCount >= 2 && (
                 <div className="mb-5 rounded-md bg-canvas p-4">
                   <p className="text-sm leading-relaxed">
-                    {total >= BUNDLE_PRICE ? (
+                    {subtotal >= BUNDLE_PRICE ? (
                       <>
-                        <strong>Save {formatUSD(total - BUNDLE_PRICE)}:</strong> get all {KIT_PRODUCTS.length} kits +{" "}
+                        <strong>Save {formatUSD(subtotal - BUNDLE_PRICE)}:</strong> get all {KIT_PRODUCTS.length} kits +{" "}
                         {ONE_SHOT_COUNT} one-shots for {formatUSD(BUNDLE_PRICE)}.
                       </>
                     ) : (
                       <>
-                        <strong>Only {formatUSD(BUNDLE_PRICE - total)} more</strong> gets all {KIT_PRODUCTS.length} kits
+                        <strong>Only {formatUSD(BUNDLE_PRICE - subtotal)} more</strong> gets all {KIT_PRODUCTS.length} kits
                         + {ONE_SHOT_COUNT} one-shots.
                       </>
                     )}
@@ -153,11 +161,23 @@ export function CartDrawer() {
                 </div>
               )}
 
+              {cart.hasBundle && <CouponField className="mb-5" />}
+
+              {couponSaving > 0 && (
+                <div className="mb-2 flex items-baseline justify-between text-sm">
+                  <span className="text-muted">
+                    {cart.coupon} (${BLACK_FRIDAY.couponAmount} off)
+                  </span>
+                  <span className="font-semibold text-brand">−{formatUSD(couponSaving)}</span>
+                </div>
+              )}
               <div className="flex items-baseline justify-between">
-                <span className="text-sm text-muted">Subtotal</span>
+                <span className="text-sm text-muted">{couponSaving > 0 ? "Total" : "Subtotal"}</span>
                 <span className="font-wide text-2xl">{formatUSD(total)}</span>
               </div>
-              <p className="mt-1 text-xs text-muted">One-time payment. Promo codes can be added at checkout.</p>
+              <p className="mt-1 text-xs text-muted">
+                {couponSaving > 0 ? "One-time payment." : "One-time payment. Promo codes can be added at checkout."}
+              </p>
 
               <form
                 action="/api/checkout"
@@ -169,6 +189,7 @@ export function CartDrawer() {
                 }}
               >
                 <input type="hidden" name="items" value={cart.ids.join(",")} />
+                {cart.coupon && <input type="hidden" name="coupon" value={cart.coupon} />}
                 <button
                   type="submit"
                   disabled={submitting}

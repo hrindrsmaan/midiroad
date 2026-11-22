@@ -2,8 +2,8 @@ import Link from "next/link";
 import { KitCardPlay } from "@/components/BundlePreviews";
 import { BundleCover, KitCover } from "@/components/KitCover";
 import { AddToCartButton } from "@/components/cart/CartButtons";
-import { BUNDLE_ID, KIT_PRODUCTS, BUNDLE_NAME, BUNDLE_PRICE, KITS_TOTAL } from "@/lib/products";
-import { formatUSD } from "@/lib/pricing";
+import { BUNDLE_ID, KIT_PRODUCTS, BUNDLE_NAME, BUNDLE_PRICE } from "@/lib/products";
+import { PRICING, formatUSD } from "@/lib/pricing";
 import { Section, SectionHeader, type Tone } from "@/components/Section";
 
 type Card = {
@@ -40,7 +40,7 @@ export function KitGrid({
     href: "/#main-cta",
     name: `${BUNDLE_NAME} Bundle`,
     price: BUNDLE_PRICE,
-    originalPrice: KITS_TOTAL,
+    originalPrice: PRICING.originalPrice,
     cover: <BundleCover />,
   };
   const cards: Card[] = [

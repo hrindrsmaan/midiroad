@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { useCart } from "@/components/cart/CartProvider";
 import * as gtag from "@/lib/gtag";
 
 type Props = {
@@ -32,6 +33,8 @@ export const SECONDARY_BUTTON_CLASS =
  */
 export function BuyButton({ product, label, className, size = "lg", fields, children, ...rest }: Props) {
   const [loading, setLoading] = useState(false);
+  // The server only applies the coupon to the bundle, so it's safe to send.
+  const { coupon } = useCart();
 
   // Coming back from Stripe with the back button restores the page from
   // cache with the button still disabled; re-enable it.
@@ -53,6 +56,7 @@ export function BuyButton({ product, label, className, size = "lg", fields, chil
       }}
     >
       <input type="hidden" name="product" value={product} />
+      {coupon && <input type="hidden" name="coupon" value={coupon} />}
       {Object.entries(fields ?? {}).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={value} />
       ))}

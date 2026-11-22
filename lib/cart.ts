@@ -1,4 +1,5 @@
 import { BUNDLE_ID, BUNDLE_NAME, BUNDLE_PRICE, KIT_PRODUCTS, kitById } from "./products";
+import { priceWithCoupon } from "./pricing";
 
 /**
  * Cart rules shared by the browser cart and /api/checkout, so the server
@@ -25,8 +26,8 @@ export function cartItem(id: string): CartItem | undefined {
   return kit && { id, name: kit.name, price: kit.price, href: `/kits/${kit.slug}` };
 }
 
-export function cartTotal(ids: string[]) {
-  return Math.round(ids.reduce((n, id) => n + (cartItem(id)?.price ?? 0), 0) * 100) / 100;
+export function cartTotal(ids: string[], coupon?: string) {
+  return Math.round(ids.reduce((n, id) => n + priceWithCoupon(id, cartItem(id)?.price ?? 0, coupon), 0) * 100) / 100;
 }
 
 /**

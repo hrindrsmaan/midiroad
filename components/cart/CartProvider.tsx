@@ -3,9 +3,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { normalizeCart } from "@/lib/cart";
 import { BUNDLE_ID } from "@/lib/products";
+import { validCoupon } from "@/lib/pricing";
 import * as gtag from "@/lib/gtag";
 
 const STORAGE_KEY = "midiroad:cart";
+const COUPON_KEY = "midiroad:coupon";
 
 type CartContext = {
   ids: string[];
@@ -20,6 +22,11 @@ type CartContext = {
   has: (id: string) => boolean;
   /** True when the bundle is in the cart, which already holds every kit. */
   hasBundle: boolean;
+  /** The applied coupon code, if any (always a valid one). */
+  coupon?: string;
+  /** Applies a code; returns false if it isn't valid. */
+  applyCoupon: (code: string) => boolean;
+  removeCoupon: () => void;
 };
 
 const Ctx = createContext<CartContext | null>(null);
@@ -41,20 +48,40 @@ function save(ids: string[]) {
   }
 }
 
+function loadCoupon(): string | undefined {
+  try {
+    return validCoupon(window.localStorage.getItem(COUPON_KEY));
+  } catch {
+    return undefined;
+  }
+}
+
+function saveCoupon(code: string | undefined) {
+  try {
+    if (code) window.localStorage.setItem(COUPON_KEY, code);
+    else window.localStorage.removeItem(COUPON_KEY);
+  } catch {
+    // Blocked storage: the coupon still applies for this visit.
+  }
+}
+
 /** Cart state for the whole site, saved in the browser between visits. */
 export function CartProvider({ children }: { children: ReactNode }) {
   const [ids, setIds] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [coupon, setCoupon] = useState<string | undefined>();
 
   useEffect(() => {
     // Read the saved cart once on mount; it isn't available during SSR.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIds(load());
+    setCoupon(loadCoupon());
     setReady(true);
     // Keep tabs in sync.
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setIds(load());
+      if (e.key === COUPON_KEY) setCoupon(loadCoupon());
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -84,8 +111,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clear: () => update(() => []),
       has: (id) => ids.includes(id),
       hasBundle: ids.includes(BUNDLE_ID),
+      coupon,
+      applyCoupon: (code) => {
+        const valid = validCoupon(code);
+        if (!valid) return false;
+        gtag.event({ action: "apply_coupon", category: "engagement", label: valid });
+        setCoupon(valid);
+        saveCoupon(valid);
+        return true;
+      },
+      removeCoupon: () => {
+        setCoupon(undefined);
+        saveCoupon(undefined);
+      },
     }),
-    [ids, ready, isOpen, update],
+    [ids, ready, isOpen, update, coupon],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

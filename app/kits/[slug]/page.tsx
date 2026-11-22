@@ -20,12 +20,11 @@ import {
   BUNDLE_NAME,
   BUNDLE_PRICE,
   KIT_PRODUCTS,
-  KITS_TOTAL,
   kitBySlug,
   kitStats,
   midiKitFor,
 } from "@/lib/products";
-import { formatUSD } from "@/lib/pricing";
+import { PRICING, formatUSD } from "@/lib/pricing";
 import { googleConfigured } from "@/lib/auth";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -104,7 +103,7 @@ export default async function KitPage({ params }: Params) {
           <Eyebrow>Better deal</Eyebrow>
           <p className="mt-2 text-[15px] leading-relaxed">
             Get <strong>all {KIT_PRODUCTS.length} kits + {ONE_SHOT_COUNT} one-shots</strong> for{" "}
-            <span className="text-muted line-through">{formatUSD(KITS_TOTAL)}</span>{" "}
+            <span className="text-muted line-through">{formatUSD(PRICING.originalPrice)}</span>{" "}
             <strong className="text-brand">{formatUSD(BUNDLE_PRICE)}</strong>, only {formatUSD(upgradeCost)} more
             than this kit.
           </p>
