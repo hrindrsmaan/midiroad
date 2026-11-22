@@ -13,7 +13,7 @@ import { faqJsonLd, homeJsonLd } from "@/lib/site";
 
 export default function Page() {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white pb-24 md:pb-0">
+    <main className="min-h-screen overflow-x-hidden bg-background pb-24 md:pb-0">
       <JsonLd data={[...homeJsonLd(), faqJsonLd(FAQS)]} />
       <SiteNav />
 
@@ -24,7 +24,7 @@ export default function Page() {
       <ProductDetail />
 
       {/* Every kit, each with its own page */}
-      <KitGrid tone="canvas" />
+      <KitGrid tone="canvas" includeBundle={false} title="Or buy one kit at a time" />
 
       {/* Every MIDI pattern, playable */}
       <MidiKits tone="white" google={googleConfigured} />

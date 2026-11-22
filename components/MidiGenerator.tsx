@@ -30,11 +30,11 @@ const HISTORY = 50;
 /** Mix levels, matching the kit previews. */
 const MIX: Record<DrumPart, number> = { kick: 1, snare: 0.8, hihat: 0.45, "open-hat": 0.4, "808": 0.85 };
 
-/** Step-button colors, one per lane: hats ivory, snare yellow, kick amber, 808 red. */
-const HATS = "#f1efe8";
-const SNARE = "#f2c511";
-const KICK = "#f0821a";
-const BASS = "#e0301e";
+/** Chart colors, one per lane (DESIGN.md): hats indigo, snare violet, kick purple-blue, 808 play green. */
+const HATS = "#a5b4fc";
+const SNARE = "#c084fc";
+const KICK = "#6366f1";
+const BASS = "#22c55e";
 
 /** Lanes are the rows the export route knows as tracks. */
 type LaneId = BeatTrack;
@@ -230,8 +230,8 @@ function BeatRoll({
         {[0, 1, 2, 3].map((bar) => (
           <span
             key={bar}
-            className={`absolute inset-y-0 flex items-center border-l border-white/10 pl-1.5 text-[11px] font-semibold tabular-nums transition-colors ${
-              playing && bar === currentBar ? "text-white" : "text-white/35"
+            className={`absolute inset-y-0 flex items-center border-l border-white/10 pl-1.5 text-xs font-semibold tabular-nums transition-colors ${
+              playing && bar === currentBar ? "text-white" : "text-white/55"
             }`}
             style={{ left: `${pct(bar * barBeats)}%` }}
           >
@@ -263,7 +263,7 @@ function BeatRoll({
                 }}
               />
               <div className={`flex min-w-0 flex-1 flex-col gap-0.5 ${off ? "opacity-40" : ""}`}>
-                <span className="text-[10px] font-semibold leading-none text-white/45">
+                <span className="text-xs font-semibold leading-none text-white/55">
                   {BEAT_SOUNDS.clap.includes(kit[lane.id]) ? "Clap" : lane.label}
                 </span>
                 <label className="group/pick relative flex min-w-0 items-center">
@@ -286,7 +286,7 @@ function BeatRoll({
                   </select>
                   <svg
                     viewBox="0 0 24 24"
-                    className="pointer-events-none absolute right-0 h-3 w-3 text-white/35 group-hover/pick:text-white/70"
+                    className="pointer-events-none absolute right-0 h-3 w-3 text-white/50 group-hover/pick:text-white/80"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2.5"
@@ -307,7 +307,7 @@ function BeatRoll({
                 }
                 className={`${STRIP_BTN} ${
                   off
-                    ? "bg-brand text-white hover:bg-brand-hover"
+                    ? "bg-brand text-on-brand hover:bg-brand-hover"
                     : "bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white disabled:hover:bg-white/[0.06] disabled:hover:text-white/60"
                 }`}
               >
@@ -355,7 +355,7 @@ function BeatRoll({
                   return (
                     <span
                       key={i}
-                      className="animate-note-in absolute flex h-[18%] min-h-[9px] origin-left items-center overflow-hidden rounded-[2px] pl-1 text-[9px] font-bold leading-none text-black/60 transition-opacity duration-150"
+                      className="animate-note-in absolute flex h-[18%] min-h-[14px] origin-left items-center overflow-hidden rounded-[2px] pl-1 text-xs font-bold leading-none text-black/70 transition-opacity duration-150"
                       style={{
                         ...noteStyle(n, lane.color, off),
                         width: `calc(${pct(n.dur)}% - 2px)`,
@@ -422,7 +422,7 @@ const ShuffleIcon = () =>
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[11px] font-medium text-white/50">{label}</span>
+      <span className="text-xs font-medium text-white/50">{label}</span>
       {children}
     </div>
   );
@@ -433,7 +433,7 @@ const GHOST_BTN =
 
 function Kbd({ children }: { children: string }) {
   return (
-    <kbd className="rounded-[3px] border border-white/15 border-b-2 bg-white/[0.05] px-1.5 py-px font-sans text-[10px] font-semibold text-white/60">
+    <kbd className="rounded-[3px] border border-white/15 bg-white/[0.05] px-1.5 py-px font-sans text-xs font-semibold text-white/60">
       {children}
     </kbd>
   );
@@ -709,9 +709,9 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
       ref={sectionRef}
       id="generator"
       aria-labelledby="generator-heading"
-      className="scroll-mt-16 bg-graphite px-4 pb-16 pt-12 text-ivory md:px-5 md:pb-24 md:pt-20"
+      className="scroll-mt-16 bg-graphite px-5 pb-16 pt-12 text-ivory md:pb-24 md:pt-20"
     >
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-8 md:mb-10">
           <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-white/60">
             <span aria-hidden className="flex gap-1">
@@ -719,11 +719,11 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                 <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
               ))}
             </span>
-            Free beat maker
+            Free to play · {SIGNUP_CREDITS} free downloads with an account
           </p>
-          <h2 id="generator-heading" className="max-w-4xl text-[38px] leading-[0.95] tracking-[-0.03em] md:text-[72px]">
+          <h1 id="generator-heading" className="max-w-4xl text-balance text-[38px] leading-[0.95] tracking-[-0.03em] md:text-[72px]">
             Make a trap beat in one click
-          </h2>
+          </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
             Generate a beat, shape it with tempo, key and mutes, then drag the MIDI straight into your DAW.
           </p>
@@ -738,10 +738,10 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
               aria-label={playing ? "Stop" : "Play"}
               aria-pressed={playing}
               title="Play / stop (Space)"
-              className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-key border-b-[3px] transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
+              className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-key transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
                 playing
-                  ? "border-black/40 bg-ivory text-graphite hover:bg-white"
-                  : "border-black/30 bg-brand text-white hover:bg-brand-hover"
+                  ? "bg-ivory text-graphite hover:bg-white"
+                  : "bg-brand text-on-brand hover:bg-brand-hover"
               }`}
             >
               {playing ? <PauseIcon /> : <span className="translate-x-px"><PlayIcon /></span>}
@@ -771,7 +771,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                     }
                   }}
                   aria-label={`Tempo in BPM, ${MIN_BPM} to ${MAX_BPM}`}
-                  className="w-10 appearance-none bg-transparent text-center text-sm font-semibold tabular-nums text-yellow [-moz-appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="w-10 appearance-none bg-transparent text-center text-sm font-semibold tabular-nums text-brand [-moz-appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
                 <button type="button" onClick={() => changeBpm(bpm + 1)} aria-label="Faster" className={`${GHOST_BTN} h-full w-8 rounded-r-key`}>
                   +
@@ -785,7 +785,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                 <select
                   value={key}
                   onChange={(e) => changeKey(Number(e.target.value))}
-                  className="h-9 cursor-pointer appearance-none rounded-key border border-white/15 bg-black/20 pl-3 pr-8 text-sm font-semibold text-yellow hover:border-white/25 focus:outline-none"
+                  className="h-9 cursor-pointer appearance-none rounded-key border border-white/15 bg-black/20 pl-3 pr-8 text-sm font-semibold text-brand hover:border-white/25 focus:outline-none"
                 >
                   {KEY_NAMES.map((name, i) => (
                     <option key={name} value={i} className="bg-graphite">
@@ -806,7 +806,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
               </label>
             </Field>
 
-            <div className="grid w-full grid-cols-[auto_1fr_1fr] items-center gap-2 sm:ml-auto sm:flex sm:w-auto [&_svg]:h-4 [&_svg]:w-4">
+            <div className="grid w-full grid-cols-[auto_1fr] items-center gap-2 sm:ml-auto sm:flex sm:w-auto [&_svg]:h-4 [&_svg]:w-4">
               <div className="flex h-10 items-center rounded-key border border-white/15">
                 <button
                   type="button"
@@ -836,7 +836,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                 type="button"
                 onClick={create}
                 title="New beat (N)"
-                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border-b-[3px] border-black/30 bg-ivory px-3 text-sm font-semibold text-graphite transition-colors hover:bg-white md:px-4 sm:flex-none"
+                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key bg-primary px-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover md:px-4 sm:flex-none"
               >
                 <ShuffleIcon />
                 New beat
@@ -846,16 +846,23 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                 onClick={() => download()}
                 disabled={downloading !== null}
                 title="Download the full beat as MIDI, muted parts left out (1 credit)"
-                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-white/20 px-3 text-sm md:px-4 font-semibold text-ivory transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:flex-none"
+                className="col-span-2 flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-white/20 px-3 sm:col-span-1 text-sm md:px-4 font-semibold text-ivory transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:flex-none"
               >
                 <DownloadIcon />
-                {downloading === "all" ? "Preparing…" : "Full MIDI"}
+                {downloading === "all" ? (
+                  "Preparing…"
+                ) : (
+                  <>
+                    Full MIDI
+                    <span className="font-medium text-white/60">· 1 credit</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
 
           {/* Piano roll: click the grid to play or stop */}
-          <div className="relative bg-[#232427]">
+          <div className="relative bg-[#111a2d]">
             <BeatRoll
               key={`${current.vibe}-${current.seed}-${current.hatBase}`}
               pattern={current}
@@ -876,7 +883,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
               className="absolute inset-y-0 left-[8.75rem] right-0 top-7 cursor-pointer md:left-[11.5rem]"
             >
               {!hasPlayed && (
-                <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-key bg-ivory px-4 py-2 text-xs font-semibold text-graphite shadow-lg [&_svg]:h-3 [&_svg]:w-3">
+                <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 whitespace-nowrap rounded-key bg-ivory px-4 py-2 text-xs font-semibold text-graphite shadow-lg [&_svg]:h-3 [&_svg]:w-3">
                   <PlayIcon />
                   Play beat
                 </span>
@@ -894,8 +901,8 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
           </div>
         </div>
 
-        <div className="mt-5 text-sm">
-          <DownloadNotice state={downloadState} />
+        <div className="mt-5 max-w-prose text-pretty text-sm">
+          <DownloadNotice state={downloadState} signedOut={!sessionPending && !session} />
           <SignInModal
             reason={gate}
             fileName="Your beat"
@@ -912,7 +919,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
 const NOTICE_LINK = "font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white";
 
 /** Under the beat maker: what the last download did, or what each one costs. */
-function DownloadNotice({ state }: { state: PaidDownload | null }) {
+function DownloadNotice({ state, signedOut }: { state: PaidDownload | null; signedOut: boolean }) {
   if (state && !state.ok) {
     if (state.error === "sign_in") {
       return (
@@ -948,9 +955,17 @@ function DownloadNotice({ state }: { state: PaidDownload | null }) {
     );
   }
   return (
-    <p className="text-white/45">
-      Each beat uses 1 credit. Full MIDI leaves muted parts out, and once the beat is yours each row downloads on
-      its own for free. Want patterns written by hand?{" "}
+    <p className="text-muted">
+      {signedOut ? (
+        <>
+          <span className="font-semibold text-white">Playing is free.</span> Downloading a beat uses 1 credit, and
+          new accounts get {SIGNUP_CREDITS} free credits.{" "}
+        </>
+      ) : (
+        "Downloading a beat uses 1 credit. "
+      )}
+      Full MIDI leaves muted parts out, and once the beat is yours each row downloads on its own for free. Want
+      patterns written by hand?{" "}
       <a href="/library" className={NOTICE_LINK}>
         Browse the library
       </a>{" "}

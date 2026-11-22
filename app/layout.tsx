@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, Space_Grotesk, Black_Ops_One, Anton } from "next/font/google";
+import { Poppins, Righteous, Space_Grotesk, Black_Ops_One, Anton } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
 import "./globals.css";
@@ -8,10 +8,17 @@ import { CartDrawer } from "@/components/cart/CartDrawer";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteJsonLd } from "@/lib/site";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-  axes: ["wdth"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const righteous = Righteous({
+  variable: "--font-righteous",
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -102,7 +109,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${blackOpsOne.variable} ${anton.variable} ${spaceGrotesk.variable} ${archivo.variable} antialiased font-sans`}
+        className={`${blackOpsOne.variable} ${anton.variable} ${spaceGrotesk.variable} ${poppins.variable} ${righteous.variable} antialiased font-sans`}
       >
         {/* Conditionally render Google Analytics based on IP */}
         {!isDevIP ? (

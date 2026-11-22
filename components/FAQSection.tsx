@@ -38,7 +38,7 @@ export function FAQSection({ tone = "white" }: { tone?: Tone }) {
                   <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
                 </svg>
               </summary>
-              <p className="pb-5 pr-8 text-[15px] leading-relaxed text-muted">{item.a}</p>
+              <p className="text-pretty pb-5 pr-8 text-[15px] leading-relaxed text-muted">{item.a}</p>
             </details>
           ))}
         </div>

@@ -68,7 +68,7 @@ export default async function KitPage({ params }: Params) {
   ];
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white pb-24 md:pb-0">
+    <main className="min-h-screen overflow-x-hidden bg-background pb-24 md:pb-0">
       <JsonLd data={[...kitJsonLd(kit), faqJsonLd(FAQS)]} />
       <SiteNav />
 

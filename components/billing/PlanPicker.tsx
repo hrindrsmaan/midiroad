@@ -35,12 +35,12 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
   return (
     <div className="space-y-8">
       <div className="flex">
-        <div className="inline-flex rounded-key border border-line bg-white p-1 text-sm font-semibold">
+        <div className="inline-flex rounded-key border border-line bg-card p-1 text-sm font-semibold">
           {[false, true].map((y) => (
             <button
               key={String(y)}
               onClick={() => setYearly(y)}
-              className={`rounded-key px-5 py-2 transition-colors ${yearly === y ? "bg-ink text-white" : "text-muted hover:text-ink"}`}
+              className={`rounded-key px-5 py-2 transition-colors ${yearly === y ? "bg-primary text-white" : "text-muted hover:text-ink"}`}
             >
               {y ? "Yearly · 2 months free" : "Monthly"}
             </button>
@@ -56,10 +56,10 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
           return (
             <div
               key={p.id}
-              className={`relative flex flex-col rounded-md border bg-white p-6 ${p.featured ? "border-2 border-brand" : "border-line"}`}
+              className={`relative flex flex-col rounded-md border bg-card p-6 ${p.featured ? "border-2 border-brand" : "border-line"}`}
             >
               {p.featured && (
-                <span className="absolute -top-3 left-6 rounded-key bg-yellow px-3 py-1 text-xs font-bold text-graphite">
+                <span className="absolute -top-3 left-6 rounded-key bg-primary px-3 py-1 text-xs font-bold text-white">
                   Most popular
                 </span>
               )}
@@ -84,7 +84,7 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
                 onClick={() => choose(p.id)}
                 disabled={busy !== null || isCurrent}
                 className={`mt-6 h-12 rounded-key text-sm font-semibold transition-colors disabled:opacity-60 ${
-                  p.featured ? "border-b-[3px] border-black/25 bg-brand text-white hover:bg-brand-hover" : "border border-ink hover:bg-canvas"
+                  p.featured ? " bg-brand text-on-brand hover:bg-brand-hover" : "border border-strong hover:bg-white/5"
                 }`}
               >
                 {isCurrent ? "Your plan" : busy === p.id ? "Opening checkout…" : current ? "Switch plan" : "Subscribe"}

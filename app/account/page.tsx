@@ -38,7 +38,7 @@ export default async function AccountPage({
     <main className="min-h-screen bg-canvas">
       <SiteNav />
       <section className="px-5 py-16 md:py-24">
-        <div className="mx-auto max-w-xl space-y-6 rounded-md border border-line bg-white p-6 sm:p-8">
+        <div className="mx-auto max-w-xl space-y-6 rounded-md border border-line bg-card p-6 sm:p-8">
           <div>
             <Eyebrow className="mb-3">Account</Eyebrow>
             <h1 className="text-2xl leading-tight md:text-3xl">
@@ -93,7 +93,7 @@ export default async function AccountPage({
                 </p>
                 <Link
                   href="/pricing"
-                  className="inline-flex h-11 items-center rounded-key bg-brand px-6 text-sm font-semibold text-white hover:bg-brand-hover"
+                  className="inline-flex h-11 items-center rounded-key bg-brand px-6 text-sm font-semibold text-on-brand hover:bg-brand-hover"
                 >
                   See plans
                 </Link>

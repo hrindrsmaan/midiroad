@@ -1,74 +1,100 @@
 @import "tailwindcss";
 
 /*
- * Drum-machine palette: an aluminum store, a graphite panel for the beat
- * maker and footer, and the four step-button colors. Each step color belongs
- * to one lane (hats ivory, snare yellow, kick amber, 808 red); red also marks
- * prices and buy buttons.
+ * Dark studio theme (see DESIGN.md). Deep navy surfaces, studio purple for
+ * selection and focus, play green for prices and the one primary action per
+ * screen. The chart colors mark the four beat-maker lanes and waveforms.
+ *
+ * Older token names are kept as aliases so components don't need renaming:
+ * ink = foreground, canvas = alternate section, line = border,
+ * brand = accent (CTA), graphite = background, panel = card, ivory = foreground.
  */
 @theme {
-  --color-ink: #2a2b2e;
-  --color-muted: #63656a;
-  --color-line: #cfd1ce;
-  --color-canvas: #e6e7e5;
-  --color-brand: #e0301e;
-  --color-brand-hover: #c42716;
-  --color-graphite: #2a2b2e;
-  --color-panel: #35363a;
-  --color-ivory: #f1efe8;
-  --color-amber: #f0821a;
-  --color-yellow: #f2c511;
-  --radius-key: 4px;
+  --color-background: #0f172a;
+  --color-foreground: #f8fafc;
+  --color-card: #192134;
+  --color-canvas: #131b2f;
+  --color-primary: #7c3aed;
+  --color-primary-hover: #6d28d9;
+  --color-secondary: #6366f1;
+  --color-muted: #94a3b8;
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-strong: rgb(255 255 255 / 0.2);
+  --color-brand: #22c55e;
+  --color-brand-hover: #16a34a;
+  --color-on-brand: #0f172a;
+  --color-destructive: #dc2626;
+
+  --color-chart-hats: #a5b4fc;
+  --color-chart-snare: #c084fc;
+  --color-chart-kick: #6366f1;
+  --color-chart-bass: #22c55e;
+  --color-chart-rest: #475569;
+
+  --color-ink: var(--color-foreground);
+  --color-graphite: var(--color-background);
+  --color-panel: var(--color-card);
+  --color-ivory: var(--color-foreground);
+
+  --radius-key: 10px;
 }
 
 /* Fonts point at next/font variables, so they are inlined into utilities. */
 @theme inline {
-  --font-sans: var(--font-archivo), system-ui, sans-serif;
-  --font-heading: var(--font-archivo), system-ui, sans-serif;
+  --font-sans: var(--font-poppins), system-ui, sans-serif;
+  --font-heading: var(--font-righteous), system-ui, sans-serif;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
+    /* Browser-drawn surfaces follow the palette too. */
+    scrollbar-color: #334155 var(--color-background);
+    accent-color: var(--color-primary);
+    caret-color: var(--color-brand);
   }
 
   body {
-    background: #ffffff;
-    color: var(--color-ink);
+    background: var(--color-background);
+    color: var(--color-foreground);
     font-family: var(--font-sans);
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Headings use the wide cut, like the lettering on a hardware panel. */
+  /* Righteous only at display sizes; smaller headings stay in Poppins. */
   h1,
-  h2,
+  h2 {
+    font-family: var(--font-righteous), system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
   h3,
   h4 {
-    font-family: var(--font-archivo), system-ui, sans-serif;
-    font-weight: 800;
-    font-stretch: 125%;
-    letter-spacing: -0.015em;
+    font-family: var(--font-poppins), system-ui, sans-serif;
+    font-weight: 600;
   }
 
   ::selection {
-    background-color: var(--color-yellow);
-    color: var(--color-graphite);
+    background-color: var(--color-primary);
+    color: #ffffff;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-amber);
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
 }
 
-/* Prices and counts set in the wide cut, with figures that line up. */
+/* Prices, counts and readouts: Poppins with figures that line up. */
 @utility font-wide {
-  font-family: var(--font-archivo), system-ui, sans-serif;
-  font-weight: 800;
-  font-stretch: 125%;
+  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 /* Beat maker: notes pop in left to right when a new take lands. */

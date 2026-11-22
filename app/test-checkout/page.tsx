@@ -25,7 +25,7 @@ export default function TestCheckoutPage() {
     <main className="min-h-screen bg-canvas">
       <SiteNav />
       <section className="px-5 py-16 md:py-24">
-        <div className="mx-auto max-w-xl space-y-6 rounded-md border border-line bg-white p-6 sm:p-8">
+        <div className="mx-auto max-w-xl space-y-6 rounded-md border border-line bg-card p-6 sm:p-8">
           <div>
             <Eyebrow className="mb-3">Free · $0.00</Eyebrow>
             <h1 className="text-2xl md:text-3xl leading-tight">Test checkout</h1>

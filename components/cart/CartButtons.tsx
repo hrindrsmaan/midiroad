@@ -13,14 +13,14 @@ export function CartButton() {
       type="button"
       onClick={open}
       aria-label={`Open cart${count ? `, ${count} item${count === 1 ? "" : "s"}` : ""}`}
-      className="relative grid h-10 w-10 cursor-pointer place-items-center rounded-full text-ink transition-colors hover:bg-canvas"
+      className="relative grid h-10 w-10 cursor-pointer place-items-center rounded-full text-ink transition-colors hover:bg-white/5"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-[22px] w-[22px]" aria-hidden>
         <path d="M6 7h12l-1 13H7L6 7Z" strokeLinejoin="round" />
         <path d="M9 7V6a3 3 0 0 1 6 0v1" strokeLinecap="round" />
       </svg>
       {count > 0 && (
-        <span className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-key bg-brand px-1 text-[10px] font-bold leading-none text-white">
+        <span className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-key bg-brand px-1 text-xs font-bold leading-none text-on-brand">
           {count}
         </span>
       )}

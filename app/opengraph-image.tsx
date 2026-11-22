@@ -18,13 +18,13 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#2a2b2e",
+          background: "#0f172a",
           color: "white",
           fontFamily: "sans-serif",
         }}
       >
         <div style={{ display: "flex", fontSize: 44, fontWeight: 800, letterSpacing: -1 }}>
-          MIDI<span style={{ color: "#e0301e" }}>ROAD</span>
+          MIDI<span style={{ color: "#22c55e" }}>ROAD</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2 }}>MIDI Drum Kits for Trap &amp; Drill</div>
@@ -36,7 +36,7 @@ export default function OpengraphImage() {
           {bars.map((h, i) => (
             <div
               key={i}
-              style={{ width: 52, height: `${h * 100}%`, borderRadius: 6, background: i % 4 === 3 ? "#e0301e" : "#f1efe8" }}
+              style={{ width: 52, height: `${h * 100}%`, borderRadius: 6, background: i % 4 === 3 ? "#22c55e" : "#a5b4fc" }}
             />
           ))}
         </div>

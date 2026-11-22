@@ -17,7 +17,7 @@ const NAV_LINKS = [
 /** Sticky top bar, kept to the essentials: logo, beat maker, account and cart. Every other page is linked from the footer. */
 export function SiteNav() {
   return (
-    <nav className="sticky top-0 z-50 border-b border-line bg-white/90 backdrop-blur">
+    <nav className="sticky top-0 z-50 border-b border-line bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 md:px-5">
         <Link href="/" className="flex shrink-0 items-center" aria-label="MidiRoad home">
           {/* A notch smaller on phones, so the links and cart fit beside it. */}
@@ -53,7 +53,7 @@ export function StickyBuyBar({
   originalPrice?: number;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white/95 px-4 py-3 backdrop-blur md:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-background/95 px-4 py-3 backdrop-blur md:hidden">
       <div className="flex items-center gap-4">
         <p className="shrink-0 leading-tight">
           {originalPrice !== undefined && (
@@ -63,7 +63,7 @@ export function StickyBuyBar({
         </p>
         <AddToCartButton
           product={product}
-          className="h-12 flex-1 rounded-key bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+          className="h-12 flex-1 rounded-key bg-brand text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover"
         />
       </div>
     </div>
@@ -72,10 +72,10 @@ export function StickyBuyBar({
 
 export function SiteFooter() {
   return (
-    <footer className="bg-ink text-white">
+    <footer className="border-t border-line bg-[#0b1222] text-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 md:flex-row md:items-start md:justify-between">
         <div className="max-w-xs">
-          <Logo inverted />
+          <Logo />
           <p className="mt-4 text-sm leading-relaxed text-white/60">
             Drag-and-drop MIDI drum kits and trap one-shots for producers.
           </p>
@@ -91,7 +91,7 @@ export function SiteFooter() {
             ))}
           </ul>
           <ul className="space-y-3">
-            <li className="text-white/40">Support</li>
+            <li className="text-muted">Support</li>
             <li>
               <a href="mailto:support@inbox.midiroad.com" className="text-white/60 transition-colors hover:text-white">
                 support@inbox.midiroad.com
@@ -101,7 +101,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-white/40">
+        <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-muted">
           © {new Date().getFullYear()} MidiRoad. All rights reserved.
         </p>
       </div>

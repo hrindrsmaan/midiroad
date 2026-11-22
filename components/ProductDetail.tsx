@@ -1,3 +1,4 @@
+import { BundlePreviews } from "@/components/BundlePreviews";
 import { BundleSpread } from "@/components/KitCover";
 import { ProductHero } from "@/components/ProductHero";
 import { PRICING, formatUSD } from "@/lib/pricing";
@@ -21,12 +22,15 @@ export function ProductDetail() {
       cover={<BundleSpread />}
       eyebrow="Best value · Every kit"
       title={BUNDLE_NAME}
+      headingLevel="h2"
+      intro={`Want patterns written by hand? Get all ${KIT_PRODUCTS.length} kits and ${ONE_SHOT_COUNT} one-shots in one download.`}
       price={PRICING.currentPrice}
       originalPrice={PRICING.originalPrice}
       badge={`Save ${PRICING.discountPercent}%`}
       compact
     >
-      <div className="space-y-5">
+      <div className="space-y-8">
+        <BundlePreviews />
         <dl className="grid grid-cols-3 divide-x divide-line overflow-hidden rounded-md border border-line">
           {STATS.map((s) => (
             <div key={s.label} className="px-3 py-3.5">
@@ -34,12 +38,12 @@ export function ProductDetail() {
               <dd className="font-wide text-2xl tabular-nums text-ink">{s.value}</dd>
               <dd className="mt-0.5 text-xs text-muted">{s.label}</dd>
               {s.note && (
-                <dd className="mt-1 text-[11px] font-semibold text-brand">{s.note}</dd>
+                <dd className="mt-1 text-xs font-semibold text-brand">{s.note}</dd>
               )}
             </div>
           ))}
         </dl>
-        <p className="text-[15px] leading-relaxed text-ink/80">
+        <p className="text-pretty text-[15px] leading-relaxed text-ink/80">
           Every kit in the store in one download, for dark trap, RnB and soul. Bought separately the kits cost{" "}
           {formatUSD(PRICING.originalPrice)}; the one-shots are only in the bundle.
         </p>

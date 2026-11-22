@@ -23,6 +23,8 @@ export function ProductHero({
   originalPrice,
   badge,
   backLink,
+  headingLevel = "h1",
+  intro,
   compact = false,
   children,
 }: {
@@ -37,14 +39,19 @@ export function ProductHero({
   originalPrice?: number;
   badge?: string;
   backLink?: { href: string; label: string };
+  /** h1 on a product page; h2 when the hero sits under another page heading. */
+  headingLevel?: "h1" | "h2";
+  /** One line under the title, e.g. how this product relates to the rest of the page. */
+  intro?: ReactNode;
   /** Less padding and a smaller cover, for when the hero sits mid-page. */
   compact?: boolean;
   children?: ReactNode;
 }) {
+  const Heading = headingLevel;
   return (
     <section
       id={id}
-      className={`scroll-mt-16 bg-white px-5 ${compact ? "py-12 md:py-16" : "pt-8 pb-20 md:pt-12 md:pb-28"}`}
+      className={`scroll-mt-16 bg-background px-5 ${compact ? "py-12 md:py-16" : "pt-8 pb-20 md:pt-12 md:pb-28"}`}
     >
       <div className="mx-auto max-w-6xl">
         {backLink && (
@@ -67,7 +74,8 @@ export function ProductHero({
           <div className="mx-auto w-full max-w-[540px] md:mx-0">
             <div>
               {eyebrow && <Eyebrow className="mb-3">{eyebrow}</Eyebrow>}
-              <h1 className="text-[34px] leading-[1] tracking-[-0.025em] md:text-[52px]">{title}</h1>
+              <Heading className="text-[34px] leading-[1] tracking-[-0.025em] md:text-[52px]">{title}</Heading>
+              {intro && <p className="mt-3 max-w-md text-base leading-relaxed text-muted">{intro}</p>}
               <p className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-2">
                 {originalPrice !== undefined && (
                   <span className="text-xl tabular-nums text-muted line-through md:text-2xl">{formatUSD(originalPrice)}</span>
@@ -76,7 +84,7 @@ export function ProductHero({
                   {formatUSD(price)}
                 </span>
                 {badge && (
-                  <span className="self-center rounded-key bg-yellow px-2.5 py-1 text-xs font-bold text-graphite">
+                  <span className="self-center rounded-key bg-primary px-2.5 py-1 text-xs font-bold text-white">
                     {badge}
                   </span>
                 )}
@@ -89,7 +97,7 @@ export function ProductHero({
                 product={product}
                 label={label}
                 size="default"
-                className="h-12 w-full rounded-key border border-ink bg-transparent text-sm font-semibold text-ink shadow-none transition-colors hover:bg-ink hover:text-white"
+                className="h-12 w-full rounded-key border border-strong bg-transparent text-sm font-semibold text-ink shadow-none transition-colors hover:bg-white/10"
                 aria-label={`Buy ${title} now for ${formatUSD(price)}`}
               >
                 Buy it now

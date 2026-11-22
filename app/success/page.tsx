@@ -99,7 +99,7 @@ export default async function Success({
           items={products.map((p) => ({ item_id: p.id, item_name: p.name, price: p.price, quantity: 1 }))}
         />
       )}
-      <nav className="border-b border-line bg-white">
+      <nav className="border-b border-line bg-background">
         <div className="mx-auto flex h-16 max-w-6xl items-center px-5">
           <Link href="/" aria-label="MidiRoad home">
             <Logo />
@@ -139,7 +139,7 @@ export default async function Success({
               return (
                 <article
                   key={p.id}
-                  className="flex flex-col gap-5 rounded-md border border-line bg-white p-5 sm:flex-row sm:items-center sm:p-6"
+                  className="flex flex-col gap-5 rounded-md border border-line bg-card p-5 sm:flex-row sm:items-center sm:p-6"
                 >
                   <div className="w-28 shrink-0">
                     {kit ? (
@@ -160,7 +160,7 @@ export default async function Success({
                     <a
                       href={href}
                       download
-                      className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-key bg-brand px-7 text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                      className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-key bg-brand px-7 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover"
                     >
                       <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
                         <path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 16.4 7.3 11.7l1.4-1.4 3.3 3.3V3h2Zm-8 14h16v2H4v-2Z" />
@@ -179,7 +179,7 @@ export default async function Success({
 
           {/* Bundle upgrade at the difference */}
           {upgradeFrom && sessionId && (
-            <article className="rounded-md border border-brand/30 bg-white p-5 sm:p-6">
+            <article className="rounded-md border border-brand/30 bg-card p-5 sm:p-6">
               <Eyebrow>Only on this page</Eyebrow>
               <h2 className="mt-2 text-xl md:text-2xl leading-tight">
                 Get everything else for {formatUSD(upgradePrice(upgradeFrom))}
@@ -215,7 +215,7 @@ export default async function Success({
           )}
 
           {/* Quick start */}
-          <article className="rounded-md border border-line bg-white p-5 sm:p-6">
+          <article className="rounded-md border border-line bg-card p-5 sm:p-6">
             <h2 className="text-lg">Start in 30 seconds</h2>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
               {QUICK_START.map((step) => (
