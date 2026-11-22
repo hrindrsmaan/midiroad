@@ -25,6 +25,7 @@ import {
   midiKitFor,
 } from "@/lib/products";
 import { formatUSD } from "@/lib/pricing";
+import { googleConfigured } from "@/lib/auth";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -119,7 +120,7 @@ export default async function KitPage({ params }: Params) {
         </div>
       </ProductHero>
 
-      <MidiKits kitId={kit.id} tone="canvas" />
+      <MidiKits kitId={kit.id} tone="canvas" google={googleConfigured} />
 
       <KitGrid excludeId={kit.id} title="More MIDI packs" eyebrow="Keep exploring" tone="white" />
 

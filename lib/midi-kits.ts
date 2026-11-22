@@ -10,6 +10,8 @@ import data from "./midi-kits.json";
 export type MidiPattern = {
   /** "<kit>/<part>-<n>", the key into midi-notes.json. */
   id: string;
+  /** The same file in the credit library (lib/library.json): downloads go through /api/library/<libraryId>. */
+  libraryId: string;
   name: string;
   bpm: number;
   /** Seconds, including the ring-out tail. */

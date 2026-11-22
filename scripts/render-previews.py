@@ -13,6 +13,7 @@ Reads samples and MIDI patterns straight out of private/midiroad.zip and writes:
 Requires numpy and ffmpeg. Run from the repo root:
   python3 scripts/render-previews.py
 """
+import hashlib
 import json
 import re
 import struct
@@ -332,6 +333,9 @@ def render_midi_kits(zf, samples) -> None:
                 }
                 patterns.append({
                     "id": pid,
+                    # Same id scripts/build-library.mjs gives this file, so a
+                    # pattern downloads (and unlocks) as that library item.
+                    "libraryId": hashlib.sha256(path.encode()).hexdigest()[:12],
                     "name": pattern_name(Path(path).stem)
                     or f"{PARTS[part][1]} {len(patterns) + 1}",
                     "bpm": round(bpm),

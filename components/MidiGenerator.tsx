@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
+import { SignInModal, type DownloadGate } from "@/components/auth/SignInModal";
 import { useMidiPlayer, type MidiLayer } from "@/components/useMidiPlayer";
 import { BEAT_SOUNDS, type BeatSound, type SoundGroup } from "@/lib/beat-sounds";
+import { authClient } from "@/lib/auth-client";
 import { event } from "@/lib/gtag";
 import type { BeatTrack } from "@/lib/midi-file";
 import { paidDownload, type PaidDownload } from "@/lib/paid-download";
@@ -87,6 +89,56 @@ const playKey = (p: GeneratedPattern, kit: Kit) => `${p.id}|${LANES.map((l) => k
 const laneOf = (part: DrumPart) => LANES.find((l) => l.parts.includes(part))!;
 
 const mutedParts = (muted: Set<LaneId>) => LANES.filter((l) => muted.has(l.id)).flatMap((l) => l.parts);
+
+/**
+ * A download asked for while signed out, kept across the sign-in redirect
+ * (localStorage, since the magic link may open in a new tab). Coming back to
+ * ?download=beat rebuilds the beat from it (generation is deterministic) and
+ * finishes the download.
+ */
+const PENDING_KEY = "midiroad:pending-beat";
+const RESUME_PARAM = "download";
+/** Older than this, a saved download is dropped instead of resumed. */
+const PENDING_TTL = 60 * 60 * 1000;
+type PendingBeat = {
+  kind: GeneratedPattern["kind"];
+  vibe: GeneratedPattern["vibe"];
+  bpm: number;
+  key: number;
+  seed: number;
+  hatBase: number;
+  muted: LaneId[];
+  lane?: LaneId;
+  at: number;
+};
+
+function savePending(p: GeneratedPattern, muted: Set<LaneId>, lane?: LaneId) {
+  const pending: PendingBeat = {
+    kind: p.kind,
+    vibe: p.vibe,
+    bpm: p.bpm,
+    key: p.key,
+    seed: p.seed,
+    hatBase: p.hatBase,
+    muted: [...muted],
+    lane,
+    at: Date.now(),
+  };
+  try {
+    localStorage.setItem(PENDING_KEY, JSON.stringify(pending));
+  } catch {}
+}
+
+function takePending(): PendingBeat | null {
+  try {
+    const raw = localStorage.getItem(PENDING_KEY);
+    localStorage.removeItem(PENDING_KEY);
+    const p = raw ? (JSON.parse(raw) as PendingBeat) : null;
+    return p && Date.now() - p.at < PENDING_TTL ? p : null;
+  } catch {
+    return null;
+  }
+}
 
 const spb = (p: GeneratedPattern) => 60 / p.bpm;
 const loopSeconds = (p: GeneratedPattern) => p.beats * spb(p);
@@ -390,7 +442,7 @@ function Kbd({ children }: { children: string }) {
  * random style; earlier ones stay in a history to step back through. Parts
  * can be muted live, and muted parts are left out of the download.
  */
-export function MidiGenerator() {
+export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
   const [bpm, setBpm] = useState(START_BPM);
   /** What's in the tempo field while it's being typed; null shows `bpm`. */
   const [bpmText, setBpmText] = useState<string | null>(null);
@@ -407,6 +459,10 @@ export function MidiGenerator() {
   const [downloadState, setDownload] = useState<PaidDownload | null>(null);
   /** The row (or "all") being downloaded right now. */
   const [downloading, setDownloading] = useState<LaneId | "all" | null>(null);
+  const { data: session, isPending: sessionPending } = authClient.useSession();
+  /** Sign-in (or out of credits) modal, opened by a blocked download. */
+  const [gate, setGate] = useState<DownloadGate | null>(null);
+  const closeGate = useCallback(() => setGate(null), []);
 
   const current = history[index];
   const playing = playingId === playKey(current, kit);
@@ -536,14 +592,25 @@ export function MidiGenerator() {
    * of it (mutes don't apply). The first download of a beat costs 1 credit;
    * the beat's other files are free after that.
    */
-  const download = async (lane?: LaneId) => {
+  const download = (lane?: LaneId) => {
     if (downloading) return;
+    // e.g. "dark-140-snare", or "dark-140-all" for the full beat.
+    track("click_download_midi", `${current.vibe}-${current.bpm}-${lane ?? "all"}`);
+    // Known signed out: skip the round trip and ask straight away.
+    if (!sessionPending && !session) {
+      savePending(current, muted, lane);
+      setGate("sign_in");
+      track("download_blocked", "sign_in");
+      return;
+    }
+    void exportBeat(current, muted, index, lane);
+  };
+
+  const exportBeat = async (current: GeneratedPattern, muted: Set<LaneId>, index: number, lane?: LaneId) => {
     const which = lane ?? "all";
     setDownloading(which);
     setDownload(null);
-    // e.g. "dark-140-snare", or "dark-140-all" for the full beat.
     const label = `${current.vibe}-${current.bpm}-${which}`;
-    track("click_download_midi", label);
     const { kind, bpm, key, seed, hatBase, vibe } = current;
     const off = mutedParts(muted);
     const result = await paidDownload("/api/export", {
@@ -563,9 +630,42 @@ export function MidiGenerator() {
     setDownloading(null);
     setDownload(result);
     if (result.ok) track("download_generated_midi", label);
-    // Why it didn't download: "sign_in", "no_credits" or "failed".
-    else track("download_blocked", result.error);
+    else {
+      // Why it didn't download: "sign_in", "no_credits" or "failed".
+      track("download_blocked", result.error);
+      if (result.error === "sign_in") savePending(current, muted, lane);
+      if (result.error !== "failed") setGate(result.error);
+    }
   };
+
+  // Back from sign-in with ?download=beat: bring the saved beat back and download it.
+  const resumed = useRef(false);
+  const resumeRef = useRef(exportBeat);
+  useEffect(() => {
+    resumeRef.current = exportBeat;
+  });
+  useEffect(() => {
+    if (resumed.current || sessionPending) return;
+    resumed.current = true;
+    const url = new URL(window.location.href);
+    if (url.searchParams.get(RESUME_PARAM) !== "beat") return;
+    url.searchParams.delete(RESUME_PARAM);
+    window.history.replaceState(null, "", url.toString());
+    const saved = takePending();
+    if (!saved || !session) return;
+    const beat = generatePattern(saved.kind, saved.bpm, saved.key, saved.seed, saved.hatBase, saved.vibe);
+    const lanes = new Set(saved.muted);
+    // One-off sync from storage (an outside source) after sign-in, not a render loop.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setHistory([beat]);
+    setIndex(0);
+    setBpm(beat.bpm);
+    setKey(beat.key);
+    setMutedLanes(lanes);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    setMuted(mutedParts(lanes));
+    void resumeRef.current(beat, lanes, 0, saved.lane);
+  }, [sessionPending, session, setMuted]);
 
   // Keyboard shortcuts, while the beat maker is on screen. The handlers
   // change every render, so the listener reads them through a ref.
@@ -781,6 +881,13 @@ export function MidiGenerator() {
 
         <div className="mt-5 text-sm">
           <DownloadNotice state={downloadState} />
+          <SignInModal
+            reason={gate}
+            fileName="Your beat"
+            google={google}
+            callbackURL={`/?${RESUME_PARAM}=beat#generator`}
+            onClose={closeGate}
+          />
         </div>
       </div>
     </section>

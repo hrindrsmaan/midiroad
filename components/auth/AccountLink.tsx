@@ -31,7 +31,7 @@ export function AccountLink() {
 
   const credits = live ?? (data.user as { credits?: number }).credits ?? 0;
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-3.5 md:gap-5">
       <Link
         href={credits > 0 ? "/account" : "/pricing"}
         title={credits > 0 ? "Your credits: 1 credit = 1 MIDI file" : "Out of credits: get a plan"}
@@ -43,10 +43,28 @@ export function AccountLink() {
         {credits.toLocaleString()}
         <span className="hidden font-medium text-muted sm:inline">credits</span>
       </Link>
-      <Link href="/account" className="text-sm font-medium text-muted transition-colors hover:text-ink">
-        Account
+      <Link href="/pricing" className="text-sm font-medium text-muted transition-colors hover:text-ink">
+        Plans
+      </Link>
+      <Link
+        href="/account"
+        aria-label="Account"
+        className="text-sm font-medium text-muted transition-colors hover:text-ink"
+      >
+        <span className="hidden sm:inline">Account</span>
+        <AccountIcon />
       </Link>
     </div>
+  );
+}
+
+/** Stands in for the "Account" label on phones, where the nav is tight. */
+function AccountIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true" className="sm:hidden">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21a8 8 0 0 1 16 0" />
+    </svg>
   );
 }
 
