@@ -20,7 +20,7 @@ export function Section({
     <section
       id={id}
       aria-labelledby={labelledBy}
-      className={`px-5 py-20 md:py-28 scroll-mt-16 ${tone === "canvas" ? "bg-canvas" : "bg-white"} ${className}`}
+      className={`px-5 py-20 md:py-28 scroll-mt-16 ${tone === "canvas" ? "bg-canvas" : "bg-background"} ${className}`}
     >
       <div className="mx-auto max-w-6xl">{children}</div>
     </section>

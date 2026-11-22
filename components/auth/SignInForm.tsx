@@ -49,7 +49,7 @@ export function SignInForm({ google, callbackURL }: { google: boolean; callbackU
     <div className="space-y-5">
       {google && (
         <>
-          <button onClick={onGoogle} className={`${BUTTON} border border-line bg-white hover:bg-canvas`}>
+          <button onClick={onGoogle} className={`${BUTTON} border border-line bg-card hover:bg-white/5`}>
             <GoogleIcon />
             Continue with Google
           </button>
@@ -72,12 +72,12 @@ export function SignInForm({ google, callbackURL }: { google: boolean; callbackU
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="h-12 w-full rounded-md border border-line bg-white px-4 text-sm outline-none focus:border-ink"
+          className="h-12 w-full rounded-md border border-line bg-card px-4 text-sm outline-none focus:border-strong"
         />
         <button
           type="submit"
           disabled={state === "sending"}
-          className={`${BUTTON} bg-brand text-white hover:bg-brand-hover`}
+          className={`${BUTTON} bg-brand text-on-brand hover:bg-brand-hover`}
         >
           {state === "sending" ? "Sending…" : "Email me a sign-in link"}
         </button>

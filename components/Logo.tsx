@@ -6,8 +6,9 @@
  * on a 64-unit grid so it stays crisp from a 16px favicon up.
  */
 
-const INK = "#2a2b2e";
-const BRAND = "#e0301e";
+const TILE = "#7c3aed";
+const ROAD = "#f8fafc";
+const BRAND = "#22c55e";
 
 /** Center-line notes, near to far: [y, height, width]. */
 const NOTES: [number, number, number][] = [
@@ -35,9 +36,9 @@ export function LogoMark({
   inverted?: boolean;
   title?: string;
 }) {
-  const tile = inverted ? "#f1efe8" : INK;
-  const road = inverted ? INK : "#f1efe8";
-  const side = inverted ? "#b9bab6" : "#55575c";
+  const tile = inverted ? ROAD : TILE;
+  const road = inverted ? TILE : ROAD;
+  const side = inverted ? "#a5b4fc" : "#c4b5fd";
   return (
     <svg
       viewBox="0 0 64 64"
@@ -75,7 +76,7 @@ export function Logo({
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <LogoMark className={markClassName} inverted={inverted} />
       <span
-        className={`font-wide text-[21px] leading-none tracking-[-0.03em] ${inverted ? "text-ivory" : "text-ink"}`}
+        className={`font-heading text-[22px] leading-none ${inverted ? "text-ivory" : "text-ink"}`}
       >
         MIDI<span className={"text-brand"}>ROAD</span>
       </span>

@@ -18,9 +18,9 @@ const VISIBLE = 12;
 const HIT_THRESHOLD = 0.08;
 /** Query param that resumes a download after sign-in: ?download=<libraryId>. */
 const RESUME_PARAM = "download";
-/** One palette for every kit: graphite at rest, signal red while playing. */
-const INK = "#2a2b2e";
-const BRAND = "#e0301e";
+/** One palette for every kit: slate at rest, play green while playing. */
+const INK = "#64748b";
+const BRAND = "#22c55e";
 
 /**
  * A pattern drawn like a lane in a MIDI editor: hits as pills, faint bar
@@ -113,12 +113,12 @@ function Chip({
       onClick={onClick}
       className={`cursor-pointer rounded-key border px-4 py-2 text-[13px] font-medium transition-colors ${
         selected
-          ? "border-ink bg-ink text-white"
-          : "border-line bg-white text-ink hover:border-ink"
+          ? "border-primary bg-primary text-white"
+          : "border-line bg-card text-ink hover:border-strong"
       }`}
     >
       {label}
-      <span className={`ml-1.5 ${selected ? "text-white/60" : "text-muted"}`}>
+      <span className={`ml-1.5 ${selected ? "text-white/85" : "text-muted"}`}>
         {count}
       </span>
     </button>
@@ -324,7 +324,7 @@ export function MidiKits({
           return (
             <div
               key={pattern.id}
-              className={`min-w-0 rounded-md border bg-white px-4 py-3.5 transition-colors ${active ? "border-brand" : "border-line"}`}
+              className={`min-w-0 rounded-md border bg-card px-4 py-3.5 transition-colors ${active ? "border-brand" : "border-line"}`}
             >
               <div className="flex items-center gap-3">
                 <button
@@ -333,7 +333,7 @@ export function MidiKits({
                   aria-label={`${active ? "Stop" : "Play"} ${kitDisplayName(pattern.kitId, pattern.kitName)} ${pattern.name}`}
                   aria-pressed={active}
                   className={`grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full transition-colors [&_svg]:h-4 [&_svg]:w-4 ${
-                    active ? "bg-brand text-white" : "bg-ink text-white hover:bg-brand"
+                    active ? "bg-brand text-on-brand" : "bg-primary text-white hover:bg-primary-hover"
                   }`}
                 >
                   {active ? <PauseIcon /> : <PlayIcon />}
@@ -363,7 +363,7 @@ export function MidiKits({
                   className={`grid h-9 w-9 shrink-0 cursor-pointer place-items-center self-start rounded-full border transition-colors disabled:cursor-default [&_svg]:h-4 [&_svg]:w-4 ${
                     saved.has(pattern.id)
                       ? "border-brand/30 bg-brand/5 text-brand"
-                      : "border-line text-ink hover:border-ink hover:bg-ink hover:text-white disabled:hover:border-line disabled:hover:bg-transparent disabled:hover:text-ink"
+                      : "border-line text-ink hover:border-strong hover:bg-white/10 disabled:hover:border-line disabled:hover:bg-transparent disabled:hover:text-ink"
                   }`}
                 >
                   {busy === pattern.id ? <Spinner /> : saved.has(pattern.id) ? <CheckIcon /> : <DownloadIcon />}
@@ -379,7 +379,7 @@ export function MidiKits({
           <button
             type="button"
             onClick={() => setExpanded((e) => !e)}
-            className="h-11 cursor-pointer rounded-key border border-ink px-6 text-sm font-semibold transition-colors hover:bg-ink hover:text-white"
+            className="h-11 cursor-pointer rounded-key border border-strong px-6 text-sm font-semibold transition-colors hover:bg-white/10"
           >
             {expanded ? "Show fewer" : `Show all ${filtered.length}`}
           </button>
@@ -394,7 +394,7 @@ export function MidiKits({
       {notice && (
         <div
           role="status"
-          className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-sm rounded-md bg-ink px-4 py-3 text-center text-sm text-white shadow-2xl md:bottom-6"
+          className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-sm rounded-md border border-line bg-card px-4 py-3 text-center text-sm text-white shadow-2xl md:bottom-6"
         >
           {notice.ok ? (
             <>

@@ -36,7 +36,7 @@ export function AccountLink() {
         href={credits > 0 ? "/account" : "/pricing"}
         title={credits > 0 ? "Your credits: 1 credit = 1 MIDI file" : "Out of credits: get a plan"}
         className={`flex h-8 items-center gap-1.5 rounded-key border px-3 text-xs font-semibold tabular-nums transition-colors ${
-          credits > 0 ? "border-line text-ink hover:bg-canvas" : "border-brand/40 bg-brand/5 text-brand hover:bg-brand/10"
+          credits > 0 ? "border-line text-ink hover:bg-white/5" : "border-brand/40 bg-brand/5 text-brand hover:bg-brand/10"
         }`}
       >
         <CreditIcon />

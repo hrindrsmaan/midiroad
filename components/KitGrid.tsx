@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { KitCardPlay } from "@/components/BundlePreviews";
 import { BundleCover, KitCover } from "@/components/KitCover";
 import { AddToCartButton } from "@/components/cart/CartButtons";
 import { BUNDLE_ID, KIT_PRODUCTS, BUNDLE_NAME, BUNDLE_PRICE, KITS_TOTAL } from "@/lib/products";
@@ -21,25 +22,29 @@ type Card = {
  */
 export function KitGrid({
   excludeId,
+  includeBundle = true,
   title = "MIDI Packs",
   eyebrow = "Shop",
   tone = "canvas",
 }: {
   excludeId?: string;
+  /** Off where the bundle already has its own section above the grid. */
+  includeBundle?: boolean;
   title?: string;
   eyebrow?: string;
   tone?: Tone;
 }) {
+  const bundleCard: Card = {
+    key: "bundle",
+    product: BUNDLE_ID,
+    href: "/#main-cta",
+    name: `${BUNDLE_NAME} Bundle`,
+    price: BUNDLE_PRICE,
+    originalPrice: KITS_TOTAL,
+    cover: <BundleCover />,
+  };
   const cards: Card[] = [
-    {
-      key: "bundle",
-      product: BUNDLE_ID,
-      href: "/#main-cta",
-      name: `${BUNDLE_NAME} Bundle`,
-      price: BUNDLE_PRICE,
-      originalPrice: KITS_TOTAL,
-      cover: <BundleCover />,
-    },
+    ...(includeBundle ? [bundleCard] : []),
     ...KIT_PRODUCTS.filter((k) => k.id !== excludeId).map((kit) => ({
       key: kit.id,
       product: kit.id,
@@ -60,7 +65,7 @@ export function KitGrid({
           <li key={card.key}>
             <Link
               href={card.href}
-              className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber"
+              className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               <div className="max-w-[260px] drop-shadow-[0_14px_14px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1.5">
                 {card.cover}
@@ -73,10 +78,11 @@ export function KitGrid({
                 <span className="font-bold text-brand">{formatUSD(card.price)}</span>
               </p>
             </Link>
-            <div className="mt-3">
+            <div className="mt-3 flex flex-wrap gap-2">
+              {card.key !== "bundle" && <KitCardPlay kitId={card.product} kitName={card.name} />}
               <AddToCartButton
                 product={card.product}
-                className="h-9 rounded-key border border-ink px-4 text-[13px] font-semibold transition-colors hover:bg-ink hover:text-white"
+                className="h-9 rounded-key border border-strong px-4 text-[13px] font-semibold transition-colors hover:bg-white/10"
               />
             </div>
           </li>

@@ -52,13 +52,13 @@ export function SignInModal({
         aria-modal="true"
         aria-labelledby="signin-modal-title"
         tabIndex={-1}
-        className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-6 shadow-2xl outline-none sm:max-w-md sm:rounded-md sm:p-8"
+        className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-card p-6 shadow-2xl outline-none sm:max-w-md sm:rounded-md sm:p-8"
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-3 top-3 grid h-10 w-10 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-canvas hover:text-ink"
+          className="absolute right-3 top-3 grid h-10 w-10 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-white/5 hover:text-ink"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
             <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
@@ -103,14 +103,14 @@ export function SignInModal({
             <div className="mt-6 flex flex-col gap-3">
               <Link
                 href="/pricing"
-                className="flex h-12 items-center justify-center rounded-key bg-brand text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                className="flex h-12 items-center justify-center rounded-key bg-brand text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover"
               >
                 See plans
               </Link>
               <Link
                 href="/#main-cta"
                 onClick={onClose}
-                className="flex h-12 items-center justify-center rounded-key border border-line text-sm font-semibold transition-colors hover:bg-canvas"
+                className="flex h-12 items-center justify-center rounded-key border border-line text-sm font-semibold transition-colors hover:bg-white/5"
               >
                 Get the bundle
               </Link>
