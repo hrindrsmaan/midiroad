@@ -29,7 +29,7 @@ ${kits.join("\n")}
 
 ## Free tools
 
-- [Free trap beat maker](${absoluteUrl("/#generator")}): generates a trap beat (hats, snare, kick, 808) in the browser, with tempo, key, sound picks and mutes. Export the whole beat or a single track as MIDI.
+- [Free trap beat maker](${absoluteUrl("/beat-maker")}): generates a trap beat (hats, snare, kick, 808) in the browser, with tempo, key, sound picks and mutes. Export the whole beat or a single track as MIDI.
 - [MIDI library](${absoluteUrl("/library")}): single hand-made MIDI patterns, downloadable one at a time with credits.
 - [Pricing](${absoluteUrl("/pricing")}): monthly MIDI credit plans for the library and the beat maker. New accounts get free credits.
 

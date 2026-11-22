@@ -6,6 +6,7 @@ import { absoluteUrl } from "@/lib/site";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
+    { url: absoluteUrl("/beat-maker"), changeFrequency: "monthly", priority: 0.9 },
     ...KIT_PRODUCTS.map((kit) => ({
       url: absoluteUrl(`/kits/${kit.slug}`),
       changeFrequency: "monthly" as const,

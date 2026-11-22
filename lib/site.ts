@@ -49,7 +49,7 @@ export const siteJsonLd = () => [
   },
 ];
 
-/** The bundle and the free beat maker, for the home page. */
+/** The bundle, for the home page. */
 export const homeJsonLd = () => [
   {
     "@context": "https://schema.org",
@@ -62,11 +62,15 @@ export const homeJsonLd = () => [
     url: SITE_URL,
     offers: offer(BUNDLE_PRICE, SITE_URL),
   },
+];
+
+/** The free beat maker, for its own page. */
+export const beatMakerJsonLd = () => [
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "MidiRoad Free Trap Beat Maker",
-    url: absoluteUrl("/#generator"),
+    url: absoluteUrl("/beat-maker"),
     applicationCategory: "MultimediaApplication",
     operatingSystem: "Any (runs in the browser)",
     description:

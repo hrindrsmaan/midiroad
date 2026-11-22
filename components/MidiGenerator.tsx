@@ -907,7 +907,7 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
             reason={gate}
             fileName="Your beat"
             google={google}
-            callbackURL={`/?${RESUME_PARAM}=beat#generator`}
+            callbackURL={`/beat-maker?${RESUME_PARAM}=beat`}
             onClose={closeGate}
           />
         </div>

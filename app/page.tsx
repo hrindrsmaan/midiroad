@@ -1,7 +1,7 @@
 import { ProductDetail } from "@/components/ProductDetail";
 import { KitGrid } from "@/components/KitGrid";
 import { MidiKits } from "@/components/MidiKits";
-import { MidiGenerator } from "@/components/MidiGenerator";
+import { BeatMakerPromo } from "@/components/BeatMakerPromo";
 import { FAQSection } from "@/components/FAQSection";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { BUNDLE_ID } from "@/lib/products";
@@ -17,19 +17,19 @@ export default function Page() {
       <JsonLd data={[...homeJsonLd(), faqJsonLd(FAQS)]} />
       <SiteNav />
 
-      {/* Free beat maker first: make a beat, hear it, download the MIDI */}
-      <MidiGenerator google={googleConfigured} />
-
-      {/* Then the bundle: best value, every kit plus the one-shots */}
+      {/* The bundle leads: best value, every kit plus the one-shots */}
       <ProductDetail />
 
       {/* Every kit, each with its own page */}
       <KitGrid tone="canvas" includeBundle={false} title="Or buy one kit at a time" />
 
-      {/* Every MIDI pattern, playable */}
-      <MidiKits tone="white" google={googleConfigured} />
+      {/* The free beat maker lives on its own page */}
+      <BeatMakerPromo />
 
-      <FAQSection tone="canvas" />
+      {/* Every MIDI pattern, playable */}
+      <MidiKits tone="canvas" google={googleConfigured} />
+
+      <FAQSection tone="white" />
 
       <StickyBuyBar
         product={BUNDLE_ID}
