@@ -5,7 +5,8 @@ import { headers } from "next/headers";
 import "./globals.css";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteJsonLd } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,36 +41,46 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
+const HOME_TITLE = "MIDI Drum Kits for Trap & Drill + Free Beat Maker | MidiRoad";
+
 export const metadata: Metadata = {
-  title: "Download MIDI Drum Kits | Premium Packs",
+  metadataBase: new URL(SITE_URL),
+  title: { default: HOME_TITLE, template: `%s | ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
   verification: {
     google: "2I4opu_i4ibpzNbr4aZGNVITaV38iWPM9IcknqvL-ws",
   },
-  description: `${MIDI_PATTERN_COUNT} royalty-free MIDI drum patterns and ${ONE_SHOT_COUNT} drum one-shots for dark trap, RnB and soul. Drag and drop into any DAW.`,
   keywords: [
-    "MIDI kits",
     "MIDI drum kits",
-    "drum samples",
-    "beat making",
+    "trap MIDI drum kit",
+    "drill MIDI drum patterns",
+    "808 MIDI",
+    "hi-hat MIDI patterns",
     "royalty free MIDI",
+    "free beat maker",
+    "trap beat maker online",
     "FL Studio MIDI",
-    "Ableton Live packs",
+    "Ableton MIDI packs",
   ],
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Download MIDI Drum Kits | Premium Packs",
-    description:
-      "Finish beats faster with drag-and-drop MIDI drum patterns and trap one-shots.",
+    title: HOME_TITLE,
+    description: SITE_DESCRIPTION,
+    url: "/",
     type: "website",
-    siteName: "MidiRoad",
+    siteName: SITE_NAME,
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Download MIDI Drum Kits | Premium Packs",
-    description: "Drag-and-drop MIDI drum kits and trap one-shots for producers.",
+    title: HOME_TITLE,
+    description: SITE_DESCRIPTION,
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
   },
 };
 
@@ -129,6 +140,7 @@ export default async function RootLayout({
             }}
           />
         )}
+        <JsonLd data={siteJsonLd()} />
         <CartProvider>
           {children}
           <CartDrawer />

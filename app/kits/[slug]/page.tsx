@@ -8,6 +8,9 @@ import { KitGrid } from "@/components/KitGrid";
 import { KitPreviews } from "@/components/KitPreviews";
 import { MidiKits } from "@/components/MidiKits";
 import { FAQSection } from "@/components/FAQSection";
+import { JsonLd } from "@/components/JsonLd";
+import { FAQS } from "@/lib/faq";
+import { faqJsonLd, kitJsonLd } from "@/lib/site";
 import { HeroBlock, ProductHero } from "@/components/ProductHero";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { ONE_SHOT_COUNT } from "@/lib/bundle";
@@ -34,11 +37,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const kit = kitBySlug((await params).slug);
   if (!kit) return {};
   const stats = kitStats(kit);
-  const title = `${kit.name} – ${stats.patterns} MIDI Drum Patterns | MidiRoad`;
+  const title = `${kit.name} – MIDI Drum Kit, ${stats.patterns} Patterns`;
+  const description = `${kit.tagline} ${stats.patterns} royalty-free MIDI drum patterns, ${stats.minBpm}–${stats.maxBpm} BPM. Drag and drop into FL Studio, Ableton, Logic or any DAW.`;
+  const path = `/kits/${kit.slug}`;
   return {
     title,
-    description: `${kit.tagline} ${stats.patterns} royalty-free MIDI drum patterns, ${stats.minBpm}–${stats.maxBpm} BPM. Drag and drop into any DAW.`,
-    openGraph: { title, description: kit.tagline, type: "website", siteName: "MidiRoad" },
+    description,
+    alternates: { canonical: path },
+    // Pages that set their own openGraph lose the root share image, so name it.
+    openGraph: { title, description, url: path, type: "website", siteName: "MidiRoad", images: "/opengraph-image" },
+    twitter: { card: "summary_large_image", title, description, images: "/opengraph-image" },
   };
 }
 
@@ -60,6 +68,7 @@ export default async function KitPage({ params }: Params) {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-white pb-24 md:pb-0">
+      <JsonLd data={[...kitJsonLd(kit), faqJsonLd(FAQS)]} />
       <SiteNav />
 
       <ProductHero
