@@ -5,6 +5,7 @@ import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
 import { useMidiPlayer, type MidiLayer } from "@/components/useMidiPlayer";
 import { BEAT_SOUNDS, type BeatSound, type SoundGroup } from "@/lib/beat-sounds";
 import { event } from "@/lib/gtag";
+import type { BeatTrack } from "@/lib/midi-file";
 import { paidDownload, type PaidDownload } from "@/lib/paid-download";
 import { SIGNUP_CREDITS } from "@/lib/plans";
 import {
@@ -30,7 +31,8 @@ const MIX: Record<DrumPart, number> = { kick: 1, snare: 0.8, hihat: 0.45, "open-
 const DRUM = "#e7e5e4";
 const BASS = "#e5392f";
 
-type LaneId = "hats" | "snare" | "kick" | "808";
+/** Lanes are the rows the export route knows as tracks. */
+type LaneId = BeatTrack;
 
 type Lane = {
   id: LaneId;
@@ -130,6 +132,8 @@ function BeatRoll({
   onToggleMute,
   kit,
   onPickSound,
+  onDownload,
+  downloading,
 }: {
   pattern: GeneratedPattern;
   progress: number;
@@ -138,6 +142,9 @@ function BeatRoll({
   onToggleMute: (lane: LaneId) => void;
   kit: Kit;
   onPickSound: (lane: LaneId, sound: BeatSound) => void;
+  onDownload: (lane: LaneId) => void;
+  /** The row (or "all") whose download is in flight. */
+  downloading: LaneId | "all" | null;
 }) {
   const pct = (beat: number) => (beat / pattern.beats) * 100;
   const now = progress * pattern.beats;
@@ -161,7 +168,7 @@ function BeatRoll({
   const lanes = LANES.map((lane) => ({ ...lane, notes: laneNotes(pattern, lane.parts) }));
 
   return (
-    <div className="grid grid-cols-[6.75rem_1fr] md:grid-cols-[9.5rem_1fr]">
+    <div className="grid grid-cols-[8.75rem_1fr] md:grid-cols-[11.5rem_1fr]">
       {/* Bar ruler */}
       <div className="h-7 border-b border-r border-white/[0.06]" />
       <div className="relative h-7 border-b border-white/[0.06]">
@@ -178,16 +185,19 @@ function BeatRoll({
         ))}
       </div>
 
-      {/* Channel strips: name, sound picker, hit light, mute */}
+      {/* Channel strips: name, sound picker, hit light, mute, download */}
       <div className="flex flex-col border-r border-white/[0.06]">
         {lanes.map((lane) => {
           const off = muted.has(lane.id);
+          // The last part still sounding can't be muted.
+          const lastOn = !off && muted.size === LANES.length - 1;
           const lit = !off && lane.notes.some(isHot);
+          const busy = downloading === lane.id;
           const all = lane.sounds.flatMap((g) => g.sounds);
           return (
             <div
               key={lane.id}
-              className={`flex items-center gap-2 border-b border-white/[0.06] px-2.5 md:px-3 last:border-b-0 ${lane.height}`}
+              className={`flex items-center gap-1.5 border-b border-white/[0.06] px-2 md:gap-2 md:px-3 last:border-b-0 ${lane.height}`}
             >
               <span
                 aria-hidden
@@ -231,14 +241,29 @@ function BeatRoll({
               <button
                 type="button"
                 onClick={() => onToggleMute(lane.id)}
+                disabled={lastOn}
                 aria-pressed={off}
-                aria-label={`${off ? "Unmute" : "Mute"} ${lane.label}`}
-                title={off ? "Unmute" : "Mute"}
-                className={`grid h-5 w-5 shrink-0 cursor-pointer place-items-center rounded font-mono text-[10px] font-semibold transition-colors ${
-                  off ? "bg-[#e5392f] text-white" : "bg-white/[0.06] text-white/45 hover:bg-white/10 hover:text-white/80"
+                aria-label={`Mute ${lane.label}`}
+                title={
+                  lastOn ? "Keep at least one part playing" : off ? `${lane.label} muted: click to unmute` : `Mute ${lane.label}`
+                }
+                className={`${STRIP_BTN} ${
+                  off
+                    ? "bg-[#e5392f] text-white hover:bg-[#d02f25]"
+                    : "bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white disabled:hover:bg-white/[0.06] disabled:hover:text-white/60"
                 }`}
               >
-                M
+                {off ? <MutedIcon /> : <SpeakerIcon />}
+              </button>
+              <button
+                type="button"
+                onClick={() => onDownload(lane.id)}
+                disabled={downloading !== null || !lane.notes.length}
+                aria-label={`Download ${lane.label} MIDI`}
+                title={`Download only the ${lane.label.toLowerCase()} as MIDI`}
+                className={`${STRIP_BTN} bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white disabled:hover:bg-white/[0.06] disabled:hover:text-white/60`}
+              >
+                {busy ? <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-white/25 border-t-white" /> : <DownloadIcon />}
               </button>
             </div>
           );
@@ -324,7 +349,14 @@ const icon = (path: ReactNode) => (
 );
 const ChevronLeft = () => icon(<path d="m15 6-6 6 6 6" />);
 const ChevronRight = () => icon(<path d="m9 6 6 6-6 6" />);
+/** Square icon buttons on a channel strip, with a larger touch target than they look. */
+const STRIP_BTN =
+  "relative grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded transition-colors after:absolute after:-inset-1 disabled:cursor-default disabled:opacity-35 [&_svg]:h-3.5 [&_svg]:w-3.5";
+
 const DownloadIcon = () => icon(<><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" /></>);
+const SpeakerIcon = () =>
+  icon(<><path d="M11 5 6 9H2v6h4l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a10 10 0 0 1 0 14" /></>);
+const MutedIcon = () => icon(<><path d="M11 5 6 9H2v6h4l5 4V5Z" /><path d="m22 9-6 6" /><path d="m16 9 6 6" /></>);
 const ShuffleIcon = () =>
   icon(<><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></>);
 
@@ -372,7 +404,9 @@ export function MidiGenerator() {
   const tempoTrackRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const sectionRef = useRef<HTMLElement>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
-  const [downloadState, setDownload] = useState<PaidDownload | "busy" | null>(null);
+  const [downloadState, setDownload] = useState<PaidDownload | null>(null);
+  /** The row (or "all") being downloaded right now. */
+  const [downloading, setDownloading] = useState<LaneId | "all" | null>(null);
 
   const current = history[index];
   const playing = playingId === playKey(current, kit);
@@ -497,11 +531,19 @@ export function MidiGenerator() {
     track(next.has(lane) ? "mute_lane" : "unmute_lane", lane);
   };
 
-  /** Exports through the server, which charges 1 credit (re-downloads are free). */
-  const download = async () => {
-    if (downloadState === "busy") return;
-    setDownload("busy");
-    track("click_download_midi", `${current.vibe}-${current.bpm}`);
+  /**
+   * Exports through the server: the full beat minus muted parts, or one row
+   * of it (mutes don't apply). The first download of a beat costs 1 credit;
+   * the beat's other files are free after that.
+   */
+  const download = async (lane?: LaneId) => {
+    if (downloading) return;
+    const which = lane ?? "all";
+    setDownloading(which);
+    setDownload(null);
+    // e.g. "dark-140-snare", or "dark-140-all" for the full beat.
+    const label = `${current.vibe}-${current.bpm}-${which}`;
+    track("click_download_midi", label);
     const { kind, bpm, key, seed, hatBase, vibe } = current;
     const off = mutedParts(muted);
     const result = await paidDownload("/api/export", {
@@ -515,11 +557,12 @@ export function MidiGenerator() {
         hatBase,
         vibe,
         index,
-        parts: current.tracks.map((t) => t.part).filter((p) => !off.includes(p)),
+        ...(lane ? { track: lane } : { parts: current.tracks.map((t) => t.part).filter((p) => !off.includes(p)) }),
       }),
     });
+    setDownloading(null);
     setDownload(result);
-    if (result.ok) track("download_generated_midi", `${current.vibe}-${current.bpm}`);
+    if (result.ok) track("download_generated_midi", label);
     // Why it didn't download: "sign_in", "no_credits" or "failed".
     else track("download_blocked", result.error);
   };
@@ -685,13 +728,13 @@ export function MidiGenerator() {
               </button>
               <button
                 type="button"
-                onClick={download}
-                disabled={downloadState === "busy"}
-                title="Download MIDI (1 credit)"
+                onClick={() => download()}
+                disabled={downloading !== null}
+                title="Download the full beat as MIDI, muted parts left out (1 credit)"
                 className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border border-white/15 px-3 text-sm md:px-4 font-semibold text-white transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:flex-none"
               >
                 <DownloadIcon />
-                {downloadState === "busy" ? "Preparing…" : "MIDI"}
+                {downloading === "all" ? "Preparing…" : "Full MIDI"}
               </button>
             </div>
           </div>
@@ -707,13 +750,15 @@ export function MidiGenerator() {
               onToggleMute={toggleMute}
               kit={kit}
               onPickSound={pickSound}
+              onDownload={download}
+              downloading={downloading}
             />
             <button
               type="button"
               tabIndex={-1}
               aria-hidden
               onClick={togglePlay}
-              className="absolute inset-y-0 left-[6.75rem] right-0 top-7 cursor-pointer md:left-[9.5rem]"
+              className="absolute inset-y-0 left-[8.75rem] right-0 top-7 cursor-pointer md:left-[11.5rem]"
             >
               {!hasPlayed && (
                 <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-black shadow-lg [&_svg]:h-3 [&_svg]:w-3">
@@ -745,8 +790,8 @@ export function MidiGenerator() {
 const NOTICE_LINK = "font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white";
 
 /** Under the beat maker: what the last download did, or what each one costs. */
-function DownloadNotice({ state }: { state: PaidDownload | "busy" | null }) {
-  if (state && state !== "busy" && !state.ok) {
+function DownloadNotice({ state }: { state: PaidDownload | null }) {
+  if (state && !state.ok) {
     if (state.error === "sign_in") {
       return (
         <p className="text-white/70">
@@ -771,17 +816,19 @@ function DownloadNotice({ state }: { state: PaidDownload | "busy" | null }) {
     }
     return <p className="text-white/70">{state.message}</p>;
   }
-  if (state && state !== "busy" && state.ok) {
+  if (state?.ok) {
     return (
       <p className="text-white/70">
         <span className="font-semibold text-white">Saved {state.filename}.</span> Drag it into your DAW.{" "}
-        {state.charged ? "1 credit used" : "Already yours, no credit used"} · {state.credits} left.
+        {state.charged ? "1 credit used, and this beat's other files are now free" : "Already yours, no credit used"} ·{" "}
+        {state.credits} left.
       </p>
     );
   }
   return (
     <p className="text-white/45">
-      Each download uses 1 credit, and muted parts are left out of the file. Want patterns written by hand?{" "}
+      Each beat uses 1 credit. Full MIDI leaves muted parts out, and once the beat is yours each row downloads on
+      its own for free. Want patterns written by hand?{" "}
       <a href="/library" className={NOTICE_LINK}>
         Browse the library
       </a>{" "}

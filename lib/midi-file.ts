@@ -69,8 +69,24 @@ export function patternToMidi(pattern: GeneratedPattern): Uint8Array {
   return new Uint8Array([...header, ...trackChunk("MidiRoad", conductor), ...tracks.flat()]);
 }
 
-export function midiFileName(pattern: GeneratedPattern, index: number) {
+/**
+ * The beat maker's rows, as the parts each one exports. Hats keep open hats
+ * on their own track, so they can go on an open hat sample.
+ */
+export const BEAT_TRACKS = {
+  hats: ["hihat", "open-hat"],
+  snare: ["snare"],
+  kick: ["kick"],
+  "808": ["808"],
+} as const satisfies Record<string, readonly DrumPart[]>;
+
+export type BeatTrack = keyof typeof BEAT_TRACKS;
+
+export const isBeatTrack = (v: unknown): v is BeatTrack => typeof v === "string" && Object.hasOwn(BEAT_TRACKS, v);
+
+/** E.g. midiroad-beat-140bpm-Fmin-1.mid, or ...-1-snare.mid for one row of it. */
+export function midiFileName(pattern: GeneratedPattern, index: number, track?: BeatTrack) {
   const kind = { hihat: "hihat", "808": "808", kick: "kick", beat: "beat" }[pattern.kind];
   const key = pattern.kind === "808" || pattern.kind === "beat" ? `-${["C", "Cs", "D", "Ds", "E", "F", "Fs", "G", "Gs", "A", "As", "B"][pattern.key]}min` : "";
-  return `midiroad-${kind}-${pattern.bpm}bpm${key}-${index + 1}.mid`;
+  return `midiroad-${kind}-${pattern.bpm}bpm${key}-${index + 1}${track ? `-${track}` : ""}.mid`;
 }

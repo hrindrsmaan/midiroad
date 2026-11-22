@@ -1,5 +1,5 @@
 import { spendCredit } from "@/lib/credits";
-import { midiFileName, patternToMidi } from "@/lib/midi-file";
+import { BEAT_TRACKS, isBeatTrack, midiFileName, patternToMidi } from "@/lib/midi-file";
 import { VIBE_IDS, generatePattern, type GenKind, type Vibe } from "@/lib/midi-generator";
 import { creditError, currentUser, midiResponse } from "@/lib/session";
 
@@ -13,6 +13,9 @@ const int = (v: unknown, min: number, max: number) =>
  * Exports a beat maker pattern for 1 credit. The pattern is rebuilt here from
  * its seed (generation is deterministic), so the file can't be had without
  * paying by editing the request.
+ *
+ * The credit unlocks the pattern, not one file: once it's paid for, the full
+ * beat and each of its rows (`track`: hats, snare, kick or 808) download free.
  */
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -31,8 +34,10 @@ export async function POST(req: Request) {
   if (!user) return creditError(401);
 
   const pattern = generatePattern(kind, bpm, key, seed, hatBase, vibe);
-  // Muted parts are left out of the file; the credit covers the whole pattern.
-  const parts: unknown = body?.parts;
+  // One row of the beat, or the beat minus its muted parts.
+  const asked: unknown = body?.track;
+  const track = isBeatTrack(asked) ? asked : undefined;
+  const parts: unknown = track ? BEAT_TRACKS[track] : body?.parts;
   const kept = Array.isArray(parts)
     ? { ...pattern, tracks: pattern.tracks.filter((t) => parts.includes(t.part)) }
     : pattern;
@@ -41,5 +46,5 @@ export async function POST(req: Request) {
   const spent = await spendCredit(user.id, `gen:${pattern.id}`);
   if (!spent.ok) return creditError(402, spent.credits);
 
-  return midiResponse(patternToMidi(kept), midiFileName(pattern, index), spent.credits, spent.charged);
+  return midiResponse(patternToMidi(kept), midiFileName(pattern, index, track), spent.credits, spent.charged);
 }
