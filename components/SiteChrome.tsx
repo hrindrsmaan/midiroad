@@ -8,7 +8,7 @@ import { formatUSD } from "@/lib/pricing";
 const NAV_LINKS = [
   { href: "/#kits", label: "MIDI Packs" },
   { href: "/#midi-kits", label: "Listen" },
-  { href: "/#generator", label: "Beat Maker" },
+  { href: "/beat-maker", label: "Beat Maker" },
   { href: "/library", label: "Library" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
@@ -28,7 +28,7 @@ export function SiteNav() {
         </Link>
         <div className="flex items-center gap-3.5 whitespace-nowrap md:gap-7">
           <TrackedLink
-            href="/#generator"
+            href="/beat-maker"
             track={{ action: "click_beat_maker", category: "navigation", label: "header" }}
             className="text-sm font-medium text-muted transition-colors hover:text-ink"
           >

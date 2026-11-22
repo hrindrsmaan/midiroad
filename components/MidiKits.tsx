@@ -175,7 +175,8 @@ export function MidiKits({
   const total = PARTS.reduce((n, p) => n + p.patterns.length, 0);
   const { playingId, progress, toggle } = useMidiPlayer();
 
-  const [partId, setPartId] = useState(PARTS[0].id);
+  // Hi-hats first: the part producers reach for most. Kits without them open on their first part.
+  const [partId, setPartId] = useState((PARTS.find((p) => p.id === "hihat") ?? PARTS[0]).id);
   /** null shows the part from every kit. */
   const [kitId, setKitId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);

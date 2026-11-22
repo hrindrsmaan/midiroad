@@ -105,7 +105,7 @@ export default async function AccountPage({
             <Link href="/library" className="text-brand hover:underline">
               Browse the library →
             </Link>
-            <Link href="/#generator" className="text-brand hover:underline">
+            <Link href="/beat-maker" className="text-brand hover:underline">
               Open the beat maker →
             </Link>
           </div>

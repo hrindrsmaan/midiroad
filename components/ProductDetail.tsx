@@ -12,22 +12,30 @@ const STATS = [
   { value: ONE_SHOT_COUNT, label: "One-shots", note: "Bundle only" },
 ];
 
-/** The bundle's product section on the home page, right under the beat maker. */
-export function ProductDetail() {
+/**
+ * The bundle's product section. It leads the home page as its hero; on the
+ * beat maker page it sits under the generator as a smaller upsell.
+ */
+export function ProductDetail({ variant = "hero" }: { variant?: "hero" | "upsell" }) {
+  const hero = variant === "hero";
   return (
     <ProductHero
-      id="main-cta"
+      id={hero ? "main-cta" : "bundle"}
       product={BUNDLE_ID}
-      label="Product Section Button"
+      label={hero ? "Product Section Button" : "Beat Maker Upsell Button"}
       cover={<BundleSpread />}
       eyebrow="Best value · Every kit"
       title={BUNDLE_NAME}
-      headingLevel="h2"
-      intro={`Want patterns written by hand? Get all ${KIT_PRODUCTS.length} kits and ${ONE_SHOT_COUNT} one-shots in one download.`}
+      headingLevel={hero ? "h1" : "h2"}
+      intro={
+        hero
+          ? `Every MidiRoad kit and all ${ONE_SHOT_COUNT} one-shots in one download. Drag the MIDI into your DAW and start the beat.`
+          : `Want patterns written by hand? Get all ${KIT_PRODUCTS.length} kits and ${ONE_SHOT_COUNT} one-shots in one download.`
+      }
       price={PRICING.currentPrice}
       originalPrice={PRICING.originalPrice}
       badge={`Save ${PRICING.discountPercent}%`}
-      compact
+      compact={!hero}
     >
       <div className="space-y-8">
         <BundlePreviews />
