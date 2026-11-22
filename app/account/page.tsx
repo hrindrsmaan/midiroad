@@ -12,7 +12,7 @@ import { activeSubscription } from "@/lib/subscription";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Your account | MidiRoad",
+  title: "Your account",
   robots: { index: false, follow: false },
 };
 

@@ -9,7 +9,7 @@ import { TEST_ID } from "@/lib/products";
  * Stripe checkout → success page → email → download.
  */
 export const metadata: Metadata = {
-  title: "Test checkout | MidiRoad",
+  title: "Test checkout",
   robots: { index: false, follow: false },
 };
 

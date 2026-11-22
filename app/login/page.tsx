@@ -7,7 +7,7 @@ import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { auth, googleConfigured } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Sign in | MidiRoad",
+  title: "Sign in",
   robots: { index: false, follow: false },
 };
 

@@ -9,8 +9,9 @@ import { currentUser } from "@/lib/session";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "MIDI Library | MidiRoad",
-  description: "Every hand-made MidiRoad MIDI pattern, one file at a time. 1 credit each.",
+  title: "MIDI Library: Single Trap Drum Patterns",
+  description: "Every hand-made MidiRoad MIDI drum pattern, one file at a time: hi-hats, snares, kicks and 808s for trap and drill. 1 credit each.",
+  alternates: { canonical: "/library" },
 };
 
 export default async function LibraryPage() {

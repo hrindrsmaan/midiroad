@@ -27,7 +27,7 @@ import { formatUSD } from "@/lib/pricing";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Order confirmed | MidiRoad",
+  title: "Order confirmed",
   robots: { index: false, follow: false },
 };
 
