@@ -24,7 +24,14 @@ export const absoluteUrl = (path = "/") => {
 export const SHARE_IMAGE = absoluteUrl("/opengraph-image");
 export const BUNDLE_IMAGE = absoluteUrl("/images/bundle-poster.png");
 
-const ORG_ID = absoluteUrl("/#organization");
+/**
+ * Node ids for the site-wide entities. Written out in full: absoluteUrl()
+ * normalizes the homepage to the bare origin and would drop the fragment,
+ * which gave Organization and WebSite the same @id.
+ */
+export const ORG_ID = `${SITE_URL}/#organization`;
+export const WEBSITE_ID = `${SITE_URL}/#website`;
+export const YOUTUBE_URL = "https://www.youtube.com/@midiroad";
 
 const offer = (price: number, url: string) => ({
   "@type": "Offer",
@@ -45,11 +52,12 @@ export const siteJsonLd = () => [
     url: SITE_URL,
     logo: absoluteUrl("/brand/midiroad-logo.png"),
     email: "support@inbox.midiroad.com",
+    sameAs: [YOUTUBE_URL],
   },
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": absoluteUrl("/#website"),
+    "@id": WEBSITE_ID,
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,

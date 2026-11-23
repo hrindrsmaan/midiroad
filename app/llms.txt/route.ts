@@ -1,6 +1,7 @@
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 import { FAQS } from "@/lib/faq";
 import { BUNDLE_NAME, BUNDLE_PRICE, KIT_PRODUCTS, kitStats } from "@/lib/products";
+import { GUIDES, guidePath } from "@/lib/guides";
 import { GENRES, genrePath } from "@/lib/patterns";
 import { SITE_DESCRIPTION, absoluteUrl } from "@/lib/site";
 
@@ -31,11 +32,15 @@ ${kits.join("\n")}
 ## Free tools
 
 - [Free trap beat maker](${absoluteUrl("/beat-maker")}): generates a trap beat (hats, snare, kick, 808) in the browser, with tempo, key, sound picks and mutes. Export the whole beat or a single track as MIDI.
-- [MIDI library](${absoluteUrl("/library")}): single hand-made MIDI patterns, downloadable one at a time with credits.
-- [MIDI pattern pages](${absoluteUrl("/midi")}): one public page per pattern, with a browser preview. The MIDI file stays a paid download.
+- [MIDI pattern pages](${absoluteUrl("/midi")}): one public page per pattern, with a browser preview. The MIDI file stays a paid download (buy the kit, or unlock one file with 1 credit).
 ${GENRES.map((genre) => `- [${genre.name} MIDI patterns](${absoluteUrl(genrePath(genre))})`).join("\n")}
 - [Patterns by tempo](${absoluteUrl("/midi/bpm")})
 - [Pricing](${absoluteUrl("/pricing")}): monthly MIDI credit plans for the library and the beat maker. New accounts get free credits.
+
+## Guides
+
+- [All guides](${absoluteUrl("/guides")})
+${GUIDES.map((guide) => `- [${guide.title}](${absoluteUrl(guidePath(guide))}): ${guide.summary}`).join("\n")}
 
 ## FAQ
 

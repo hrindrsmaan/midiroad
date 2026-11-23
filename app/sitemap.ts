@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
 import { BPM_RANGES, GENRES, PATTERNS, bpmPath, genrePath, patternPath } from "@/lib/patterns";
+import { GUIDES, guidePath } from "@/lib/guides";
 import { KIT_PRODUCTS } from "@/lib/products";
 import { absoluteUrl } from "@/lib/site";
 
 /**
  * Public pages for search engines. Account, checkout, and sign-in pages are
- * left out. Pattern pages and style/tempo hubs are included.
+ * left out, and so is /library (noindex: the pattern pages cover its files). Pattern pages and style/tempo hubs are included.
  * Every URL uses the apex host with no trailing slash, matching the canonical tag.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -34,7 +35,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
-    { url: absoluteUrl("/library"), changeFrequency: "weekly", priority: 0.6 },
+    { url: absoluteUrl("/guides"), changeFrequency: "monthly", priority: 0.7 },
+    ...GUIDES.map((guide) => ({
+      url: absoluteUrl(guidePath(guide)),
+      lastModified: guide.dateModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     { url: absoluteUrl("/pricing"), changeFrequency: "monthly", priority: 0.5 },
   ];
 }

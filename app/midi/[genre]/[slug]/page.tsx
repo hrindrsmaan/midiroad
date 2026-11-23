@@ -71,7 +71,7 @@ export default async function PatternPage({ params }: Params) {
               MIDI patterns
             </Link>
             <span aria-hidden> / </span>
-            <Link href={genrePath(pattern)} className="hover:text-ink">
+            <Link href={genrePath({ slug: pattern.genreSlug })} className="hover:text-ink">
               {pattern.genreName}
             </Link>
             <span aria-hidden> / </span>
@@ -128,7 +128,7 @@ export default async function PatternPage({ params }: Params) {
               </Link>
             </li>
             <li>
-              <Link href={genrePath(pattern)} className="text-ink underline underline-offset-4">
+              <Link href={genrePath({ slug: pattern.genreSlug })} className="text-ink underline underline-offset-4">
                 All {pattern.genreName.toLowerCase()} patterns
               </Link>
             </li>

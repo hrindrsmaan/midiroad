@@ -3,6 +3,7 @@ import { KitGrid } from "@/components/KitGrid";
 import { MidiKits } from "@/components/MidiKits";
 import { BeatMakerPromo } from "@/components/BeatMakerPromo";
 import { FAQSection } from "@/components/FAQSection";
+import { GuidesTeaser } from "@/components/GuidesTeaser";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { BUNDLE_ID } from "@/lib/products";
 import { PRICING } from "@/lib/pricing";
@@ -29,7 +30,10 @@ export default function Page() {
       {/* Every MIDI pattern, playable */}
       <MidiKits tone="canvas" google={googleConfigured} />
 
-      <FAQSection tone="white" />
+      {/* Guides: how to use the patterns, one click from the homepage */}
+      <GuidesTeaser tone="white" />
+
+      <FAQSection tone="canvas" />
 
       <StickyBuyBar
         product={BUNDLE_ID}
