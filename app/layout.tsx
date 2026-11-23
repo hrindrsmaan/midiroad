@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import "./globals.css";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { AttributionCapture } from "@/components/AttributionCapture";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, siteJsonLd } from "@/lib/site";
 
@@ -142,6 +143,7 @@ export default async function RootLayout({
           />
         )}
         <JsonLd data={siteJsonLd()} />
+        <AttributionCapture />
         <CartProvider>
           {children}
           <CartDrawer />

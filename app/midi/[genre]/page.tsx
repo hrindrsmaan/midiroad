@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "@/components/cart/CartButtons";
 import { FaqList } from "@/components/FaqList";
+import { FreeKitBanner } from "@/components/FreeKitCta";
+import { FREE_KIT_COUNT } from "@/lib/free-kit";
 import { JsonLd } from "@/components/JsonLd";
 import { PatternBrowser } from "@/components/PatternBrowser";
 import { Eyebrow } from "@/components/Section";
@@ -76,6 +78,7 @@ export default async function GenrePage({ params }: Params) {
               Kit details
             </Link>
           </div>
+          <FreeKitBanner source="genre-page" count={FREE_KIT_COUNT} className="mt-10 max-w-3xl" />
           <section aria-labelledby="about-heading" className="mt-12 max-w-3xl">
             <h2 id="about-heading" className="text-2xl md:text-[32px]">
               About {genre.name.toLowerCase()} drums

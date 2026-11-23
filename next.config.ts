@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/download": ["./private/**/*"],
     "/api/library/[id]": ["./private/library.zip"],
+    "/api/free-kit/download": ["./private/free-kit.zip"],
   },
   serverExternalPackages: ["pino", "@logtail/pino"],
 };

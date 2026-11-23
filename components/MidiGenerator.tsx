@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
 import { SignInModal, type DownloadGate } from "@/components/auth/SignInModal";
 import { useMidiPlayer, type MidiLayer } from "@/components/useMidiPlayer";
@@ -10,6 +11,7 @@ import { event } from "@/lib/gtag";
 import type { BeatTrack } from "@/lib/midi-file";
 import { paidDownload, type PaidDownload } from "@/lib/paid-download";
 import { SIGNUP_CREDITS } from "@/lib/plans";
+import { LANE_SOUNDS, beatPath, beatPattern, sameBeat, type SharedBeat } from "@/lib/shared-beat";
 import {
   KEY_NAMES,
   generatePattern,
@@ -165,6 +167,46 @@ function toLayers(p: GeneratedPattern, kit: Kit): MidiLayer[] {
 
 /** The beat shown before anyone presses New beat; fixed so server and client agree. */
 const firstBeat = () => generatePattern("beat", START_BPM, START_KEY, 11, 0.5, "dark");
+
+/** A shared beat's sounds as the beat maker's kit (unknown samples fall back to the default). */
+const kitFor = (b: SharedBeat): Kit =>
+  Object.fromEntries(
+    LANES.map((l) => [l.id, LANE_SOUNDS[l.id].find((s) => s.src === b.sounds[l.id]) ?? DEFAULT_KIT[l.id]]),
+  ) as Kit;
+
+/** What gets saved when a beat is shared: the generator inputs, mutes and sounds. */
+const toShared = (p: GeneratedPattern, muted: Set<LaneId>, kit: Kit): SharedBeat => ({
+  v: 1,
+  vibe: p.vibe,
+  bpm: p.bpm,
+  key: p.key,
+  seed: p.seed,
+  hatBase: p.hatBase === 0.25 ? 0.25 : 0.5,
+  muted: LANES.filter((l) => muted.has(l.id)).map((l) => l.id),
+  sounds: Object.fromEntries(LANES.map((l) => [l.id, kit[l.id].src])) as SharedBeat["sounds"],
+});
+
+type ShareState =
+  | { step: "idle" }
+  | { step: "saving"; remix: boolean }
+  | { step: "ready"; url: string; copied: boolean }
+  | { step: "error"; message: string };
+
+/** Saves a beat (as a remix of `parentId`, if set) and returns its id. */
+async function saveBeat(beat: SharedBeat, parentId?: string): Promise<{ id: string } | { error: string }> {
+  try {
+    const res = await fetch("/api/beats", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ beat, parentId }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok || !body.id) return { error: body.message ?? "Couldn't save the beat. Try again." };
+    return { id: body.id };
+  } catch {
+    return { error: "Network error. Try again." };
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Piano roll                                                          */
@@ -415,6 +457,10 @@ const DownloadIcon = () => icon(<><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /
 const SpeakerIcon = () =>
   icon(<><path d="M11 5 6 9H2v6h4l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a10 10 0 0 1 0 14" /></>);
 const MutedIcon = () => icon(<><path d="M11 5 6 9H2v6h4l5 4V5Z" /><path d="m22 9-6 6" /><path d="m16 9 6 6" /></>);
+const ShareIcon = () =>
+  icon(<><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4" /><path d="m15.4 6.5-6.8 4" /></>);
+const RemixIcon = () =>
+  icon(<><path d="M4 12a8 8 0 0 1 14-5.3L20 9" /><path d="M20 4v5h-5" /><path d="M20 12a8 8 0 0 1-14 5.3L4 15" /><path d="M4 20v-5h5" /></>);
 const ShuffleIcon = () =>
   icon(<><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></>);
 
@@ -448,15 +494,31 @@ function Kbd({ children }: { children: string }) {
  * random style; earlier ones stay in a history to step back through. Parts
  * can be muted live, and muted parts are left out of the download.
  */
-export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
-  const [bpm, setBpm] = useState(START_BPM);
+export function MidiGenerator({
+  google = false,
+  initial,
+  sharedId,
+  heading = "Make a trap beat in one click",
+  intro = "Generate a beat, shape it with tempo, key and mutes, then drag the MIDI straight into your DAW.",
+}: {
+  google?: boolean;
+  /** A shared beat to open with (the /b/<id> page). */
+  initial?: SharedBeat;
+  /** That beat's id: sharing an unchanged beat reuses it, and changes are saved as remixes of it. */
+  sharedId?: string;
+  heading?: ReactNode;
+  intro?: ReactNode;
+} = {}) {
+  const router = useRouter();
+  const [bpm, setBpm] = useState(initial?.bpm ?? START_BPM);
   /** What's in the tempo field while it's being typed; null shows `bpm`. */
   const [bpmText, setBpmText] = useState<string | null>(null);
-  const [key, setKey] = useState(START_KEY);
-  const [history, setHistory] = useState<GeneratedPattern[]>(() => [firstBeat()]);
+  const [key, setKey] = useState(initial?.key ?? START_KEY);
+  const [history, setHistory] = useState<GeneratedPattern[]>(() => [initial ? beatPattern(initial) : firstBeat()]);
   const [index, setIndex] = useState(0);
-  const [muted, setMutedLanes] = useState<Set<LaneId>>(() => new Set());
-  const [kit, setKit] = useState<Kit>(DEFAULT_KIT);
+  const [muted, setMutedLanes] = useState<Set<LaneId>>(() => new Set(initial?.muted ?? []));
+  const [kit, setKit] = useState<Kit>(() => (initial ? kitFor(initial) : DEFAULT_KIT));
+  const [share, setShare] = useState<ShareState>({ step: "idle" });
   const { playingId, progress, toggle, setMuted } = useMidiPlayer();
   const restartRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const tempoTrackRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -472,6 +534,69 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
 
   const current = history[index];
   const playing = playingId === playKey(current, kit);
+
+  // A shared beat may open with rows muted; the player needs to know before it starts.
+  const initialMuted = useRef(initial?.muted);
+  useEffect(() => {
+    if (initialMuted.current?.length) setMuted(mutedParts(new Set(initialMuted.current)));
+  }, [setMuted]);
+
+  // Any change makes a shared link stale, so the panel closes until Share is pressed again.
+  const shareKey = `${current.id}|${[...muted].sort().join(",")}|${LANES.map((l) => kit[l.id].src).join("|")}`;
+  const lastShareKey = useRef(shareKey);
+  useEffect(() => {
+    if (lastShareKey.current === shareKey) return;
+    lastShareKey.current = shareKey;
+    // Resetting UI state on an outside change (the beat), not a render loop.
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
+    setShare((s) => (s.step === "ready" || s.step === "error" ? { step: "idle" } : s));
+  }, [shareKey]);
+
+  /**
+   * Share: saves the beat as it is now and shows its /b/<id> link. On a
+   * shared beat's page, an unchanged beat reuses that link, and a changed one
+   * is saved as a remix of it.
+   */
+  const shareBeat = async () => {
+    if (share.step === "saving") return;
+    const beat = toShared(current, muted, kit);
+    track("share_beat", `${current.vibe}-${current.bpm}`);
+    if (sharedId && initial && sameBeat(beat, initial)) {
+      setShare({ step: "ready", url: `${window.location.origin}${beatPath(sharedId)}`, copied: false });
+      return;
+    }
+    setShare({ step: "saving", remix: false });
+    const saved = await saveBeat(beat, sharedId);
+    if ("error" in saved) setShare({ step: "error", message: saved.error });
+    else setShare({ step: "ready", url: `${window.location.origin}${beatPath(saved.id)}`, copied: false });
+  };
+
+  /** Remix: saves the beat as it is now as a new beat linked to this one, and opens it. */
+  const remixBeat = async () => {
+    if (!sharedId || share.step === "saving") return;
+    track("remix_beat", sharedId);
+    setShare({ step: "saving", remix: true });
+    const saved = await saveBeat(toShared(current, muted, kit), sharedId);
+    if ("error" in saved) setShare({ step: "error", message: saved.error });
+    else router.push(`${beatPath(saved.id)}?remixed=1`);
+  };
+
+  const copyLink = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setShare({ step: "ready", url, copied: true });
+      track("copy_beat_link", url.split("/").pop() ?? "");
+    } catch {
+      // Clipboard blocked: the link stays selected in the field to copy by hand.
+    }
+  };
+
+  const nativeShare = async (url: string) => {
+    try {
+      await navigator.share({ title: "My beat on MidiRoad", text: "Listen to my beat and remix it:", url });
+      track("native_share_beat", url.split("/").pop() ?? "");
+    } catch {}
+  };
   /** Whether a beat is sounding, or about to restart after a retune. */
   const isLive = () => playingId !== null || restartRef.current !== undefined;
 
@@ -722,11 +847,9 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
             Free to play · {SIGNUP_CREDITS} free downloads with an account
           </p>
           <h1 id="generator-heading" className="max-w-4xl text-balance text-[38px] leading-[0.95] tracking-[-0.03em] md:text-[72px]">
-            Make a trap beat in one click
+            {heading}
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
-            Generate a beat, shape it with tempo, key and mutes, then drag the MIDI straight into your DAW.
-          </p>
+          <div className="mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">{intro}</div>
         </div>
 
         <div className="overflow-hidden rounded-md border border-black/40 bg-panel shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_24px_60px_-30px_rgba(0,0,0,0.7)]">
@@ -858,8 +981,39 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
                   </>
                 )}
               </button>
+              <button
+                type="button"
+                onClick={() => void shareBeat()}
+                disabled={share.step === "saving"}
+                title="Save this beat and get a link to share"
+                className={`${sharedId ? "" : "col-span-2"} flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-white/20 px-3 text-sm font-semibold text-ivory transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:col-span-1 sm:flex-none md:px-4`}
+              >
+                <ShareIcon />
+                {share.step === "saving" && !share.remix ? "Saving…" : "Share beat"}
+              </button>
+              {sharedId && (
+                <button
+                  type="button"
+                  onClick={() => void remixBeat()}
+                  disabled={share.step === "saving"}
+                  title="Save a copy of this beat to change and share as your own"
+                  className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key bg-brand px-3 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover disabled:opacity-60 sm:flex-none md:px-4"
+                >
+                  <RemixIcon />
+                  {share.step === "saving" && share.remix ? "Saving…" : "Remix this beat"}
+                </button>
+              )}
             </div>
           </div>
+
+          {(share.step === "ready" || share.step === "error") && (
+            <SharePanel
+              state={share}
+              onCopy={copyLink}
+              onShare={nativeShare}
+              onClose={() => setShare({ step: "idle" })}
+            />
+          )}
 
           {/* Piano roll: click the grid to play or stop */}
           <div className="relative bg-[#111a2d]">
@@ -913,6 +1067,73 @@ export function MidiGenerator({ google = false }: { google?: boolean } = {}) {
         </div>
       </div>
     </section>
+  );
+}
+
+/** Under the toolbar once a beat is saved: its link, copy, and the phone's share sheet. */
+function SharePanel({
+  state,
+  onCopy,
+  onShare,
+  onClose,
+}: {
+  state: Extract<ShareState, { step: "ready" | "error" }>;
+  onCopy: (url: string) => void;
+  onShare: (url: string) => void;
+  onClose: () => void;
+}) {
+  const [canShare, setCanShare] = useState(false);
+  useEffect(() => {
+    // navigator.share exists only in the browser (mostly phones); checked after hydration.
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
+    setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
+
+  if (state.step === "error") {
+    return (
+      <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] bg-red-500/10 px-4 py-3 text-sm text-white/85 md:px-5" role="alert">
+        {state.message}
+        <button type="button" onClick={onClose} className="cursor-pointer text-white/60 hover:text-white">
+          Dismiss
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-2 border-b border-white/[0.06] bg-brand/[0.08] px-4 py-3 sm:flex-row sm:items-center md:px-5" role="status">
+      <span className="shrink-0 text-sm font-semibold text-white">Your beat&apos;s link</span>
+      <input
+        readOnly
+        value={state.url}
+        aria-label="Link to this beat"
+        onFocus={(e) => e.target.select()}
+        className="h-9 min-w-0 flex-1 rounded-key border border-white/15 bg-black/30 px-3 font-mono text-sm text-ivory focus:border-brand focus:outline-none"
+      />
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => onCopy(state.url)}
+          className="h-9 flex-1 cursor-pointer whitespace-nowrap rounded-key bg-brand px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover sm:flex-none"
+        >
+          {state.copied ? "Copied" : "Copy link"}
+        </button>
+        {canShare && (
+          <button
+            type="button"
+            onClick={() => onShare(state.url)}
+            className="h-9 flex-1 cursor-pointer whitespace-nowrap rounded-key border border-white/20 px-4 text-sm font-semibold text-ivory transition-colors hover:bg-white/[0.06] sm:flex-none"
+          >
+            Share…
+          </button>
+        )}
+        <a
+          href={state.url}
+          className="grid h-9 cursor-pointer place-items-center whitespace-nowrap rounded-key px-3 text-sm font-semibold text-white/70 hover:text-white"
+        >
+          Open
+        </a>
+      </div>
+    </div>
   );
 }
 

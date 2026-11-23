@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FreeKitBanner } from "@/components/FreeKitCta";
 import { JsonLd } from "@/components/JsonLd";
+import { FREE_KIT_COUNT } from "@/lib/free-kit";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { GUIDES, guidePath } from "@/lib/guides";
@@ -66,6 +68,7 @@ export default function GuidesIndexPage() {
               </li>
             ))}
           </ul>
+          <FreeKitBanner source="guide" count={FREE_KIT_COUNT} className="mt-10" />
           <p className="mt-10 text-sm text-muted">
             Ready to try one?{" "}
             <Link href="/midi" className="font-semibold text-ink underline underline-offset-4">
