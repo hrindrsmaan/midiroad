@@ -1,0 +1,19 @@
+{
+ "name": "MidiRoad Free Starter Kit",
+ "slug": "midiroad-free-starter-kit",
+ "note": "Two patterns from each style, spread across tempos. Change the ids (from lib/pattern-catalog.json), then run: python3 scripts/build-free-kit.py",
+ "patterns": [
+  "essentials/hihat-6",
+  "essentials/808-26",
+  "black-market/hihat-8",
+  "black-market/kick-1",
+  "odyssey/hihat-9",
+  "odyssey/808-7",
+  "psycho/808-3",
+  "psycho/snare-2",
+  "decoy/hihat-10",
+  "decoy/808-4",
+  "focus/808-1",
+  "focus/808-4"
+ ]
+}
