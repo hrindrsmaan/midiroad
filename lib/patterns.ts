@@ -1,6 +1,6 @@
 import { MIDI_KITS, type MidiPattern } from "@/lib/midi-kits";
 import { kitById } from "@/lib/products";
-import { SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import { ORG_ID, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 import catalogJson from "./pattern-catalog.json";
 
 /**
@@ -218,7 +218,8 @@ const isoDuration = (seconds: number) => `PT${Math.max(1, Math.round(seconds))}S
 
 export function patternJsonLd(pattern: PublicPattern) {
   const url = absoluteUrl(pattern.path);
-  const genreUrl = absoluteUrl(genrePath(pattern));
+  // genrePath() reads `.slug`, which on a pattern is the pattern's own slug.
+  const genreUrl = absoluteUrl(genrePath({ slug: pattern.genreSlug }));
   const kitUrl = absoluteUrl(`/kits/${pattern.kitSlug}`);
   return [
     {
@@ -229,11 +230,11 @@ export function patternJsonLd(pattern: PublicPattern) {
       url,
       duration: isoDuration(pattern.duration),
       genre: pattern.genreName,
-      byArtist: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      byArtist: { "@type": "Organization", "@id": ORG_ID, name: SITE_NAME, url: SITE_URL },
       recordingOf: {
         "@type": "MusicComposition",
         name: pattern.title,
-        composer: { "@type": "Organization", name: SITE_NAME },
+        composer: { "@type": "Organization", "@id": ORG_ID, name: SITE_NAME },
       },
       additionalProperty: [
         { "@type": "PropertyValue", name: "Tempo", value: `${pattern.bpm} BPM` },
@@ -255,8 +256,8 @@ export function patternJsonLd(pattern: PublicPattern) {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: "MIDI patterns", item: absoluteUrl("/midi") },
-        { "@type": "ListItem", position: 3, name: pattern.genreName, item: genreUrl },
+        { "@type": "ListItem", position: 2, name: "MIDI", item: absoluteUrl("/midi") },
+        { "@type": "ListItem", position: 3, name: `${pattern.genreName} MIDI patterns`, item: genreUrl },
         { "@type": "ListItem", position: 4, name: pattern.title, item: url },
       ],
     },
