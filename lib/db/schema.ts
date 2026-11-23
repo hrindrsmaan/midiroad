@@ -1,4 +1,15 @@
-import { boolean, index, integer, pgTable, primaryKey, serial, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  type AnyPgColumn,
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  primaryKey,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 /**
  * Better Auth's core tables (user, session, account, verification).
@@ -144,3 +155,59 @@ export const unlock = pgTable(
   },
   (t) => [primaryKey({ columns: [t.userId, t.item] })],
 );
+
+/**
+ * Email signups (the free MIDI kit). Separate from `user`: a signup is not an
+ * account, gets no credits, and has no password. One row per email; a repeat
+ * signup keeps the first source and refreshes the latest one.
+ */
+export const subscriber = pgTable("subscriber", {
+  id: text("id").primaryKey(),
+  /** Lowercased and trimmed. */
+  email: text("email").notNull().unique(),
+  /** Where they signed up first: "free-kit-page", "beat-maker", "pattern-page", … */
+  source: text("source").notNull(),
+  /** Where the latest signup came from. */
+  lastSource: text("last_source").notNull(),
+  /** ?ref= on the landing URL (e.g. "youtube"). */
+  ref: text("ref"),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+  utmContent: text("utm_content"),
+  utmTerm: text("utm_term"),
+  /** The page that carried the ref/utm tags. */
+  landingPath: text("landing_path"),
+  signups: integer("signups").notNull().default(1),
+  downloads: integer("downloads").notNull().default(0),
+  lastDownloadAt: timestamp("last_download_at"),
+  unsubscribedAt: timestamp("unsubscribed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+/**
+ * Beats shared from the beat maker, at /b/<id>. `data` is the beat maker
+ * state (lib/shared-beat.ts), validated before it is stored. parentId links a
+ * remix to the beat it came from.
+ */
+export const sharedBeat = pgTable(
+  "shared_beat",
+  {
+    id: text("id").primaryKey(),
+    parentId: text("parent_id").references((): AnyPgColumn => sharedBeat.id, { onDelete: "set null" }),
+    data: jsonb("data").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => [index("shared_beat_parent_id_idx").on(t.parentId)],
+);
+
+/** Fixed-window counters for rate limits (lib/rate-limit.ts). Keys hold hashed IPs, never raw ones. */
+export const rateLimit = pgTable("rate_limit", {
+  key: text("key").primaryKey(),
+  count: integer("count").notNull(),
+  resetAt: timestamp("reset_at", { withTimezone: true }).notNull(),
+});
