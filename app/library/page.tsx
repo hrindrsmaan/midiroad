@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LibraryList } from "@/components/library/LibraryList";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { getCredits, getUnlocks } from "@/lib/credits";
 import { LIBRARY, LIBRARY_FOLDERS } from "@/lib/library";
+import { patternByLibraryId } from "@/lib/patterns";
 import { currentUser } from "@/lib/session";
 import { pageMetadata } from "@/lib/seo";
 
@@ -34,9 +36,24 @@ export default async function LibraryPage() {
               <a href="/pricing" className="font-semibold text-ink underline underline-offset-4">
                 See plans
               </a>
+              . Each pattern also has a public preview page.{" "}
+              <Link href="/midi" className="font-semibold text-ink underline underline-offset-4">
+                Browse by style and tempo
+              </Link>
             </p>
           </div>
-          <LibraryList folders={LIBRARY_FOLDERS} owned={owned} credits={credits} signedIn={!!user} />
+          <LibraryList
+            folders={LIBRARY_FOLDERS.map((group) => ({
+              folder: group.folder,
+              items: group.items.map((item) => {
+                const pub = patternByLibraryId(item.id);
+                return { ...item, href: pub?.path, title: pub?.title };
+              }),
+            }))}
+            owned={owned}
+            credits={credits}
+            signedIn={!!user}
+          />
         </div>
       </section>
       <SiteFooter />

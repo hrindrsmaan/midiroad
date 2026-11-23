@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { LibraryItem } from "@/lib/library";
 import { paidDownload, type PaidDownload } from "@/lib/paid-download";
 
-type Folder = { folder: string; items: LibraryItem[] };
+type ListedItem = LibraryItem & { href?: string; title?: string };
+type Folder = { folder: string; items: ListedItem[] };
 
 /** Folders of MIDI files, each downloadable for 1 credit (free once unlocked). */
 export function LibraryList({
@@ -66,7 +68,16 @@ export function LibraryList({
               const have = owned.has(item.id);
               return (
                 <li key={item.id} className="flex items-center justify-between gap-3 px-5 py-2.5 text-sm">
-                  <span className="truncate">{item.name.replace(/\.mid$/i, "")}</span>
+                  <div className="min-w-0">
+                    {item.href && item.title ? (
+                      <Link href={item.href} className="block truncate font-medium hover:underline">
+                        {item.title}
+                      </Link>
+                    ) : null}
+                    <span className={`block truncate ${item.title ? "text-xs text-muted" : ""}`}>
+                      {item.name.replace(/\.mid$/i, "")}
+                    </span>
+                  </div>
                   <button
                     onClick={() => download(item)}
                     disabled={busy !== null}
