@@ -20,6 +20,19 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## IndexNow (tell search engines about new pages)
+
+[IndexNow](https://www.indexnow.org) pings Bing, Yandex, Seznam and Naver (and the AI search tools built on Bing's index, such as ChatGPT search and Copilot) when pages change.
+
+- The key file is `public/6b8030468b8020792428d1dc16fe48b5.txt`, served at `https://midiroad.com/6b8030468b8020792428d1dc16fe48b5.txt`. Its contents must stay equal to the key in the script.
+- After a production deploy that adds or changes pages, run:
+
+```bash
+npm run indexnow
+```
+
+It reads the live `https://midiroad.com/sitemap.xml` and POSTs every URL to `https://api.indexnow.org/indexnow`. A `200` or `202` means the URLs were accepted. To list the URLs without sending them, run `npm run indexnow -- --dry-run`. Set `SITEMAP_URL` to read a different sitemap.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
