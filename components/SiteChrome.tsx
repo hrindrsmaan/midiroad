@@ -5,10 +5,12 @@ import { Logo } from "@/components/Logo";
 import { TrackedLink } from "@/components/TrackedLink";
 import { formatUSD } from "@/lib/pricing";
 import { BlackFridayBar } from "@/components/BlackFriday";
+import { GENRES, genrePath } from "@/lib/patterns";
 
 const NAV_LINKS = [
   { href: "/#kits", label: "MIDI Packs" },
   { href: "/#midi-kits", label: "Listen" },
+  { href: "/midi", label: "Patterns" },
   { href: "/beat-maker", label: "Beat Maker" },
   { href: "/library", label: "Library" },
   { href: "/pricing", label: "Pricing" },
@@ -30,6 +32,13 @@ export function SiteNav() {
           />
         </Link>
         <div className="flex items-center gap-3.5 whitespace-nowrap md:gap-7">
+          <TrackedLink
+            href="/midi"
+            track={{ action: "click_patterns", category: "navigation", label: "header" }}
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink min-[480px]:inline"
+          >
+            Patterns
+          </TrackedLink>
           <TrackedLink
             href="/beat-maker"
             track={{ action: "click_beat_maker", category: "navigation", label: "header" }}
@@ -84,7 +93,7 @@ export function SiteFooter() {
             Drag-and-drop MIDI drum kits and trap one-shots for producers.
           </p>
         </div>
-        <div className="flex gap-16 text-sm">
+        <div className="flex flex-wrap gap-x-16 gap-y-8 text-sm">
           <ul className="space-y-3">
             {NAV_LINKS.map((l) => (
               <li key={l.href}>
@@ -93,6 +102,21 @@ export function SiteFooter() {
                 </Link>
               </li>
             ))}
+          </ul>
+          <ul className="space-y-3">
+            <li className="text-muted">Styles</li>
+            {GENRES.map((genre) => (
+              <li key={genre.slug}>
+                <Link href={genrePath(genre)} className="text-white/60 transition-colors hover:text-white">
+                  {genre.name}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link href="/midi/bpm" className="text-white/60 transition-colors hover:text-white">
+                By tempo
+              </Link>
+            </li>
           </ul>
           <ul className="space-y-3">
             <li className="text-muted">Support</li>

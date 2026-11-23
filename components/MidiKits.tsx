@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
 import { SignInModal, type DownloadGate } from "@/components/auth/SignInModal";
@@ -10,6 +11,7 @@ import { event } from "@/lib/gtag";
 import { MIDI_KITS, MIDI_PARTS, MIDI_PATTERN_COUNT, type MidiPattern, type PartPattern } from "@/lib/midi-kits";
 import { paidDownload, type PaidDownload } from "@/lib/paid-download";
 import { SIGNUP_CREDITS } from "@/lib/plans";
+import { genreForKit, genrePath, patternById } from "@/lib/patterns";
 import { kitDisplayName } from "@/lib/products";
 
 /** Patterns shown per part before "Show all". */
@@ -277,8 +279,23 @@ export function MidiKits({
           onlyKit ? `${total} MIDI patterns` : `${MIDI_PATTERN_COUNT} MIDI patterns · ${MIDI_KITS.length} kits`
         }
         title={onlyKit ? "Hear every pattern" : "Hear every MIDI kit"}
-        intro="Press play on any pattern. Each MIDI is played with drum samples from the bundle's one-shot kit."
+        intro={
+          <>
+            Press play on any pattern. Each MIDI is played with drum samples from the bundle&apos;s one-shot kit.{" "}
+            <Link href="/midi" className="font-semibold text-ink underline underline-offset-4">
+              Browse all {MIDI_PATTERN_COUNT} pattern pages
+            </Link>
+          </>
+        }
       />
+
+      {onlyKit && genreForKit(onlyKit) && (
+        <p className="mb-6 text-sm">
+          <Link href={genrePath(genreForKit(onlyKit)!)} className="font-semibold text-ink underline underline-offset-4">
+            Open every {genreForKit(onlyKit)!.name.toLowerCase()} pattern page
+          </Link>
+        </p>
+      )}
 
       <div role="tablist" aria-label="Drum parts" className={`flex flex-wrap gap-2 ${onlyKit ? "mb-10" : "mb-5"}`}>
         {PARTS.map((p) => (
@@ -341,7 +358,13 @@ export function MidiKits({
                 </button>
                 <div className="min-w-0 flex-1">
                   <p className="flex items-baseline justify-between gap-2 text-sm font-medium">
-                    <span className="truncate">{pattern.name}</span>
+                    {patternById(pattern.id) ? (
+                      <Link href={patternById(pattern.id)!.path} className="min-w-0 truncate hover:underline">
+                        {patternById(pattern.id)!.title}
+                      </Link>
+                    ) : (
+                      <span className="truncate">{pattern.name}</span>
+                    )}
                     <span className="shrink-0 text-xs font-normal text-muted">{pattern.bpm} BPM</span>
                   </p>
                   {!onlyKit && (

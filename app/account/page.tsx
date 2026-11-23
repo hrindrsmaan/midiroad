@@ -8,13 +8,16 @@ import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { getCredits, getUnlocks } from "@/lib/credits";
 import { currentUser } from "@/lib/session";
 import { activeSubscription } from "@/lib/subscription";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Your account",
-  robots: { index: false, follow: false },
-};
+  description: "Your MidiRoad credits, plan, and billing.",
+  path: "/account",
+  index: false,
+});
 
 const date = (d?: Date | null) =>
   d ? new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";

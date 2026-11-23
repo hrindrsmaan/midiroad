@@ -5,11 +5,14 @@ import { SignInForm } from "@/components/auth/SignInForm";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { auth, googleConfigured } from "@/lib/auth";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Sign in",
-  robots: { index: false, follow: false },
-};
+  description: "Sign in to MidiRoad to download MIDI patterns. No password needed.",
+  path: "/login",
+  index: false,
+});
 
 /** Only same-site paths, so ?next= can't bounce users to another domain. */
 function safeNext(next?: string) {

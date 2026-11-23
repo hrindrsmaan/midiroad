@@ -9,7 +9,16 @@ export const SITE_URL = "https://midiroad.com";
 export const SITE_NAME = "MidiRoad";
 export const SITE_DESCRIPTION = `Royalty-free MIDI drum kits for trap, drill and RnB producers: ${MIDI_PATTERN_COUNT} drag-and-drop MIDI drum patterns and ${ONE_SHOT_COUNT} drum one-shots for FL Studio, Ableton, Logic and any DAW, plus a free trap beat maker.`;
 
-export const absoluteUrl = (path = "/") => new URL(path, SITE_URL).toString();
+/**
+ * Absolute URL on the canonical host. The homepage has no trailing slash so
+ * the tag, the sitemap, and https://midiroad.com all name one URL.
+ */
+export const absoluteUrl = (path = "/") => {
+  const url = new URL(path, SITE_URL);
+  if (url.pathname === "/") return SITE_URL;
+  url.pathname = url.pathname.replace(/\/+$/, "") || "/";
+  return url.toString();
+};
 
 /** Social share image, also used as the product image in structured data. */
 export const SHARE_IMAGE = absoluteUrl("/opengraph-image");
