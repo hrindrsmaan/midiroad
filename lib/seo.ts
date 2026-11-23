@@ -17,6 +17,7 @@ export function pageMetadata({
   path,
   index = true,
   follow = false,
+  image = "/opengraph-image",
 }: {
   title: string;
   description: string;
@@ -25,6 +26,8 @@ export function pageMetadata({
   index?: boolean;
   /** Only read when `index` is false. */
   follow?: boolean;
+  /** Share image path; the site-wide card by default. */
+  image?: string;
 }): Metadata {
   const url = absoluteUrl(path);
   return {
@@ -38,13 +41,13 @@ export function pageMetadata({
       type: "website",
       siteName: SITE_NAME,
       locale: "en_US",
-      images: "/opengraph-image",
+      images: image,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: "/opengraph-image",
+      images: image,
     },
     ...(index
       ? {}

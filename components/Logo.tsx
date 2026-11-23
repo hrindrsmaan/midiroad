@@ -30,8 +30,11 @@ export function LogoMark({
   className = "h-9 w-9",
   inverted = false,
   title,
+  size,
 }: {
   className?: string;
+  /** Fixed pixel size (for Open Graph images, which ignore CSS classes). */
+  size?: number;
   /** Light tile for dark backgrounds. */
   inverted?: boolean;
   title?: string;
@@ -42,6 +45,8 @@ export function LogoMark({
   return (
     <svg
       viewBox="0 0 64 64"
+      width={size}
+      height={size}
       className={className}
       role={title ? "img" : undefined}
       aria-label={title}

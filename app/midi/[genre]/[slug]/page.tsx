@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "@/components/cart/CartButtons";
+import { FreeKitBanner, FreeKitLink } from "@/components/FreeKitCta";
 import { JsonLd } from "@/components/JsonLd";
+import { FREE_KIT_COUNT } from "@/lib/free-kit";
 import { PatternDownload } from "@/components/PatternDownload";
 import { PatternPlayer } from "@/components/PatternPlayer";
 import { Eyebrow } from "@/components/Section";
@@ -119,6 +121,13 @@ export default async function PatternPage({ params }: Params) {
                 See plans
               </Link>
             </p>
+            <FreeKitLink
+              source="pattern-page"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
+            >
+              Get {FREE_KIT_COUNT} free patterns
+              <span aria-hidden>→</span>
+            </FreeKitLink>
           </div>
 
           <ul className="mt-10 space-y-2 text-sm">
@@ -140,6 +149,8 @@ export default async function PatternPage({ params }: Params) {
               </li>
             )}
           </ul>
+
+          <FreeKitBanner source="pattern-page" count={FREE_KIT_COUNT} className="mt-10" />
 
           {copies.length > 0 && (
             <section className="mt-12">

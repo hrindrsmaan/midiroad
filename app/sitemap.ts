@@ -6,13 +6,14 @@ import { absoluteUrl } from "@/lib/site";
 
 /**
  * Public pages for search engines. Account, checkout, and sign-in pages are
- * left out, and so is /library (noindex: the pattern pages cover its files). Pattern pages and style/tempo hubs are included.
+ * left out, and so is /library (noindex: the pattern pages cover its files), and so are shared beats (/b/<id>, noindex). Pattern pages and style/tempo hubs are included.
  * Every URL uses the apex host with no trailing slash, matching the canonical tag.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
     { url: absoluteUrl("/beat-maker"), changeFrequency: "monthly", priority: 0.9 },
+    { url: absoluteUrl("/free-midi-kit"), changeFrequency: "monthly", priority: 0.9 },
     { url: absoluteUrl("/midi"), changeFrequency: "weekly", priority: 0.9 },
     ...GENRES.map((genre) => ({
       url: absoluteUrl(genrePath(genre)),
