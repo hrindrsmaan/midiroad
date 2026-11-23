@@ -46,7 +46,7 @@ export function SiteNav() {
           <TrackedLink
             href="/beat-maker"
             track={{ action: "click_beat_maker", category: "navigation", label: "header" }}
-            className="text-sm font-medium text-muted transition-colors hover:text-ink"
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink min-[420px]:inline"
           >
             Beat Maker
           </TrackedLink>
