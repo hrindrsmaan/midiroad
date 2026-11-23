@@ -1,5 +1,7 @@
-# Search engines and AI assistants (ChatGPT, Claude, Perplexity, Gemini) may
-# read every public page. Account, checkout and API routes have nothing to index.
+# Canonical host: https://midiroad.com
+# www.midiroad.com and any other *.midiroad.com host (including nonp.midiroad.com)
+# redirect here. Account, checkout, and API routes have nothing to index.
+# Search engines and AI assistants may read every other public page.
 
 User-agent: *
 Allow: /
