@@ -16,6 +16,10 @@ export const metadata: Metadata = pageMetadata({
   description:
     "Every hand-made MidiRoad MIDI drum pattern, one file at a time: hi-hats, snares, kicks and 808s for trap and drill. 1 credit each.",
   path: "/library",
+  // The public /midi/<genre>/<slug> pages are the indexable copy of each file;
+  // this list stays out of results but its links to them are still crawled.
+  index: false,
+  follow: true,
 });
 
 export default async function LibraryPage() {
