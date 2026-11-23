@@ -16,6 +16,13 @@ export const BLACK_FRIDAY = {
   couponAmount: 5,
 } as const;
 
+/**
+ * Private invite codes sent by email. Same $5 off the bundle as the sale code,
+ * but they keep working after the sale ends. Each also exists as a Stripe
+ * promotion code, so it works when typed on the Stripe checkout page too.
+ */
+export const VIP_CODES: readonly string[] = ["VIP999"];
+
 function round2(n: number) {
   return Math.round(n * 100) / 100;
 }
@@ -40,6 +47,7 @@ export const PRICING = {
 /** The normalized coupon code if it's valid right now, else undefined. */
 export function validCoupon(code: string | null | undefined): string | undefined {
   const c = (code ?? "").trim().toUpperCase();
+  if (VIP_CODES.includes(c)) return c;
   return BLACK_FRIDAY.active && c === BLACK_FRIDAY.couponCode ? c : undefined;
 }
 
