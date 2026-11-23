@@ -12,6 +12,7 @@ import { FAQSection } from "@/components/FAQSection";
 import { JsonLd } from "@/components/JsonLd";
 import { FAQS } from "@/lib/faq";
 import { faqJsonLd, kitJsonLd } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 import { HeroBlock, ProductHero } from "@/components/ProductHero";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { ONE_SHOT_COUNT } from "@/lib/bundle";
@@ -39,15 +40,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const stats = kitStats(kit);
   const title = `${kit.name} – MIDI Drum Kit, ${stats.patterns} Patterns`;
   const description = `${kit.tagline} ${stats.patterns} royalty-free MIDI drum patterns, ${stats.minBpm}–${stats.maxBpm} BPM. Drag and drop into FL Studio, Ableton, Logic or any DAW.`;
-  const path = `/kits/${kit.slug}`;
-  return {
-    title,
-    description,
-    alternates: { canonical: path },
-    // Pages that set their own openGraph lose the root share image, so name it.
-    openGraph: { title, description, url: path, type: "website", siteName: "MidiRoad", images: "/opengraph-image" },
-    twitter: { card: "summary_large_image", title, description, images: "/opengraph-image" },
-  };
+  return pageMetadata({ title, description, path: `/kits/${kit.slug}` });
 }
 
 export default async function KitPage({ params }: Params) {

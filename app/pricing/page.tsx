@@ -6,14 +6,16 @@ import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { SIGNUP_CREDITS } from "@/lib/plans";
 import { currentUser } from "@/lib/session";
 import { activeSubscription } from "@/lib/subscription";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Pricing: Monthly MIDI Credits",
-  description: "Monthly MIDI credits: download any MIDI drum pattern from the library or any beat from the free trap beat maker.",
-  alternates: { canonical: "/pricing" },
-};
+  description:
+    "Monthly MIDI credits: download any MIDI drum pattern from the library or any beat from the free trap beat maker.",
+  path: "/pricing",
+});
 
 export default async function PricingPage() {
   const user = await currentUser();

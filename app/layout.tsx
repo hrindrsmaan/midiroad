@@ -6,7 +6,7 @@ import "./globals.css";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { JsonLd } from "@/components/JsonLd";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, siteJsonLd } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, siteJsonLd } from "@/lib/site";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -64,11 +64,11 @@ export const metadata: Metadata = {
     "FL Studio MIDI",
     "Ableton MIDI packs",
   ],
-  alternates: { canonical: "/" },
+  alternates: { canonical: absoluteUrl("/") },
   openGraph: {
     title: HOME_TITLE,
     description: SITE_DESCRIPTION,
-    url: "/",
+    url: absoluteUrl("/"),
     type: "website",
     siteName: SITE_NAME,
     locale: "en_US",

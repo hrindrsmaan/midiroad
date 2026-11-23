@@ -23,13 +23,16 @@ import {
   upgradePrice,
 } from "@/lib/products";
 import { formatUSD } from "@/lib/pricing";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Order confirmed",
-  robots: { index: false, follow: false },
-};
+  description: "Your MidiRoad order is confirmed. Download your MIDI kit from this page.",
+  path: "/success",
+  index: false,
+});
 
 type Order = {
   productIds: string[];

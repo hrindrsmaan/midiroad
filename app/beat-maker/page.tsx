@@ -5,19 +5,13 @@ import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { JsonLd } from "@/components/JsonLd";
 import { googleConfigured } from "@/lib/auth";
 import { beatMakerJsonLd } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
 const title = "Free Trap Beat Maker – Export MIDI to Your DAW";
 const description =
   "Make a trap drum beat in one click: hi-hats, snare, kick and 808. Change tempo, key and sounds, mute parts, and export the MIDI to FL Studio, Ableton, Logic or any DAW.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/beat-maker" },
-  // Pages that set their own openGraph lose the root share image, so name it.
-  openGraph: { title, description, url: "/beat-maker", type: "website", siteName: "MidiRoad", images: "/opengraph-image" },
-  twitter: { card: "summary_large_image", title, description, images: "/opengraph-image" },
-};
+export const metadata: Metadata = pageMetadata({ title, description, path: "/beat-maker" });
 
 export default function BeatMakerPage() {
   return (

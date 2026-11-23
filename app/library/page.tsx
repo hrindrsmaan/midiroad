@@ -5,14 +5,16 @@ import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { getCredits, getUnlocks } from "@/lib/credits";
 import { LIBRARY, LIBRARY_FOLDERS } from "@/lib/library";
 import { currentUser } from "@/lib/session";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "MIDI Library: Single Trap Drum Patterns",
-  description: "Every hand-made MidiRoad MIDI drum pattern, one file at a time: hi-hats, snares, kicks and 808s for trap and drill. 1 credit each.",
-  alternates: { canonical: "/library" },
-};
+  description:
+    "Every hand-made MidiRoad MIDI drum pattern, one file at a time: hi-hats, snares, kicks and 808s for trap and drill. 1 credit each.",
+  path: "/library",
+});
 
 export default async function LibraryPage() {
   const user = await currentUser();

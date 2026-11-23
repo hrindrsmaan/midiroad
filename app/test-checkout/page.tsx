@@ -3,15 +3,18 @@ import { BuyButton, BUY_BUTTON_CLASS } from "@/components/BuyButton";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { TEST_ID } from "@/lib/products";
+import { pageMetadata } from "@/lib/seo";
 
 /**
  * Unlisted page for testing the live purchase flow with a $0 order:
  * Stripe checkout → success page → email → download.
  */
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Test checkout",
-  robots: { index: false, follow: false },
-};
+  description: "Unlisted page for checking the MidiRoad checkout flow.",
+  path: "/test-checkout",
+  index: false,
+});
 
 const STEPS = [
   "Click the button and complete the $0 Stripe checkout with your email. No card is needed.",
