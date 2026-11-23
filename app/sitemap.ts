@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { BPM_RANGES, GENRES, PATTERNS, bpmPath, genrePath, patternPath } from "@/lib/patterns";
+import { GUIDES, guidePath } from "@/lib/guides";
 import { KIT_PRODUCTS } from "@/lib/products";
 import { absoluteUrl } from "@/lib/site";
 
@@ -33,6 +34,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: absoluteUrl(`/kits/${kit.slug}`),
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    { url: absoluteUrl("/guides"), changeFrequency: "monthly", priority: 0.7 },
+    ...GUIDES.map((guide) => ({
+      url: absoluteUrl(guidePath(guide)),
+      lastModified: guide.dateModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
     })),
     { url: absoluteUrl("/pricing"), changeFrequency: "monthly", priority: 0.5 },
   ];

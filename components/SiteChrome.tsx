@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/#midi-kits", label: "Listen" },
   { href: "/midi", label: "Patterns" },
   { href: "/beat-maker", label: "Beat Maker" },
+  { href: "/guides", label: "Guides" },
   { href: "/library", label: "Library" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
