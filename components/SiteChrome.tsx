@@ -6,6 +6,7 @@ import { TrackedLink } from "@/components/TrackedLink";
 import { formatUSD } from "@/lib/pricing";
 import { BlackFridayBar } from "@/components/BlackFriday";
 import { GENRES, genrePath } from "@/lib/patterns";
+import { YOUTUBE_URL } from "@/lib/site";
 
 const NAV_LINKS = [
   { href: "/#kits", label: "MIDI Packs" },
@@ -123,6 +124,11 @@ export function SiteFooter() {
             <li>
               <a href="mailto:support@inbox.midiroad.com" className="text-white/60 transition-colors hover:text-white">
                 support@inbox.midiroad.com
+              </a>
+            </li>
+            <li>
+              <a href={YOUTUBE_URL} rel="me noopener" className="text-white/60 transition-colors hover:text-white">
+                YouTube
               </a>
             </li>
           </ul>
