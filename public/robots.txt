@@ -2,6 +2,7 @@
 # www.midiroad.com and any other *.midiroad.com host (including nonp.midiroad.com)
 # redirect here. Account, checkout, and API routes have nothing to index.
 # Search engines and AI assistants may read every other public page.
+# Plain-text summary for AI assistants: https://midiroad.com/llms.txt
 
 User-agent: *
 Allow: /

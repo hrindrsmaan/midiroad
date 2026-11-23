@@ -1,6 +1,7 @@
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 import { FAQS } from "@/lib/faq";
 import { BUNDLE_NAME, BUNDLE_PRICE, KIT_PRODUCTS, kitStats } from "@/lib/products";
+import { GUIDES, guidePath } from "@/lib/guides";
 import { GENRES, genrePath } from "@/lib/patterns";
 import { SITE_DESCRIPTION, absoluteUrl } from "@/lib/site";
 
@@ -35,6 +36,11 @@ ${kits.join("\n")}
 ${GENRES.map((genre) => `- [${genre.name} MIDI patterns](${absoluteUrl(genrePath(genre))})`).join("\n")}
 - [Patterns by tempo](${absoluteUrl("/midi/bpm")})
 - [Pricing](${absoluteUrl("/pricing")}): monthly MIDI credit plans for the library and the beat maker. New accounts get free credits.
+
+## Guides
+
+- [All guides](${absoluteUrl("/guides")})
+${GUIDES.map((guide) => `- [${guide.title}](${absoluteUrl(guidePath(guide))}): ${guide.summary}`).join("\n")}
 
 ## FAQ
 
