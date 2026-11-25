@@ -10,8 +10,8 @@ export function Testimonials({ className = "" }: { className?: string }) {
   if (TESTIMONIALS.length === 0) return null;
 
   return (
-    <figure className={`rounded-md border border-line px-4 py-3 ${className}`}>
-      <figcaption className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-muted">
+    <figure className={className}>
+      <figcaption className="mb-4 flex items-center gap-1.5 text-sm font-semibold text-muted">
         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" aria-hidden>
           <path
             fill="#ff0000"
@@ -21,17 +21,17 @@ export function Testimonials({ className = "" }: { className?: string }) {
         </svg>
         What producers say on YouTube
       </figcaption>
-      <ul className="grid grid-cols-1 gap-x-4 gap-y-1.5 sm:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {TESTIMONIALS.map((t) => (
-          <li key={t.handle} className="flex min-w-0 items-center gap-2">
+          <li key={t.handle} className="flex min-w-0 items-start gap-3 rounded-md border border-line bg-card p-4">
             <Image
               src={t.avatar}
               alt=""
-              width={22}
-              height={22}
-              className="h-[22px] w-[22px] shrink-0 rounded-full object-cover"
+              width={36}
+              height={36}
+              className="h-9 w-9 shrink-0 rounded-full object-cover"
             />
-            <p className="min-w-0 text-[13px] leading-snug">
+            <p className="min-w-0 text-sm leading-snug">
               <span className="text-ink">&ldquo;{t.text}&rdquo;</span>{" "}
               <span className="text-muted">{t.handle}</span>
             </p>

@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/*.test.mts",
     "db:generate": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs migrate",
     "db:studio": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs studio",

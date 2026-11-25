@@ -35,6 +35,7 @@ ${kits.join("\n")}
 - [Free MIDI drum kit](${absoluteUrl(FREE_KIT_PATH)}): ${FREE_KIT_COUNT} royalty-free MIDI drum patterns (two each from trap, street trap, melodic trap, dark trap, drill and 808 bass, ${FREE_KIT_MIN_BPM}–${FREE_KIT_MAX_BPM} BPM), free for an email address. No account needed.
 - [Free trap beat maker](${absoluteUrl("/beat-maker")}): generates a trap beat (hats, snare, kick, 808) in the browser, with tempo, key, sound picks and mutes. Export the whole beat or a single track as MIDI.
 - [MIDI pattern pages](${absoluteUrl("/midi")}): one public page per pattern, with a browser preview. The MIDI file stays a paid download (buy the kit, or unlock one file with 1 credit).
+- [All kits](${absoluteUrl("/kits")}): each MIDI kit on its own page, plus ${BUNDLE_NAME}.
 ${GENRES.map((genre) => `- [${genre.name} MIDI patterns](${absoluteUrl(genrePath(genre))})`).join("\n")}
 - [Patterns by tempo](${absoluteUrl("/midi/bpm")})
 - [Pricing](${absoluteUrl("/pricing")}): monthly MIDI credit plans for the library and the beat maker. New accounts get free credits.

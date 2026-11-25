@@ -3,7 +3,8 @@ import Link from "next/link";
 import { FaqList } from "@/components/FaqList";
 import { FreeKitForm } from "@/components/FreeKitForm";
 import { JsonLd } from "@/components/JsonLd";
-import { PatternBrowser } from "@/components/PatternBrowser";
+import { TrackTable } from "@/components/catalog/TrackTable";
+import { toCatalogTrack } from "@/lib/catalog";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import type { FaqItem } from "@/lib/faq";
@@ -15,7 +16,6 @@ import {
   FREE_KIT_PATH,
   FREE_KIT_PATTERNS,
 } from "@/lib/free-kit";
-import { GENRES } from "@/lib/patterns";
 import { pageMetadata } from "@/lib/seo";
 import { FREE_KIT_LINK_DAYS } from "@/lib/signing";
 import { ORG_ID, SITE_NAME, SITE_URL, absoluteUrl, faqJsonLd } from "@/lib/site";
@@ -52,13 +52,6 @@ const FAQS: FaqItem[] = [
     a: "Occasionally, with new patterns and offers. Every email has an unsubscribe link, and one click takes you off the list.",
   },
 ];
-
-/** The 12 patterns grouped by style, for the browser preview list. */
-const groups = GENRES.map((genre) => ({
-  id: genre.slug,
-  label: genre.name,
-  patterns: FREE_KIT_PATTERNS.filter((p) => p.genreSlug === genre.slug),
-})).filter((g) => g.patterns.length > 0);
 
 export default function FreeMidiKitPage() {
   const url = absoluteUrl(FREE_KIT_PATH);
@@ -138,7 +131,7 @@ export default function FreeMidiKitPage() {
             Played here with MidiRoad drum samples. Each one links to its own page with tempo, length and the kit it
             comes from.
           </p>
-          <PatternBrowser groups={groups} />
+          <TrackTable tracks={FREE_KIT_PATTERNS.map((pattern) => toCatalogTrack(pattern))} label="Free kit patterns" />
         </div>
       </section>
 

@@ -6,7 +6,10 @@ import { FreeKitBanner, FreeKitLink } from "@/components/FreeKitCta";
 import { JsonLd } from "@/components/JsonLd";
 import { FREE_KIT_COUNT } from "@/lib/free-kit";
 import { PatternDownload } from "@/components/PatternDownload";
-import { PatternPlayer } from "@/components/PatternPlayer";
+import { PatternStage } from "@/components/catalog/PatternStage";
+import { TrackTable } from "@/components/catalog/TrackTable";
+import { toCatalogTrack } from "@/lib/catalog";
+import { waveCode } from "@/lib/tracks";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { googleConfigured } from "@/lib/auth";
@@ -89,7 +92,11 @@ export default async function PatternPage({ params }: Params) {
           </p>
 
           <div className="mt-8">
-            <PatternPlayer pattern={pattern} />
+            <PatternStage
+              track={toCatalogTrack(pattern)}
+              queue={[pattern, ...related].map((item) => toCatalogTrack(item))}
+              detailWave={waveCode(pattern.peaks, 96)}
+            />
           </div>
 
           <p className="mt-8 max-w-xl text-[16px] leading-relaxed">{pattern.description}</p>
@@ -171,19 +178,13 @@ export default async function PatternPage({ params }: Params) {
           {related.length > 0 && (
             <section className="mt-12">
               <h2 className="text-2xl">Related {pattern.partLabel.toLowerCase()}</h2>
-              <ul className="mt-4 space-y-2 text-sm">
-                {related.map((other) => (
-                  <li key={other.id}>
-                    <Link href={other.path} className="text-ink underline underline-offset-4">
-                      {other.title}
-                    </Link>
-                    <span className="text-muted">
-                      {" "}
-                      · {other.bpm} BPM · {other.genreName}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-4">
+                <TrackTable
+                  tracks={related.map((item) => toCatalogTrack(item))}
+                  queue={[pattern, ...related].map((item) => toCatalogTrack(item))}
+                  label={`Related ${pattern.partLabel}`}
+                />
+              </div>
             </section>
           )}
         </div>

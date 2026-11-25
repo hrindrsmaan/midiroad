@@ -105,8 +105,8 @@ export default async function AccountPage({
           </div>
 
           <div className="flex flex-wrap gap-3 text-sm font-semibold">
-            <Link href="/library" className="text-brand hover:underline">
-              Browse the library →
+            <Link href="/midi" className="text-brand hover:underline">
+              Browse patterns →
             </Link>
             <Link href="/beat-maker" className="text-brand hover:underline">
               Open the beat maker →

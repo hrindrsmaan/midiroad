@@ -7,6 +7,8 @@ import { CartProvider } from "@/components/cart/CartProvider";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { AttributionCapture } from "@/components/AttributionCapture";
 import { JsonLd } from "@/components/JsonLd";
+import { MiniPlayer, PlayerProvider } from "@/components/player/Player";
+import { fitMetaDescription } from "@/lib/meta-text";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, siteJsonLd } from "@/lib/site";
 
 const poppins = Poppins({
@@ -44,11 +46,12 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const HOME_TITLE = "MIDI Drum Kits for Trap & Drill + Free Beat Maker | MidiRoad";
+const HOME_DESCRIPTION = fitMetaDescription(SITE_DESCRIPTION);
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: HOME_TITLE, template: `%s | ${SITE_NAME}` },
-  description: SITE_DESCRIPTION,
+  description: HOME_DESCRIPTION,
   applicationName: SITE_NAME,
   verification: {
     google: "2I4opu_i4ibpzNbr4aZGNVITaV38iWPM9IcknqvL-ws",
@@ -68,7 +71,7 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteUrl("/") },
   openGraph: {
     title: HOME_TITLE,
-    description: SITE_DESCRIPTION,
+    description: HOME_DESCRIPTION,
     url: absoluteUrl("/"),
     type: "website",
     siteName: SITE_NAME,
@@ -77,7 +80,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: HOME_TITLE,
-    description: SITE_DESCRIPTION,
+    description: HOME_DESCRIPTION,
   },
   robots: {
     index: true,
@@ -145,8 +148,11 @@ export default async function RootLayout({
         <JsonLd data={siteJsonLd()} />
         <AttributionCapture />
         <CartProvider>
-          {children}
-          <CartDrawer />
+          <PlayerProvider>
+            {children}
+            <MiniPlayer />
+            <CartDrawer />
+          </PlayerProvider>
         </CartProvider>
       </body>
     </html>

@@ -13,6 +13,21 @@ import { NextResponse, type NextRequest } from "next/server";
 const APEX = "midiroad.com";
 
 export function proxy(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  if (path === "/library" || path === "/library/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/midi";
+    url.search = "";
+    const hostname = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+    const local = !hostname || hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".vercel.app");
+    if (!local) {
+      url.protocol = "https:";
+      url.hostname = APEX;
+      url.port = "";
+    }
+    return NextResponse.redirect(url, 301);
+  }
+
   const hostname = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
   const skip =
     !hostname ||
