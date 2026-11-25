@@ -18,7 +18,7 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#0f172a",
+          background: "#0a0a0b",
           color: "white",
           fontFamily: "sans-serif",
         }}
@@ -36,7 +36,7 @@ export default function OpengraphImage() {
           {bars.map((h, i) => (
             <div
               key={i}
-              style={{ width: 52, height: `${h * 100}%`, borderRadius: 6, background: i % 4 === 3 ? "#22c55e" : "#a5b4fc" }}
+              style={{ width: 52, height: `${h * 100}%`, borderRadius: 6, background: i % 4 === 3 ? "#c6ff3d" : "#7c5cff" }}
             />
           ))}
         </div>

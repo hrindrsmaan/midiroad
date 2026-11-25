@@ -1,35 +1,35 @@
 @import "tailwindcss";
 
 /*
- * Dark studio theme (see DESIGN.md). Deep navy surfaces, studio purple for
- * selection and focus, play green for prices and the one primary action per
- * screen. The chart colors mark the four beat-maker lanes and waveforms.
+ * Near-black catalog theme. One electric violet for selection and focus,
+ * lime for play, price, and the primary action. Violet fills are deep enough
+ * that white labels clear WCAG AA. Chart colors mark the beat-maker lanes.
  *
  * Older token names are kept as aliases so components don't need renaming:
  * ink = foreground, canvas = alternate section, line = border,
  * brand = accent (CTA), graphite = background, panel = card, ivory = foreground.
  */
 @theme {
-  --color-background: #0f172a;
-  --color-foreground: #f8fafc;
-  --color-card: #192134;
-  --color-canvas: #131b2f;
-  --color-primary: #7c3aed;
-  --color-primary-hover: #6d28d9;
-  --color-secondary: #6366f1;
-  --color-muted: #94a3b8;
+  --color-background: #0a0a0b;
+  --color-foreground: #f4f4f5;
+  --color-card: #18181b;
+  --color-canvas: #111113;
+  --color-primary: #6a4cf5;
+  --color-primary-hover: #5836e0;
+  --color-secondary: #7c5cff;
+  --color-muted: #a1a1aa;
   --color-line: rgb(255 255 255 / 0.08);
-  --color-strong: rgb(255 255 255 / 0.2);
-  --color-brand: #22c55e;
-  --color-brand-hover: #16a34a;
-  --color-on-brand: #0f172a;
-  --color-destructive: #dc2626;
+  --color-strong: rgb(255 255 255 / 0.18);
+  --color-brand: #c6ff3d;
+  --color-brand-hover: #b6f034;
+  --color-on-brand: #0a0a0b;
+  --color-destructive: #f87171;
 
-  --color-chart-hats: #a5b4fc;
-  --color-chart-snare: #c084fc;
-  --color-chart-kick: #6366f1;
-  --color-chart-bass: #22c55e;
-  --color-chart-rest: #475569;
+  --color-chart-hats: #c4b5fd;
+  --color-chart-snare: #f0abfc;
+  --color-chart-kick: #7c5cff;
+  --color-chart-bass: #c6ff3d;
+  --color-chart-rest: #6b6b76;
 
   --color-ink: var(--color-foreground);
   --color-graphite: var(--color-background);
@@ -41,7 +41,8 @@
 
 /* Fonts point at next/font variables, so they are inlined into utilities. */
 @theme inline {
-  --font-sans: var(--font-poppins), system-ui, sans-serif;
+  --font-sans: var(--font-geist), system-ui, sans-serif;
+  /* The logo wordmark stays on Righteous. Page headings set Space Grotesk themselves. */
   --font-heading: var(--font-righteous), system-ui, sans-serif;
 }
 
@@ -50,8 +51,8 @@
     scroll-behavior: smooth;
     color-scheme: dark;
     /* Browser-drawn surfaces follow the palette too. */
-    scrollbar-color: #334155 var(--color-background);
-    accent-color: var(--color-primary);
+    scrollbar-color: #3f3f46 var(--color-background);
+    accent-color: var(--color-secondary);
     caret-color: var(--color-brand);
   }
 
@@ -64,17 +65,17 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Space Grotesk for display type: tight, catalog-like headlines. */
+  /* Space Grotesk for display type. Body stays Geist via --font-sans. */
   h1,
   h2 {
-    font-family: var(--font-space-grotesk), var(--font-poppins), system-ui, sans-serif;
+    font-family: var(--font-space-grotesk), var(--font-geist), system-ui, sans-serif;
     font-weight: 600;
     letter-spacing: -0.03em;
   }
 
   h3,
   h4 {
-    font-family: var(--font-poppins), system-ui, sans-serif;
+    font-family: var(--font-geist), system-ui, sans-serif;
     font-weight: 600;
   }
 
@@ -84,14 +85,14 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-secondary);
     outline-offset: 2px;
   }
 }
 
-/* Prices, counts and readouts: Poppins with figures that line up. */
+/* Prices, counts and readouts: Geist with figures that line up. */
 @utility font-wide {
-  font-family: var(--font-poppins), system-ui, sans-serif;
+  font-family: var(--font-geist), system-ui, sans-serif;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;

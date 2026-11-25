@@ -7,10 +7,10 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const LANES = [
-  { color: "#a5b4fc", steps: "1011101110111011" },
-  { color: "#c084fc", steps: "0000100000001000" },
-  { color: "#6366f1", steps: "1000001000100000" },
-  { color: "#22c55e", steps: "1000001000100010" },
+  { color: "#c4b5fd", steps: "1011101110111011" },
+  { color: "#f0abfc", steps: "0000100000001000" },
+  { color: "#7c5cff", steps: "1000001000100000" },
+  { color: "#c6ff3d", steps: "1000001000100010" },
 ];
 
 export default function FreeKitImage() {
@@ -24,7 +24,7 @@ export default function FreeKitImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#0f172a",
+          background: "#0a0a0b",
           color: "white",
           fontFamily: "sans-serif",
         }}
@@ -38,8 +38,8 @@ export default function FreeKitImage() {
             style={{
               display: "flex",
               marginLeft: "auto",
-              background: "#22c55e",
-              color: "#0f172a",
+              background: "#c6ff3d",
+              color: "#0a0a0b",
               fontSize: 30,
               fontWeight: 800,
               padding: "10px 22px",

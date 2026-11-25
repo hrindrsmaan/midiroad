@@ -37,7 +37,7 @@ const MIX: Record<DrumPart, number> = { kick: 1, snare: 0.8, hihat: 0.45, "open-
 const HATS = "#a5b4fc";
 const SNARE = "#c084fc";
 const KICK = "#6366f1";
-const BASS = "#22c55e";
+const BASS = "#c6ff3d";
 
 /** Lanes are the rows the export route knows as tracks. */
 type LaneId = BeatTrack;
@@ -1017,7 +1017,7 @@ export function MidiGenerator({
           )}
 
           {/* Piano roll: click the grid to play or stop */}
-          <div className="relative bg-[#111a2d]">
+          <div className="relative bg-canvas">
             <BeatRoll
               key={`${current.vibe}-${current.seed}-${current.hatBase}`}
               pattern={current}

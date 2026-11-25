@@ -156,7 +156,7 @@ export function MiniPlayer() {
   const index = queue.findIndex((item) => item.id === track.id);
 
   return (
-    <div className="mini-player fixed inset-x-0 bottom-0 z-40 border-t border-line bg-[#0b1222]/95 backdrop-blur">
+    <div className="mini-player fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-3 md:gap-3 md:px-5">
         <TransportButton label="Previous pattern" disabled={index <= 0} onClick={prev}>
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>

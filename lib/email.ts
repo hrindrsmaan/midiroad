@@ -44,7 +44,7 @@ export async function sendEmail(to: string, sessionId: string, items: EmailItem[
             .content { padding: 40px 30px; }
             h1 { color: #000; font-size: 28px; margin: 0 0 20px 0; }
             p { color: #333; line-height: 1.6; margin: 0 0 20px 0; }
-            .button { display: inline-block; background: #7c3aed; color: #ffffff; padding: 16px 32px; text-decoration: none; font-weight: bold; border-radius: 4px; margin: 20px 0; }
+            .button { display: inline-block; background: #6a4cf5; color: #ffffff; padding: 16px 32px; text-decoration: none; font-weight: bold; border-radius: 4px; margin: 20px 0; }
             .item { border: 1px solid #e8e5df; border-radius: 12px; padding: 16px 20px; margin: 0 0 12px 0; }
             .item-name { font-weight: bold; margin: 0; color: #0f172a; }
             .item .button { margin: 12px 0 0 0; padding: 12px 24px; }
@@ -92,7 +92,7 @@ export async function sendMagicLinkEmail(to: string, url: string) {
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 20px; color: #0f172a;">
         <h1 style="font-size: 22px; margin: 0 0 16px;">Sign in to MidiRoad</h1>
         <p style="line-height: 1.6; margin: 0 0 24px; color: #333;">Click the button to sign in. The link expires in 5 minutes and works once.</p>
-        <a href="${url}" style="display: inline-block; background: #7c3aed; color: #fff; padding: 14px 28px; border-radius: 4px; text-decoration: none; font-weight: bold;">Sign in</a>
+        <a href="${url}" style="display: inline-block; background: #6a4cf5; color: #fff; padding: 14px 28px; border-radius: 4px; text-decoration: none; font-weight: bold;">Sign in</a>
         <p style="font-size: 13px; color: #6b6864; margin: 28px 0 0;">If you didn't ask for this, you can ignore this email.</p>
       </div>`,
   });
@@ -153,15 +153,15 @@ Unsubscribe: ${unsubscribeUrl}`;
     html: `
       <div style="background:#f4f4f0;padding:32px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
         <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;">
-          <div style="background:#0f172a;padding:24px;text-align:center;">
+          <div style="background:#0a0a0b;padding:24px;text-align:center;">
             <img src="${base}/brand/midiroad-logo-white.png" alt="MidiRoad" style="height:36px;" />
           </div>
           <div style="padding:32px 28px;color:#0f172a;">
             <h1 style="font-size:24px;margin:0 0 12px;">Your free MIDI kit is ready</h1>
             <p style="line-height:1.6;margin:0 0 8px;color:#333;">The ${kitName}: ${patternCount} royalty-free MIDI drum patterns, two from each style (trap, street trap, melodic trap, dark trap, drill and 808 bass).</p>
-            <a href="${downloadUrl}" style="display:inline-block;background:#22c55e;color:#0f172a;padding:14px 28px;border-radius:4px;text-decoration:none;font-weight:bold;margin:16px 0;">Download the kit</a>
+            <a href="${downloadUrl}" style="display:inline-block;background:#c6ff3d;color:#0a0a0b;padding:14px 28px;border-radius:4px;text-decoration:none;font-weight:bold;margin:16px 0;">Download the kit</a>
             <p style="font-size:14px;line-height:1.6;color:#555;margin:0 0 16px;">The link works for ${days} days. Drag a .mid file onto a drum or 808 channel in FL Studio, Ableton, Logic or any DAW, and set the project to the BPM in the file name.</p>
-            <p style="font-size:14px;line-height:1.6;color:#555;margin:0;">Want more? <a href="${base}/midi" style="color:#7c3aed;">Browse every pattern</a> or <a href="${base}/beat-maker" style="color:#7c3aed;">make a beat in the free beat maker</a>.</p>
+            <p style="font-size:14px;line-height:1.6;color:#555;margin:0;">Want more? <a href="${base}/midi" style="color:#6a4cf5;">Browse every pattern</a> or <a href="${base}/beat-maker" style="color:#6a4cf5;">make a beat in the free beat maker</a>.</p>
           </div>
           <div style="background:#f9f9f9;padding:18px 28px;font-size:12px;line-height:1.6;color:#666;text-align:center;">
             <p style="margin:0 0 6px;">You're getting this because you asked for the free kit at midiroad.com. MidiRoad sends occasional emails with new patterns and offers.</p>

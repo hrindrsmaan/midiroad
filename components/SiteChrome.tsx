@@ -103,7 +103,7 @@ export function StickyBuyBar({
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-[#0b1222] text-white">
+    <footer className="border-t border-line bg-canvas text-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 md:flex-row md:items-start md:justify-between">
         <div className="max-w-xs">
           <Logo />

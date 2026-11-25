@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins, Righteous, Space_Grotesk, Black_Ops_One, Anton } from "next/font/google";
+import { Geist, Righteous, Space_Grotesk, Black_Ops_One, Anton } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
 import "./globals.css";
@@ -11,11 +11,12 @@ import { MiniPlayer, PlayerProvider } from "@/components/player/Player";
 import { fitMetaDescription } from "@/lib/meta-text";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, siteJsonLd } from "@/lib/site";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "variable",
   display: "swap",
+  adjustFontFallback: true,
 });
 
 const righteous = Righteous({
@@ -113,7 +114,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${blackOpsOne.variable} ${anton.variable} ${spaceGrotesk.variable} ${poppins.variable} ${righteous.variable} antialiased font-sans`}
+        className={`${blackOpsOne.variable} ${anton.variable} ${spaceGrotesk.variable} ${geist.variable} ${righteous.variable} antialiased font-sans`}
       >
         {/* Conditionally render Google Analytics based on IP */}
         {!isDevIP ? (
