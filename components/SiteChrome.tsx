@@ -4,6 +4,7 @@ import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
 import { FreeKitLink } from "@/components/FreeKitCta";
 import { Logo } from "@/components/Logo";
 import { TrackedLink } from "@/components/TrackedLink";
+import { BPM_KEY_PATH } from "@/lib/bpm-key/content";
 import { formatUSD } from "@/lib/pricing";
 import { BlackFridayBar } from "@/components/BlackFriday";
 import { GENRES, genrePath } from "@/lib/patterns";
@@ -15,6 +16,7 @@ const NAV_LINKS = [
   { href: "/midi", label: "Patterns" },
   { href: "/beat-maker", label: "Beat Maker" },
   { href: "/chord-maker", label: "Chord Maker" },
+  { href: BPM_KEY_PATH, label: "BPM & Key Finder" },
   { href: "/free-midi-kit", label: "Free MIDI Kit" },
   { href: "/guides", label: "Guides" },
   { href: "/pricing", label: "Pricing" },

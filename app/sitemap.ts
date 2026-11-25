@@ -1,3 +1,4 @@
+import { BPM_KEY_PATH } from "@/lib/bpm-key/content";
 import type { MetadataRoute } from "next";
 import { BPM_RANGES, GENRES, PATTERNS, bpmPath, genrePath, patternPath, patternsInGenre, patternsInRange } from "@/lib/patterns";
 import { GUIDES, guidePath } from "@/lib/guides";
@@ -26,6 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/free-midi-kit"), changeFrequency: "monthly", priority: 0.9 },
     { url: absoluteUrl("/kits"), changeFrequency: "weekly", priority: 0.8 },
     { url: absoluteUrl("/chord-maker"), changeFrequency: "monthly", priority: 0.8 },
+    { url: absoluteUrl(BPM_KEY_PATH), changeFrequency: "monthly", priority: 0.8 },
     { url: absoluteUrl("/midi"), changeFrequency: "weekly", priority: 0.9 },
     ...extra("/midi", PATTERNS.length),
     ...GENRES.flatMap((genre) => [

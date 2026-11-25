@@ -1,3 +1,4 @@
+import { BPM_KEY_DESCRIPTION, BPM_KEY_PATH } from "@/lib/bpm-key/content";
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 import { BUNDLE_NAME, BUNDLE_PRICE, KIT_PRODUCTS, kitStats, type KitProduct } from "@/lib/products";
 
@@ -112,6 +113,33 @@ export const chordMakerJsonLd = () => [
     publisher: { "@id": ORG_ID },
   },
 ];
+
+/** The free BPM and key finder. Audio never leaves the browser. */
+export const bpmKeyFinderJsonLd = () => {
+  const url = absoluteUrl(BPM_KEY_PATH);
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: "MidiRoad Free BPM & Key Finder",
+      url,
+      applicationCategory: "MultimediaApplication",
+      operatingSystem: "Any (runs in the browser)",
+      description: BPM_KEY_DESCRIPTION,
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      isAccessibleForFree: true,
+      publisher: { "@id": ORG_ID },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "BPM & Key Finder", item: url },
+      ],
+    },
+  ];
+};
 
 /** One kit's product page. */
 export const kitJsonLd = (kit: KitProduct) => {
