@@ -547,7 +547,7 @@ export function BundleSpread() {
           key={kit.id}
           href={`/kits/${kit.slug}`}
           aria-label={`${kit.name}: ${kitStats(kit).patterns} MIDI patterns`}
-          className="group relative block aspect-[3/4] overflow-hidden rounded-md shadow-[0_10px_24px_-8px_rgba(0,0,0,0.45)] ring-1 ring-black/10 transition-transform duration-200 hover:-translate-y-1"
+          className="group relative block aspect-[3/4] overflow-hidden rounded-md shadow-[0_10px_24px_-8px_rgba(0,0,0,0.45)] ring-1 ring-foreground/10 transition-transform duration-200 hover:-translate-y-1"
         >
           {kit.image ? (
             <Image src={kit.image} alt="" fill sizes="200px" className="object-cover" />

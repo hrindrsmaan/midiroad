@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { TESTIMONIALS } from "@/lib/testimonials";
 
 /**
@@ -20,6 +21,17 @@ export function Testimonials({ className = "" }: { className?: string }) {
           <path fill="#fff" d="m9.75 15.5 5.75-3.5-5.75-3.5v7Z" />
         </svg>
         What producers say on YouTube
+        <span className="font-normal">
+          &middot;{" "}
+          <Link
+            href="https://www.youtube.com/@midiroad"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 hover:text-ink"
+          >
+            see the comments in context
+          </Link>
+        </span>
       </figcaption>
       <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {TESTIMONIALS.map((t) => (

@@ -54,7 +54,7 @@ export function CartDrawer() {
       {/* Backdrop */}
       <div
         onClick={close}
-        className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 bg-foreground/40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
       />
 
       <div
@@ -76,7 +76,7 @@ export function CartDrawer() {
             type="button"
             onClick={close}
             aria-label="Close cart"
-            className="-mr-2 grid h-10 w-10 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-white/5 hover:text-ink"
+            className="-mr-2 grid h-10 w-10 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-foreground/[0.03] hover:text-ink"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
               <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
@@ -91,7 +91,7 @@ export function CartDrawer() {
             <Link
               href="/#kits"
               onClick={close}
-              className="mt-6 inline-flex h-11 items-center rounded-key border border-strong px-6 text-[13px] font-semibold transition-colors hover:bg-white/10"
+              className="mt-6 inline-flex h-11 items-center rounded-key border border-strong px-6 text-[13px] font-semibold transition-colors hover:bg-foreground/[0.06]"
             >
               Browse MIDI packs
             </Link>
@@ -155,7 +155,7 @@ export function CartDrawer() {
                   <button
                     type="button"
                     onClick={() => cart.add(BUNDLE_ID)}
-                    className="mt-3 h-9 cursor-pointer rounded-key border border-strong px-4 text-xs font-semibold transition-colors hover:bg-white/10"
+                    className="mt-3 h-9 cursor-pointer rounded-key border border-strong px-4 text-xs font-semibold transition-colors hover:bg-foreground/[0.06]"
                   >
                     Switch to the bundle
                   </button>

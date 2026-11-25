@@ -9,7 +9,7 @@ import { BLACK_FRIDAY, PRICING, formatUSD } from "@/lib/pricing";
 export function BlackFridayBar() {
   if (!BLACK_FRIDAY.active) return null;
   return (
-    <div className="bg-black px-4 py-2 text-center text-[13px] leading-snug text-white">
+    <div className="bg-foreground px-4 py-2 text-center text-[13px] leading-snug text-background">
       <span className="mr-2 rounded-[3px] bg-brand px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-on-brand">
         Black Friday
       </span>
@@ -17,7 +17,7 @@ export function BlackFridayBar() {
       <Link href="/#main-cta" className="font-semibold underline underline-offset-2">
         Code {BLACK_FRIDAY.couponCode}
       </Link>{" "}
-      takes an extra ${BLACK_FRIDAY.couponAmount} off.
+      takes an extra ${BLACK_FRIDAY.couponAmount} off &mdash; already applied in your cart.
     </div>
   );
 }
@@ -33,18 +33,11 @@ export function CouponField({ className = "" }: { className?: string }) {
 
   if (cart.coupon) {
     return (
-      <p className={`flex items-center justify-between gap-3 text-sm ${className}`}>
+      <p className={`flex items-center gap-2 text-sm ${className}`}>
         <span>
           <span className="font-semibold text-brand">✓ {cart.coupon}</span>{" "}
           <span className="text-muted">applied: extra ${BLACK_FRIDAY.couponAmount} off the bundle</span>
         </span>
-        <button
-          type="button"
-          onClick={cart.removeCoupon}
-          className="shrink-0 cursor-pointer text-xs text-muted underline underline-offset-2 hover:text-ink"
-        >
-          Remove
-        </button>
       </p>
     );
   }
@@ -77,7 +70,7 @@ export function CouponField({ className = "" }: { className?: string }) {
         />
         <button
           type="submit"
-          className="h-10 shrink-0 cursor-pointer rounded-key border border-strong px-4 text-[13px] font-semibold transition-colors hover:bg-white/10"
+          className="h-10 shrink-0 cursor-pointer rounded-key border border-strong px-4 text-[13px] font-semibold transition-colors hover:bg-foreground/[0.06]"
         >
           Apply
         </button>

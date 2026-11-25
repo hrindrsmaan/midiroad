@@ -151,6 +151,11 @@ export default async function KitPage({ params, searchParams }: Params) {
             downloads
             google={googleConfigured}
             label={`${kit.name} patterns`}
+            creditNote={
+              <>
+                All {kitStats(kit).patterns} patterns are in the kit download. Need just one file? Unlock it for 1 credit.
+              </>
+            }
           />
         </div>
       </section>

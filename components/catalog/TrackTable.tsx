@@ -57,6 +57,7 @@ export function TrackTable({
   downloads = false,
   google = false,
   label = "Patterns",
+  creditNote,
 }: {
   tracks: CatalogTrack[];
   /** Prev/next list. Defaults to `tracks`. */
@@ -65,6 +66,12 @@ export function TrackTable({
   downloads?: boolean;
   google?: boolean;
   label?: string;
+  /**
+   * Replaces the default credit line. Used where the patterns are already
+   * part of something the visitor has bought, so the "1 credit" wording
+   * would read as a second charge for the same files.
+   */
+  creditNote?: React.ReactNode;
 }) {
   const player = usePlayer();
   const list = queue ?? tracks;
@@ -133,7 +140,7 @@ export function TrackTable({
             <li
               key={track.id}
               className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-1 py-2 md:grid-cols-[auto_minmax(0,1.5fr)_minmax(0,0.9fr)_4.5rem_6.5rem_minmax(7rem,1fr)_auto] ${
-                playing ? "bg-white/[0.03]" : ""
+                playing ? "bg-foreground/[0.035]" : ""
               }`}
             >
               <button
@@ -142,7 +149,7 @@ export function TrackTable({
                 aria-label={`${playing ? "Stop" : "Play"} ${track.title}`}
                 aria-pressed={playing}
                 className={`grid h-9 w-9 cursor-pointer place-items-center rounded-full [&_svg]:h-3.5 [&_svg]:w-3.5 ${
-                  playing ? "bg-brand text-on-brand" : "bg-white/10 text-ink hover:bg-white/15"
+                  playing ? "bg-brand text-on-brand" : "bg-foreground/[0.06] text-ink hover:bg-foreground/[0.08]"
                 }`}
               >
                 {playing ? <PauseIcon /> : <PlayIcon />}
@@ -198,8 +205,12 @@ export function TrackTable({
       </ul>
       {downloads && (
         <p className="mt-3 text-xs text-muted">
-          Every pattern downloads as a MIDI file for 1 credit.
-          {!isPending && !session ? ` New accounts get ${SIGNUP_CREDITS} free credits.` : ""}
+          {creditNote ?? (
+            <>
+              Every pattern downloads as a MIDI file for 1 credit.
+              {!isPending && !session ? ` New accounts get ${SIGNUP_CREDITS} free credits.` : ""}
+            </>
+          )}
         </p>
       )}
       {notice && (

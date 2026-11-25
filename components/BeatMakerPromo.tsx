@@ -26,7 +26,7 @@ export function BeatMakerPromo() {
           <TrackedLink
             href="/beat-maker"
             track={{ action: "click_beat_maker", category: "navigation", label: "home_promo" }}
-            className="mt-6 inline-flex h-12 items-center rounded-key bg-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+            className="mt-6 inline-flex h-12 items-center rounded-key bg-primary px-6 text-sm font-semibold text-on-brand transition-colors hover:bg-primary-hover"
           >
             Open the beat maker
           </TrackedLink>
@@ -39,7 +39,7 @@ export function BeatMakerPromo() {
                 {[...lane.steps].map((on, i) => (
                   <span
                     key={i}
-                    className={`aspect-square rounded-[2px] ${on === "1" ? lane.color : "bg-white/[0.06]"}`}
+                    className={`aspect-square rounded-[2px] ${on === "1" ? lane.color : "bg-foreground/[0.05]"}`}
                   />
                 ))}
               </div>

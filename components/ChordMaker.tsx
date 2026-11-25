@@ -35,8 +35,8 @@ const MIN_BPM = 50;
 const MAX_BPM = 180;
 
 /** Chart colors (DESIGN.md): chords violet, bass play green. */
-const CHORD = "#c084fc";
-const BASS = "#c6ff3d";
+const CHORD = "#d07bd4";
+const BASS = "#3f8f5e";
 
 /** Pitches on the roll, high to low like a DAW. */
 const ROWS = Array.from({ length: HIGH - LOW + 1 }, (_, i) => HIGH - i);
@@ -327,9 +327,9 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
     <section ref={sectionRef} id="chord-maker" aria-labelledby={headingId} className="scroll-mt-16 bg-graphite px-5 pb-16 pt-12 text-ivory md:pb-24 md:pt-20">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 md:mb-10">
-          <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-white/60">
+          <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted">
             <span aria-hidden className="flex gap-1">
-              {[CHORD, "#a5b4fc", "#6366f1", BASS].map((c) => (
+              {[CHORD, "#9b8ce8", "#6a4ce8", BASS].map((c) => (
                 <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
               ))}
             </span>
@@ -343,14 +343,14 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
           >
             Make a chord progression in seconds
           </Heading>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">
             Pick a key and a progression, shape the chords on the piano roll, then drag the MIDI into your DAW.
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-md border border-black/40 bg-panel shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_24px_60px_-30px_rgba(0,0,0,0.7)]">
+        <div className="overflow-hidden rounded-md border border-line bg-panel shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_18px_40px_-26px_rgba(31,31,31,0.30)]">
           {/* Toolbar */}
-          <div className="flex flex-wrap items-end gap-x-5 gap-y-4 border-b border-white/[0.06] px-4 py-4 md:px-5">
+          <div className="flex flex-wrap items-end gap-x-5 gap-y-4 border-b border-line/70 px-4 py-4 md:px-5">
             <button
               type="button"
               onClick={togglePlay}
@@ -358,14 +358,14 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
               aria-pressed={playing}
               title="Play / stop (Space)"
               className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-key transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
-                playing ? "bg-ivory text-graphite hover:bg-white" : "bg-brand text-on-brand hover:bg-brand-hover"
+                playing ? "bg-ivory text-graphite hover:bg-foreground/80" : "bg-brand text-on-brand hover:bg-brand-hover"
               }`}
             >
               {playing ? <PauseIcon /> : <span className="translate-x-px"><PlayIcon /></span>}
             </button>
 
             <Field label="Tempo">
-              <div className="flex h-9 items-center rounded-key border border-white/15 bg-black/20">
+              <div className="flex h-9 items-center rounded-key border border-line bg-background">
                 <button type="button" onClick={() => changeBpm(bpm - 1)} aria-label="Slower" className={`${GHOST_BTN} h-full w-8 rounded-l-key`}>
                   −
                 </button>
@@ -402,7 +402,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                     </option>
                   ))}
                 </Select>
-                <div className="flex h-9 rounded-key border border-white/15 bg-black/20 p-0.5" role="group" aria-label="Scale">
+                <div className="flex h-9 rounded-key border border-line bg-background p-0.5" role="group" aria-label="Scale">
                   {(["minor", "major"] as Mode[]).map((m) => (
                     <button
                       key={m}
@@ -410,7 +410,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                       onClick={() => changeMode(m)}
                       aria-pressed={mode === m}
                       className={`cursor-pointer rounded-[5px] px-2.5 text-sm font-semibold capitalize transition-colors ${
-                        mode === m ? "bg-white/10 text-brand" : "text-white/55 hover:text-white"
+                        mode === m ? "bg-foreground/[0.06] text-brand" : "text-muted hover:text-foreground"
                       }`}
                     >
                       {m}
@@ -440,7 +440,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                 type="button"
                 onClick={shuffle}
                 title="New chords (N)"
-                className="flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key bg-primary px-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover md:px-4"
+                className="flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key bg-primary px-3 text-sm font-semibold text-on-brand transition-colors hover:bg-primary-hover md:px-4"
               >
                 <ShuffleIcon />
                 New chords
@@ -450,7 +450,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                 onClick={() => exportChords(spec)}
                 disabled={downloading}
                 title="Download the progression as MIDI (subscribers)"
-                className="flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-white/20 px-3 text-sm font-semibold text-ivory transition-colors hover:bg-white/[0.06] disabled:opacity-60 md:px-4"
+                className="flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-strong px-3 text-sm font-semibold text-ivory transition-colors hover:bg-foreground/[0.05] disabled:opacity-60 md:px-4"
               >
                 <DownloadIcon />
                 {downloading ? "Preparing…" : "Download MIDI"}
@@ -459,7 +459,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
           </div>
 
           {/* Second row: how it plays */}
-          <div className="flex flex-wrap items-end gap-x-5 gap-y-3 border-b border-white/[0.06] px-4 py-3 md:px-5">
+          <div className="flex flex-wrap items-end gap-x-5 gap-y-3 border-b border-line/70 px-4 py-3 md:px-5">
             <Field label="Rhythm">
               <Select label="Rhythm" value={rhythm} onChange={(v) => setRhythm(v as RhythmId)}>
                 {RHYTHMS.map((r) => (
@@ -478,7 +478,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                 ))}
               </Select>
             </Field>
-            <label className="flex h-9 cursor-pointer items-center gap-2 text-sm font-medium text-white/75">
+            <label className="flex h-9 cursor-pointer items-center gap-2 text-sm font-medium text-foreground/75">
               <input type="checkbox" checked={withBass} onChange={(e) => setWithBass(e.target.checked)} className="h-4 w-4 cursor-pointer" />
               Bass notes
             </label>
@@ -486,15 +486,15 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
 
           {/* Chord slots, one per bar, lined up with the roll */}
           <div className="grid grid-cols-[2.5rem_1fr] md:grid-cols-[3.5rem_1fr]">
-            <div className="border-b border-r border-white/[0.06]" />
-            <div className="grid grid-cols-4 border-b border-white/[0.06]">
+            <div className="border-b border-r border-line/70" />
+            <div className="grid grid-cols-4 border-b border-line/70">
               {slots.map((slot, bar) => {
                 const diatonic = Array.from({ length: 7 }, (_, d) => d);
                 return (
                   <div
                     key={bar}
-                    className={`flex min-w-0 flex-col gap-1.5 border-l border-white/[0.06] px-2 py-2.5 transition-colors first:border-l-0 md:px-3 ${
-                      bar === currentBar ? "bg-white/[0.05]" : ""
+                    className={`flex min-w-0 flex-col gap-1.5 border-l border-line/70 px-2 py-2.5 transition-colors first:border-l-0 md:px-3 ${
+                      bar === currentBar ? "bg-foreground/[0.04]" : ""
                     }`}
                   >
                     <div className="flex items-baseline justify-between gap-1">
@@ -502,11 +502,11 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                         type="button"
                         onClick={() => player.audition(voiced[bar], instrument)}
                         title="Hear this chord"
-                        className="min-w-0 cursor-pointer truncate text-left text-base font-semibold leading-tight text-white hover:text-brand md:text-xl"
+                        className="min-w-0 cursor-pointer truncate text-left text-base font-semibold leading-tight text-foreground hover:text-brand md:text-xl"
                       >
                         {names[bar]}
                       </button>
-                      <span className="shrink-0 text-xs font-semibold tabular-nums text-white/40">{bar + 1}</span>
+                      <span className="shrink-0 text-xs font-semibold tabular-nums text-muted">{bar + 1}</span>
                     </div>
                     <div className="flex min-w-0 flex-col gap-1 md:flex-row">
                       <MiniSelect
@@ -544,13 +544,13 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
 
           {/* Piano roll: click to add or remove a note in that bar's chord */}
           <div className="relative grid grid-cols-[2.5rem_1fr] bg-canvas md:grid-cols-[3.5rem_1fr]">
-            <div className="border-r border-white/[0.06]" aria-hidden>
+            <div className="border-r border-line/70" aria-hidden>
               {ROWS.map((n) => (
                 <div
                   key={n}
                   className={`flex items-center justify-end pr-1 text-[9px] font-semibold leading-none ${
-                    isBlack(n) ? "bg-black/50 text-white/0" : "bg-white/[0.82] text-black/45"
-                  } ${n % 12 === 0 ? "border-b border-black/30" : ""}`}
+                    isBlack(n) ? "bg-foreground text-foreground/0" : "bg-card text-foreground/45"
+                  } ${n % 12 === 0 ? "border-b border-foreground/20" : ""}`}
                   style={{ height: ROW_PX }}
                 >
                   {n % 12 === 0 ? noteName(n) : ""}
@@ -562,7 +562,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
               {ROWS.map((n, i) => (
                 <span
                   key={n}
-                  className={`absolute inset-x-0 ${isBlack(n) ? "bg-black/25" : ""} ${n % 12 === 0 ? "border-b border-white/[0.08]" : ""}`}
+                  className={`absolute inset-x-0 ${isBlack(n) ? "bg-foreground/25" : ""} ${n % 12 === 0 ? "border-b border-line/80" : ""}`}
                   style={{ top: i * ROW_PX, height: ROW_PX }}
                 />
               ))}
@@ -571,7 +571,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                 return (
                   <span
                     key={beat}
-                    className={`absolute inset-y-0 w-px ${beat % BEATS_PER_BAR === 0 ? "bg-white/[0.14]" : "bg-white/[0.04]"}`}
+                    className={`absolute inset-y-0 w-px ${beat % BEATS_PER_BAR === 0 ? "bg-foreground/[0.09]" : "bg-foreground/[0.04]"}`}
                     style={{ left: `${(beat / TOTAL_BEATS) * 100}%` }}
                   />
                 );
@@ -607,7 +607,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
                         tabIndex={-1}
                         aria-label={`${voiced[bar].includes(pitch) ? "Remove" : "Add"} ${noteName(pitch, flats)} in bar ${bar + 1}`}
                         onClick={() => toggleNote(bar, pitch)}
-                        className="w-full shrink-0 cursor-pointer hover:bg-white/[0.07]"
+                        className="w-full shrink-0 cursor-pointer hover:bg-foreground/[0.05]"
                         style={{ height: ROW_PX }}
                       />
                     ))}
@@ -617,7 +617,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
 
               {playing && (
                 <span
-                  className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-ivory shadow-[0_0_6px_rgba(241,239,232,0.6)]"
+                  className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-ivory shadow-[0_0_6px_rgba(31,31,31,0.35)]"
                   style={{ left: `${progress * 100}%` }}
                 />
               )}
@@ -636,13 +636,13 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
 
           {/* Bass lane */}
           {withBass && (
-            <div className="grid grid-cols-[2.5rem_1fr] border-t border-white/[0.06] bg-canvas md:grid-cols-[3.5rem_1fr]">
-              <div className="flex items-center justify-center border-r border-white/[0.06] text-xs font-semibold text-white/55">Bass</div>
+            <div className="grid grid-cols-[2.5rem_1fr] border-t border-line/70 bg-canvas md:grid-cols-[3.5rem_1fr]">
+              <div className="flex items-center justify-center border-r border-line/70 text-xs font-semibold text-muted">Bass</div>
               <div className="relative h-9">
                 {notes.bass.map((n, i) => (
                   <span
                     key={i}
-                    className="absolute top-1/2 flex h-5 -translate-y-1/2 items-center overflow-hidden rounded-[2px] pl-1.5 text-xs font-bold leading-none text-black/70"
+                    className="absolute top-1/2 flex h-5 -translate-y-1/2 items-center overflow-hidden rounded-[2px] pl-1.5 text-xs font-bold leading-none text-foreground/70"
                     style={{
                       left: `${(n.beat / TOTAL_BEATS) * 100}%`,
                       width: `calc(${(n.dur / TOTAL_BEATS) * 100}% - 2px)`,
@@ -658,7 +658,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
           )}
 
           {/* Status bar */}
-          <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-2.5 text-xs text-white/50 md:px-5">
+          <div className="flex items-center justify-between gap-3 border-t border-line/70 px-4 py-2.5 text-xs text-muted md:px-5">
             <span className="truncate">
               {[`${KEY_LABELS[key]} ${mode}`, numerals.join(" – "), `${bpm} BPM`].join("  ·  ")}
             </span>
@@ -668,14 +668,14 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
           </div>
         </div>
 
-        <p className="mt-5 max-w-prose text-pretty text-sm text-white/60" aria-live="polite">
+        <p className="mt-5 max-w-prose text-pretty text-sm text-muted" aria-live="polite">
           {failed ? (
-            <span className="font-semibold text-white">Download failed. Try again.</span>
+            <span className="font-semibold text-foreground">Download failed. Try again.</span>
           ) : (
             <>
-              <span className="font-semibold text-white">Playing is free. Downloading is for subscribers</span>, and
+              <span className="font-semibold text-foreground">Playing is free. Downloading is for subscribers</span>, and
               doesn&apos;t use credits.{" "}
-              <Link href="/pricing" className="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">
+              <Link href="/pricing" className="font-semibold text-foreground underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                 See plans
               </Link>
               . The MIDI has a Chords track and, with bass notes on, a Bass track, so each lands on its own instrument
@@ -709,18 +709,18 @@ const DownloadIcon = () => icon(<><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /
 const ShuffleIcon = () =>
   icon(<><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="M4 4l5 5" /></>);
 const Chevron = ({ className }: { className: string }) => (
-  <svg viewBox="0 0 24 24" className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-white/50 ${className}`} fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+  <svg viewBox="0 0 24 24" className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted ${className}`} fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
     <path d="m6 9 6 6 6-6" />
   </svg>
 );
 
 const GHOST_BTN =
-  "grid cursor-pointer place-items-center text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent";
+  "grid cursor-pointer place-items-center text-muted transition-colors hover:bg-foreground/[0.05] hover:text-foreground disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-xs font-medium text-white/50">{label}</span>
+      <span className="text-xs font-medium text-muted">{label}</span>
       {children}
     </div>
   );
@@ -733,7 +733,7 @@ function Select({ label, value, onChange, children }: { label: string; value: st
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-9 cursor-pointer appearance-none rounded-key border border-white/15 bg-black/20 pl-3 pr-8 text-sm font-semibold text-brand hover:border-white/25 focus:outline-none"
+        className="h-9 cursor-pointer appearance-none rounded-key border border-line bg-background pl-3 pr-8 text-sm font-semibold text-brand hover:border-strong focus:outline-none"
       >
         {children}
       </select>
@@ -749,7 +749,7 @@ function MiniSelect({ label, value, onChange, children }: { label: string; value
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-7 w-full min-w-0 cursor-pointer appearance-none truncate rounded border border-white/10 bg-black/20 pl-1.5 pr-5 text-xs font-medium text-white/80 hover:border-white/25 hover:text-white focus:outline-none"
+        className="h-7 w-full min-w-0 cursor-pointer appearance-none truncate rounded border border-line bg-background pl-1.5 pr-5 text-xs font-medium text-foreground/80 hover:border-strong hover:text-foreground focus:outline-none"
       >
         {children}
       </select>
@@ -760,7 +760,7 @@ function MiniSelect({ label, value, onChange, children }: { label: string; value
 
 function Kbd({ children }: { children: string }) {
   return (
-    <kbd className="rounded-[3px] border border-white/15 bg-white/[0.05] px-1.5 py-px font-sans text-xs font-semibold text-white/60">
+    <kbd className="rounded-[3px] border border-line bg-foreground/[0.04] px-1.5 py-px font-sans text-xs font-semibold text-muted">
       {children}
     </kbd>
   );

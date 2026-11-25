@@ -7,10 +7,10 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const LANES = [
-  { color: "#c4b5fd", steps: "1011101110111011" },
-  { color: "#f0abfc", steps: "0000100000001000" },
-  { color: "#7c5cff", steps: "1000001000100000" },
-  { color: "#c6ff3d", steps: "1000001000100010" },
+  { color: "#9b8ce8", steps: "1011101110111011" },
+  { color: "#d07bd4", steps: "0000100000001000" },
+  { color: "#6a4ce8", steps: "1000001000100000" },
+  { color: "#2e6b45", steps: "1000001000100010" },
 ];
 
 export default function FreeKitImage() {
@@ -24,22 +24,22 @@ export default function FreeKitImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "#0a0a0b",
-          color: "white",
+          background: "#f8f1e7",
+          color: "#1f1f1f",
           fontFamily: "sans-serif",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <LogoMark size={64} />
           <div style={{ display: "flex", fontSize: 40, fontWeight: 800, letterSpacing: -1 }}>
-            MIDI<span style={{ color: "#22c55e" }}>ROAD</span>
+            MIDI<span style={{ color: "#2e6b45" }}>ROAD</span>
           </div>
           <div
             style={{
               display: "flex",
               marginLeft: "auto",
-              background: "#c6ff3d",
-              color: "#0a0a0b",
+              background: "#2e6b45",
+              color: "#fefaf7",
               fontSize: 30,
               fontWeight: 800,
               padding: "10px 22px",
@@ -53,7 +53,7 @@ export default function FreeKitImage() {
           <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1.02, letterSpacing: -2 }}>
             {`${FREE_KIT_COUNT} free MIDI drum patterns`}
           </div>
-          <div style={{ fontSize: 32, color: "rgba(255,255,255,0.65)" }}>
+          <div style={{ fontSize: 32, color: "rgba(31,31,31,0.62)" }}>
             {`Trap · Drill · Dark trap · 808s · ${FREE_KIT_MIN_BPM}–${FREE_KIT_MAX_BPM} BPM · Any DAW`}
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function FreeKitImage() {
                     width: 58,
                     height: 16,
                     borderRadius: 3,
-                    background: on === "1" ? lane.color : "rgba(255,255,255,0.07)",
+                    background: on === "1" ? lane.color : "rgba(31,31,31,0.08)",
                   }}
                 />
               ))}

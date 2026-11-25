@@ -77,5 +77,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     })),
     { url: absoluteUrl("/pricing"), changeFrequency: "monthly", priority: 0.5 },
+    { url: absoluteUrl("/license"), changeFrequency: "yearly", priority: 0.3 },
   ];
 }

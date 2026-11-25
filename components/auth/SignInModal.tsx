@@ -49,7 +49,7 @@ export function SignInModal({
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center text-left text-base text-ink sm:items-center sm:p-5">
-      <div onClick={onClose} className="absolute inset-0 bg-black/40" />
+      <div onClick={onClose} className="absolute inset-0 bg-foreground/40" />
       <div
         ref={panelRef}
         role="dialog"
@@ -62,7 +62,7 @@ export function SignInModal({
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-3 top-3 grid h-10 w-10 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-white/5 hover:text-ink"
+          className="absolute right-3 top-3 grid h-10 w-10 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:bg-foreground/[0.03] hover:text-ink"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
             <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
@@ -161,7 +161,7 @@ export function SignInModal({
               <Link
                 href="/#main-cta"
                 onClick={onClose}
-                className="flex h-12 items-center justify-center rounded-key border border-line text-sm font-semibold transition-colors hover:bg-white/5"
+                className="flex h-12 items-center justify-center rounded-key border border-line text-sm font-semibold transition-colors hover:bg-foreground/[0.03]"
               >
                 Get the bundle
               </Link>

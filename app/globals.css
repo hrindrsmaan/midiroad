@@ -1,35 +1,36 @@
 @import "tailwindcss";
 
 /*
- * Near-black catalog theme. One electric violet for selection and focus,
- * lime for play, price, and the primary action. Violet fills are deep enough
- * that white labels clear WCAG AA. Chart colors mark the beat-maker lanes.
+ * Warm paper theme. Cream page, near-white cards, near-black ink, and one
+ * forest green that carries every action and price. The palette is sampled
+ * from a light editorial reference: #F8F1E7 paper, #FEFAF7 card, #F1E8DA
+ * alternate section, #1F1F1F ink, #2E6B45 green.
  *
  * Older token names are kept as aliases so components don't need renaming:
  * ink = foreground, canvas = alternate section, line = border,
  * brand = accent (CTA), graphite = background, panel = card, ivory = foreground.
  */
 @theme {
-  --color-background: #0a0a0b;
-  --color-foreground: #f4f4f5;
-  --color-card: #18181b;
-  --color-canvas: #111113;
-  --color-primary: #6a4cf5;
-  --color-primary-hover: #5836e0;
-  --color-secondary: #7c5cff;
-  --color-muted: #a1a1aa;
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-strong: rgb(255 255 255 / 0.18);
-  --color-brand: #c6ff3d;
-  --color-brand-hover: #b6f034;
-  --color-on-brand: #0a0a0b;
-  --color-destructive: #f87171;
+  --color-background: #f8f1e7;
+  --color-foreground: #1f1f1f;
+  --color-card: #fefaf7;
+  --color-canvas: #f1e8da;
+  --color-primary: #2e6b45;
+  --color-primary-hover: #24573a;
+  --color-secondary: #6e8c5e;
+  --color-muted: #6b6357;
+  --color-line: #e3d8c5;
+  --color-strong: #b5a48f;
+  --color-brand: #2e6b45;
+  --color-brand-hover: #24573a;
+  --color-on-brand: #fefaf7;
+  --color-destructive: #b3261e;
 
-  --color-chart-hats: #c4b5fd;
-  --color-chart-snare: #f0abfc;
-  --color-chart-kick: #7c5cff;
-  --color-chart-bass: #c6ff3d;
-  --color-chart-rest: #6b6b76;
+  --color-chart-hats: #9b8ce8;
+  --color-chart-snare: #d07bd4;
+  --color-chart-kick: #6a4ce8;
+  --color-chart-bass: #2e6b45;
+  --color-chart-rest: #c2b6a2;
 
   --color-ink: var(--color-foreground);
   --color-graphite: var(--color-background);
@@ -49,9 +50,9 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    color-scheme: dark;
+    color-scheme: light;
     /* Browser-drawn surfaces follow the palette too. */
-    scrollbar-color: #3f3f46 var(--color-background);
+    scrollbar-color: #cfc0ab var(--color-background);
     accent-color: var(--color-secondary);
     caret-color: var(--color-brand);
   }
@@ -87,7 +88,7 @@
 
   ::selection {
     background-color: var(--color-primary);
-    color: #ffffff;
+    color: var(--color-on-brand);
   }
 
   :focus-visible {

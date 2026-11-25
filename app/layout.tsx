@@ -9,6 +9,7 @@ import { AttributionCapture } from "@/components/AttributionCapture";
 import { JsonLd } from "@/components/JsonLd";
 import { MiniPlayer, PlayerProvider } from "@/components/player/Player";
 import { fitMetaDescription } from "@/lib/meta-text";
+import { BLACK_FRIDAY, validCoupon } from "@/lib/pricing";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, siteJsonLd } from "@/lib/site";
 
 const roboto = Roboto({
@@ -149,7 +150,7 @@ export default async function RootLayout({
         )}
         <JsonLd data={siteJsonLd()} />
         <AttributionCapture />
-        <CartProvider>
+        <CartProvider initialCoupon={validCoupon(BLACK_FRIDAY.couponCode)}>
           <PlayerProvider>
             {children}
             <MiniPlayer />

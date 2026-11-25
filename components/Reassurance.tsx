@@ -2,6 +2,8 @@
  * One line of purchase reassurance under each buy button: the only place
  * the page states these promises, so they aren't repeated around the CTA.
  */
+import Link from "next/link";
+
 const REASSURANCE = [
   {
     label: "Secure checkout via Stripe",
@@ -14,6 +16,7 @@ const REASSURANCE = [
   {
     label: "Royalty-free",
     icon: "m9.55 17.6-4.95-4.95 1.41-1.41 3.54 3.54 8.49-8.49 1.41 1.42-9.9 9.9Z",
+    href: "/license",
   },
   {
     label: "30-day refund",
@@ -29,7 +32,13 @@ export function Reassurance({ className = "" }: { className?: string }) {
           <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 shrink-0" aria-hidden>
             <path d={r.icon} />
           </svg>
-          {r.label}
+          {r.href ? (
+            <Link href={r.href} className="underline underline-offset-2 transition-colors hover:text-ink">
+              {r.label}
+            </Link>
+          ) : (
+            r.label
+          )}
         </li>
       ))}
     </ul>

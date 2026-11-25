@@ -30,9 +30,6 @@ export default function Page() {
       <SiteNav />
       <HomeHero />
 
-      <ChordMaker google={googleConfigured} heading="h2" />
-      <ChordPackCompare />
-
       <section aria-labelledby="previews-heading" className="px-5 pb-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
@@ -52,15 +49,18 @@ export default function Page() {
         </div>
       </section>
 
-      <div className="bg-background px-5 pb-4">
-        <FreeKitBanner source="home" count={FREE_KIT_COUNT} className="mx-auto max-w-6xl" />
-      </div>
-
       <VaultBand />
 
       <KitGrid tone="canvas" includeBundle={false} title="Or buy one kit at a time" />
 
+      <div className="bg-background px-5 pb-4">
+        <FreeKitBanner source="home" count={FREE_KIT_COUNT} className="mx-auto max-w-6xl" />
+      </div>
+
       <BeatMakerPromo />
+
+      <ChordMaker google={googleConfigured} heading="h2" />
+      <ChordPackCompare />
 
       <GuidesTeaser tone="canvas" />
 
@@ -70,6 +70,13 @@ export default function Page() {
             What producers say
           </h2>
           <Testimonials />
+          <p className="mt-6 text-sm text-muted">
+            Not sure yet?{" "}
+            <Link href="/free-midi-kit" className="font-semibold text-ink underline underline-offset-4">
+              Download 12 patterns free
+            </Link>{" "}
+            and hear them in your DAW before you spend anything.
+          </p>
         </div>
       </section>
 

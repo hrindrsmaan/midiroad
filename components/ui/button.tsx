@@ -20,11 +20,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-key text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50";
 
     const variants = {
-      default: "bg-primary text-white hover:bg-primary-hover",
-      destructive: "bg-destructive text-white hover:bg-destructive/90",
-      outline: "border border-strong bg-transparent hover:bg-white/10",
-      secondary: "bg-card text-foreground hover:bg-white/10",
-      ghost: "hover:bg-white/10",
+      default: "bg-primary text-on-brand hover:bg-primary-hover",
+      destructive: "bg-destructive text-foreground hover:bg-destructive/90",
+      outline: "border border-strong bg-transparent hover:bg-foreground/[0.06]",
+      secondary: "bg-card text-foreground hover:bg-foreground/[0.06]",
+      ghost: "hover:bg-foreground/[0.06]",
       link: "text-foreground underline-offset-4 hover:underline",
     };
 

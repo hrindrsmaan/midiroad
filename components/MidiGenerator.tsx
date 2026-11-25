@@ -34,10 +34,10 @@ const HISTORY = 50;
 const MIX: Record<DrumPart, number> = { kick: 1, snare: 0.8, hihat: 0.45, "open-hat": 0.4, "808": 0.85 };
 
 /** Chart colors, one per lane (DESIGN.md): hats indigo, snare violet, kick purple-blue, 808 play green. */
-const HATS = "#a5b4fc";
-const SNARE = "#c084fc";
-const KICK = "#6366f1";
-const BASS = "#c6ff3d";
+const HATS = "#9b8ce8";
+const SNARE = "#d07bd4";
+const KICK = "#6a4ce8";
+const BASS = "#3f8f5e";
 
 /** Lanes are the rows the export route knows as tracks. */
 type LaneId = BeatTrack;
@@ -268,13 +268,13 @@ function BeatRoll({
   return (
     <div className="grid grid-cols-[8.75rem_1fr] md:grid-cols-[11.5rem_1fr]">
       {/* Bar ruler */}
-      <div className="h-7 border-b border-r border-white/[0.06]" />
-      <div className="relative h-7 border-b border-white/[0.06]">
+      <div className="h-7 border-b border-r border-line/70" />
+      <div className="relative h-7 border-b border-line/70">
         {[0, 1, 2, 3].map((bar) => (
           <span
             key={bar}
-            className={`absolute inset-y-0 flex items-center border-l border-white/10 pl-1.5 text-xs font-semibold tabular-nums transition-colors ${
-              playing && bar === currentBar ? "text-white" : "text-white/55"
+            className={`absolute inset-y-0 flex items-center border-l border-line pl-1.5 text-xs font-semibold tabular-nums transition-colors ${
+              playing && bar === currentBar ? "text-foreground" : "text-muted"
             }`}
             style={{ left: `${pct(bar * barBeats)}%` }}
           >
@@ -284,7 +284,7 @@ function BeatRoll({
       </div>
 
       {/* Channel strips: name, sound picker, hit light, mute, download */}
-      <div className="flex flex-col border-r border-white/[0.06]">
+      <div className="flex flex-col border-r border-line/70">
         {lanes.map((lane) => {
           const off = muted.has(lane.id);
           // The last part still sounding can't be muted.
@@ -295,18 +295,18 @@ function BeatRoll({
           return (
             <div
               key={lane.id}
-              className={`flex items-center gap-1.5 border-b border-white/[0.06] px-2 md:gap-2 md:px-3 last:border-b-0 ${lane.height}`}
+              className={`flex items-center gap-1.5 border-b border-line/70 px-2 md:gap-2 md:px-3 last:border-b-0 ${lane.height}`}
             >
               <span
                 aria-hidden
                 className="hidden h-2.5 w-2.5 shrink-0 rounded-[2px] transition-[background-color,box-shadow] duration-75 md:block"
                 style={{
-                  background: lit ? lane.color : `${lane.color}38`,
+                  background: lit ? lane.color : `${lane.color}80`,
                   boxShadow: lit ? `0 0 8px ${lane.color}` : undefined,
                 }}
               />
               <div className={`flex min-w-0 flex-1 flex-col gap-0.5 ${off ? "opacity-40" : ""}`}>
-                <span className="text-xs font-semibold leading-none text-white/55">
+                <span className="text-xs font-semibold leading-none text-muted">
                   {BEAT_SOUNDS.clap.includes(kit[lane.id]) ? "Clap" : lane.label}
                 </span>
                 <label className="group/pick relative flex min-w-0 items-center">
@@ -315,7 +315,7 @@ function BeatRoll({
                     value={kit[lane.id].src}
                     onChange={(e) => onPickSound(lane.id, all.find((s) => s.src === e.target.value)!)}
                     title={`Change ${lane.label.toLowerCase()} sound`}
-                    className="w-full min-w-0 cursor-pointer appearance-none truncate bg-transparent pr-3.5 text-xs font-medium leading-tight text-white/85 hover:text-white focus:outline-none focus-visible:underline"
+                    className="w-full min-w-0 cursor-pointer appearance-none truncate bg-transparent pr-3.5 text-xs font-medium leading-tight text-foreground/85 hover:text-foreground focus:outline-none focus-visible:underline"
                   >
                     {lane.sounds.map((group) => (
                       <optgroup key={group.label} label={group.label} className="bg-graphite">
@@ -329,7 +329,7 @@ function BeatRoll({
                   </select>
                   <svg
                     viewBox="0 0 24 24"
-                    className="pointer-events-none absolute right-0 h-3 w-3 text-white/50 group-hover/pick:text-white/80"
+                    className="pointer-events-none absolute right-0 h-3 w-3 text-muted group-hover/pick:text-foreground/80"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2.5"
@@ -351,7 +351,7 @@ function BeatRoll({
                 className={`${STRIP_BTN} ${
                   off
                     ? "bg-brand text-on-brand hover:bg-brand-hover"
-                    : "bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white disabled:hover:bg-white/[0.06] disabled:hover:text-white/60"
+                    : "bg-foreground/[0.05] text-muted hover:bg-foreground/[0.06] hover:text-foreground disabled:hover:bg-foreground/[0.05] disabled:hover:text-muted"
                 }`}
               >
                 {off ? <MutedIcon /> : <SpeakerIcon />}
@@ -362,9 +362,9 @@ function BeatRoll({
                 disabled={downloading !== null || !lane.notes.length}
                 aria-label={`Download ${lane.label} MIDI`}
                 title={`Download only the ${lane.label.toLowerCase()} as MIDI`}
-                className={`${STRIP_BTN} bg-white/[0.06] text-white/60 hover:bg-white/10 hover:text-white disabled:hover:bg-white/[0.06] disabled:hover:text-white/60`}
+                className={`${STRIP_BTN} bg-foreground/[0.05] text-muted hover:bg-foreground/[0.06] hover:text-foreground disabled:hover:bg-foreground/[0.05] disabled:hover:text-muted`}
               >
-                {busy ? <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-white/25 border-t-white" /> : <DownloadIcon />}
+                {busy ? <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-strong border-t-line" /> : <DownloadIcon />}
               </button>
             </div>
           );
@@ -376,13 +376,13 @@ function BeatRoll({
         {[1, 3].map((bar) => (
           <span
             key={bar}
-            className="absolute inset-y-0 bg-white/[0.015]"
+            className="absolute inset-y-0 bg-foreground/[0.02]"
             style={{ left: `${pct(bar * barBeats)}%`, width: `${pct(barBeats)}%` }}
           />
         ))}
         {Array.from({ length: 63 }, (_, i) => {
           const step = i + 1;
-          const strength = step % 16 === 0 ? "bg-white/[0.12]" : step % 4 === 0 ? "bg-white/[0.06]" : "bg-white/[0.025]";
+          const strength = step % 16 === 0 ? "bg-foreground/[0.08]" : step % 4 === 0 ? "bg-foreground/[0.05]" : "bg-foreground/[0.03]";
           return <span key={step} className={`absolute inset-y-0 w-px ${strength}`} style={{ left: `${(step / 64) * 100}%` }} />;
         })}
 
@@ -392,13 +392,13 @@ function BeatRoll({
           const lo = Math.min(...pitches);
           const span = Math.max(1, Math.max(...pitches) - lo);
           return (
-            <div key={lane.id} className={`relative border-b border-white/[0.06] last:border-b-0 ${lane.height}`}>
+            <div key={lane.id} className={`relative border-b border-line/70 last:border-b-0 ${lane.height}`}>
               {lane.notes.map((n, i) => {
                 if (lane.id === "808") {
                   return (
                     <span
                       key={i}
-                      className="animate-note-in absolute flex h-[18%] min-h-[14px] origin-left items-center overflow-hidden rounded-[2px] pl-1 text-xs font-bold leading-none text-black/70 transition-opacity duration-150"
+                      className="animate-note-in absolute flex h-[18%] min-h-[14px] origin-left items-center overflow-hidden rounded-[2px] pl-1 text-xs font-bold leading-none text-foreground/70 transition-opacity duration-150"
                       style={{
                         ...noteStyle(n, lane.color, off),
                         width: `calc(${pct(n.dur)}% - 2px)`,
@@ -430,7 +430,7 @@ function BeatRoll({
 
         {playing && (
           <span
-            className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-ivory shadow-[0_0_6px_rgba(241,239,232,0.6)]"
+            className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-ivory shadow-[0_0_6px_rgba(31,31,31,0.35)]"
             style={{ left: `${progress * 100}%` }}
           />
         )}
@@ -469,18 +469,18 @@ const ShuffleIcon = () =>
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-xs font-medium text-white/50">{label}</span>
+      <span className="text-xs font-medium text-muted">{label}</span>
       {children}
     </div>
   );
 }
 
 const GHOST_BTN =
-  "grid cursor-pointer place-items-center text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent";
+  "grid cursor-pointer place-items-center text-muted transition-colors hover:bg-foreground/[0.05] hover:text-foreground disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent";
 
 function Kbd({ children }: { children: string }) {
   return (
-    <kbd className="rounded-[3px] border border-white/15 bg-white/[0.05] px-1.5 py-px font-sans text-xs font-semibold text-white/60">
+    <kbd className="rounded-[3px] border border-line bg-foreground/[0.04] px-1.5 py-px font-sans text-xs font-semibold text-muted">
       {children}
     </kbd>
   );
@@ -839,7 +839,7 @@ export function MidiGenerator({
     >
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 md:mb-10">
-          <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-white/60">
+          <p className="mb-4 flex items-center gap-2 text-sm font-semibold text-muted">
             <span aria-hidden className="flex gap-1">
               {[HATS, SNARE, KICK, BASS].map((c) => (
                 <span key={c} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: c }} />
@@ -850,12 +850,12 @@ export function MidiGenerator({
           <h1 id="generator-heading" className="max-w-4xl text-balance text-[38px] leading-[0.95] tracking-[-0.03em] md:text-[72px]">
             {heading}
           </h1>
-          <div className="mt-5 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">{intro}</div>
+          <div className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">{intro}</div>
         </div>
 
-        <div className="overflow-hidden rounded-md border border-black/40 bg-panel shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_24px_60px_-30px_rgba(0,0,0,0.7)]">
+        <div className="overflow-hidden rounded-md border border-line bg-panel shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_18px_40px_-26px_rgba(31,31,31,0.30)]">
           {/* Toolbar */}
-          <div className="flex flex-wrap items-end gap-x-5 gap-y-4 border-b border-white/[0.06] px-4 py-4 md:px-5">
+          <div className="flex flex-wrap items-end gap-x-5 gap-y-4 border-b border-line/70 px-4 py-4 md:px-5">
             <button
               type="button"
               onClick={togglePlay}
@@ -864,7 +864,7 @@ export function MidiGenerator({
               title="Play / stop (Space)"
               className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-key transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
                 playing
-                  ? "bg-ivory text-graphite hover:bg-white"
+                  ? "bg-ivory text-graphite hover:bg-foreground/80"
                   : "bg-brand text-on-brand hover:bg-brand-hover"
               }`}
             >
@@ -872,7 +872,7 @@ export function MidiGenerator({
             </button>
 
             <Field label="Tempo">
-              <div className="flex h-9 items-center rounded-key border border-white/15 bg-black/20">
+              <div className="flex h-9 items-center rounded-key border border-line bg-background">
                 <button type="button" onClick={() => changeBpm(bpm - 1)} aria-label="Slower" className={`${GHOST_BTN} h-full w-8 rounded-l-key`}>
                   −
                 </button>
@@ -909,7 +909,7 @@ export function MidiGenerator({
                 <select
                   value={key}
                   onChange={(e) => changeKey(Number(e.target.value))}
-                  className="h-9 cursor-pointer appearance-none rounded-key border border-white/15 bg-black/20 pl-3 pr-8 text-sm font-semibold text-brand hover:border-white/25 focus:outline-none"
+                  className="h-9 cursor-pointer appearance-none rounded-key border border-line bg-background pl-3 pr-8 text-sm font-semibold text-brand hover:border-strong focus:outline-none"
                 >
                   {KEY_NAMES.map((name, i) => (
                     <option key={name} value={i} className="bg-graphite">
@@ -919,7 +919,7 @@ export function MidiGenerator({
                 </select>
                 <svg
                   viewBox="0 0 24 24"
-                  className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/50"
+                  className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -931,7 +931,7 @@ export function MidiGenerator({
             </Field>
 
             <div className="grid w-full grid-cols-[auto_1fr] items-center gap-2 sm:ml-auto sm:flex sm:w-auto [&_svg]:h-4 [&_svg]:w-4">
-              <div className="flex h-10 items-center rounded-key border border-white/15">
+              <div className="flex h-10 items-center rounded-key border border-line">
                 <button
                   type="button"
                   onClick={() => step(-1)}
@@ -942,7 +942,7 @@ export function MidiGenerator({
                 >
                   <ChevronLeft />
                 </button>
-                <span className="hidden min-w-[2.75rem] whitespace-nowrap text-center sm:inline text-xs font-semibold tabular-nums text-white/60" aria-live="polite">
+                <span className="hidden min-w-[2.75rem] whitespace-nowrap text-center sm:inline text-xs font-semibold tabular-nums text-muted" aria-live="polite">
                   {index + 1} / {history.length}
                 </span>
                 <button
@@ -960,7 +960,7 @@ export function MidiGenerator({
                 type="button"
                 onClick={create}
                 title="New beat (N)"
-                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key bg-primary px-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover md:px-4 sm:flex-none"
+                className="flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key bg-primary px-3 text-sm font-semibold text-on-brand transition-colors hover:bg-primary-hover md:px-4 sm:flex-none"
               >
                 <ShuffleIcon />
                 New beat
@@ -970,7 +970,7 @@ export function MidiGenerator({
                 onClick={() => download()}
                 disabled={downloading !== null}
                 title="Download the full beat as MIDI, muted parts left out (1 credit)"
-                className="col-span-2 flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-white/20 px-3 sm:col-span-1 text-sm md:px-4 font-semibold text-ivory transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:flex-none"
+                className="col-span-2 flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-strong px-3 sm:col-span-1 text-sm md:px-4 font-semibold text-ivory transition-colors hover:bg-foreground/[0.05] disabled:opacity-60 sm:flex-none"
               >
                 <DownloadIcon />
                 {downloading === "all" ? (
@@ -978,7 +978,7 @@ export function MidiGenerator({
                 ) : (
                   <>
                     Full MIDI
-                    <span className="font-medium text-white/60">· 1 credit</span>
+                    <span className="font-medium text-muted">· 1 credit</span>
                   </>
                 )}
               </button>
@@ -987,7 +987,7 @@ export function MidiGenerator({
                 onClick={() => void shareBeat()}
                 disabled={share.step === "saving"}
                 title="Save this beat and get a link to share"
-                className={`${sharedId ? "" : "col-span-2"} flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-white/20 px-3 text-sm font-semibold text-ivory transition-colors hover:bg-white/[0.06] disabled:opacity-60 sm:col-span-1 sm:flex-none md:px-4`}
+                className={`${sharedId ? "" : "col-span-2"} flex h-10 flex-1 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-key border border-strong px-3 text-sm font-semibold text-ivory transition-colors hover:bg-foreground/[0.05] disabled:opacity-60 sm:col-span-1 sm:flex-none md:px-4`}
               >
                 <ShareIcon />
                 {share.step === "saving" && !share.remix ? "Saving…" : "Share beat"}
@@ -1047,7 +1047,7 @@ export function MidiGenerator({
           </div>
 
           {/* Status bar */}
-          <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-2.5 text-xs text-white/50 md:px-5">
+          <div className="flex items-center justify-between gap-3 border-t border-line/70 px-4 py-2.5 text-xs text-muted md:px-5">
             <span className="truncate">{[...current.tags, `${current.bpm} BPM`].join("  ·  ")}</span>
             <span className="hidden shrink-0 items-center gap-1.5 md:flex">
               <Kbd>Space</Kbd> play <Kbd>N</Kbd> new <Kbd>←</Kbd>
@@ -1092,23 +1092,23 @@ function SharePanel({
 
   if (state.step === "error") {
     return (
-      <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] bg-red-500/10 px-4 py-3 text-sm text-white/85 md:px-5" role="alert">
+      <div className="flex items-center justify-between gap-3 border-b border-line/70 bg-red-500/10 px-4 py-3 text-sm text-foreground/85 md:px-5" role="alert">
         {state.message}
-        <button type="button" onClick={onClose} className="cursor-pointer text-white/60 hover:text-white">
+        <button type="button" onClick={onClose} className="cursor-pointer text-muted hover:text-foreground">
           Dismiss
         </button>
       </div>
     );
   }
   return (
-    <div className="flex flex-col gap-2 border-b border-white/[0.06] bg-brand/[0.08] px-4 py-3 sm:flex-row sm:items-center md:px-5" role="status">
-      <span className="shrink-0 text-sm font-semibold text-white">Your beat&apos;s link</span>
+    <div className="flex flex-col gap-2 border-b border-line/70 bg-brand/[0.08] px-4 py-3 sm:flex-row sm:items-center md:px-5" role="status">
+      <span className="shrink-0 text-sm font-semibold text-foreground">Your beat&apos;s link</span>
       <input
         readOnly
         value={state.url}
         aria-label="Link to this beat"
         onFocus={(e) => e.target.select()}
-        className="h-9 min-w-0 flex-1 rounded-key border border-white/15 bg-black/30 px-3 font-mono text-sm text-ivory focus:border-brand focus:outline-none"
+        className="h-9 min-w-0 flex-1 rounded-key border border-line bg-foreground/30 px-3 font-mono text-sm text-ivory focus:border-brand focus:outline-none"
       />
       <div className="flex gap-2">
         <button
@@ -1122,14 +1122,14 @@ function SharePanel({
           <button
             type="button"
             onClick={() => onShare(state.url)}
-            className="h-9 flex-1 cursor-pointer whitespace-nowrap rounded-key border border-white/20 px-4 text-sm font-semibold text-ivory transition-colors hover:bg-white/[0.06] sm:flex-none"
+            className="h-9 flex-1 cursor-pointer whitespace-nowrap rounded-key border border-strong px-4 text-sm font-semibold text-ivory transition-colors hover:bg-foreground/[0.05] sm:flex-none"
           >
             Share…
           </button>
         )}
         <a
           href={state.url}
-          className="grid h-9 cursor-pointer place-items-center whitespace-nowrap rounded-key px-3 text-sm font-semibold text-white/70 hover:text-white"
+          className="grid h-9 cursor-pointer place-items-center whitespace-nowrap rounded-key px-3 text-sm font-semibold text-foreground/70 hover:text-foreground"
         >
           Open
         </a>
@@ -1138,15 +1138,15 @@ function SharePanel({
   );
 }
 
-const NOTICE_LINK = "font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white";
+const NOTICE_LINK = "font-semibold text-foreground underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground";
 
 /** Under the beat maker: what the last download did, or what each one costs. */
 function DownloadNotice({ state, signedOut }: { state: PaidDownload | null; signedOut: boolean }) {
   if (state && !state.ok) {
     if (state.error === "sign_in") {
       return (
-        <p className="text-white/70">
-          <span className="font-semibold text-white">Sign in to download.</span> New accounts get {SIGNUP_CREDITS} free
+        <p className="text-foreground/70">
+          <span className="font-semibold text-foreground">Sign in to download.</span> New accounts get {SIGNUP_CREDITS} free
           credits.{" "}
           <a href="/login?next=/%23generator" className={NOTICE_LINK}>
             Sign in
@@ -1156,8 +1156,8 @@ function DownloadNotice({ state, signedOut }: { state: PaidDownload | null; sign
     }
     if (state.error === "no_credits") {
       return (
-        <p className="text-white/70">
-          <span className="font-semibold text-white">You&apos;re out of credits.</span>{" "}
+        <p className="text-foreground/70">
+          <span className="font-semibold text-foreground">You&apos;re out of credits.</span>{" "}
           <a href="/pricing" className={NOTICE_LINK}>
             Get a plan
           </a>{" "}
@@ -1165,12 +1165,12 @@ function DownloadNotice({ state, signedOut }: { state: PaidDownload | null; sign
         </p>
       );
     }
-    return <p className="text-white/70">{state.message}</p>;
+    return <p className="text-foreground/70">{state.message}</p>;
   }
   if (state?.ok) {
     return (
-      <p className="text-white/70">
-        <span className="font-semibold text-white">Saved {state.filename}.</span> Drag it into your DAW.{" "}
+      <p className="text-foreground/70">
+        <span className="font-semibold text-foreground">Saved {state.filename}.</span> Drag it into your DAW.{" "}
         {state.charged ? "1 credit used, and this beat's other files are now free" : "Already yours, no credit used"} ·{" "}
         {state.credits} left.
       </p>
@@ -1180,7 +1180,7 @@ function DownloadNotice({ state, signedOut }: { state: PaidDownload | null; sign
     <p className="text-muted">
       {signedOut ? (
         <>
-          <span className="font-semibold text-white">Playing is free.</span> Downloading a beat uses 1 credit, and
+          <span className="font-semibold text-foreground">Playing is free.</span> Downloading a beat uses 1 credit, and
           new accounts get {SIGNUP_CREDITS} free credits.{" "}
         </>
       ) : (
@@ -1192,7 +1192,7 @@ function DownloadNotice({ state, signedOut }: { state: PaidDownload | null; sign
         Browse patterns
       </Link>{" "}
       or{" "}
-      <a href="#main-cta" className={NOTICE_LINK}>
+      <a href="#bundle" className={NOTICE_LINK}>
         get the bundle
       </a>
       .

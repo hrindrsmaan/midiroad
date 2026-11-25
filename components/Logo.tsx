@@ -6,9 +6,11 @@
  * on a 64-unit grid so it stays crisp from a 16px favicon up.
  */
 
-const TILE = "#7c3aed";
-const ROAD = "#f8fafc";
-const BRAND = "#22c55e";
+const TILE = "#1f1f1f";
+const ROAD = "#f8f1e7";
+const BRAND = "#5fbf7c";
+const SIDE = "#8fa98f";
+const SIDE_INVERTED = "#6f8f74";
 
 /** Center-line notes, near to far: [y, height, width]. */
 const NOTES: [number, number, number][] = [
@@ -41,7 +43,8 @@ export function LogoMark({
 }) {
   const tile = inverted ? ROAD : TILE;
   const road = inverted ? TILE : ROAD;
-  const side = inverted ? "#a5b4fc" : "#c4b5fd";
+  const side = inverted ? SIDE_INVERTED : SIDE;
+  const notes = inverted ? "#2e6b45" : BRAND;
   return (
     <svg
       viewBox="0 0 64 64"
@@ -60,7 +63,7 @@ export function LogoMark({
       <path d="M11 55 L29.5 11 H34.5 L53 55 Z" fill={road} />
       {/* Center line as MIDI notes */}
       {NOTES.map(([y, h, w]) => (
-        <rect key={y} x={32 - w / 2} y={y} width={w} height={h} rx={w / 3} fill={BRAND} />
+        <rect key={y} x={32 - w / 2} y={y} width={w} height={h} rx={w / 3} fill={notes} />
       ))}
     </svg>
   );
@@ -83,7 +86,7 @@ export function Logo({
       <span
         className={`font-heading text-[22px] leading-none ${inverted ? "text-ivory" : "text-ink"}`}
       >
-        MIDI<span className="text-[#22c55e]">ROAD</span>
+        MIDI<span className="text-[#2e6b45]">ROAD</span>
       </span>
     </span>
   );

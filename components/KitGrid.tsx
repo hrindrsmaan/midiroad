@@ -67,7 +67,7 @@ export function KitGrid({
               href={card.href}
               className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
-              <div className="max-w-[260px] drop-shadow-[0_14px_14px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1.5">
+              <div className="max-w-[260px] drop-shadow-[0_14px_14px_rgba(31,31,31,0.18)] transition-transform duration-300 group-hover:-translate-y-1.5">
                 {card.cover}
               </div>
               <h3 className="mt-5 text-[15px] leading-snug md:text-base">{card.name}</h3>
@@ -82,7 +82,7 @@ export function KitGrid({
               {card.key !== "bundle" && <KitCardPlay kitId={card.product} kitName={card.name} />}
               <AddToCartButton
                 product={card.product}
-                className="h-9 rounded-key border border-strong px-4 text-[13px] font-semibold transition-colors hover:bg-white/10"
+                className="h-9 rounded-key border border-strong px-4 text-[13px] font-semibold transition-colors hover:bg-foreground/[0.06]"
               />
             </div>
           </li>

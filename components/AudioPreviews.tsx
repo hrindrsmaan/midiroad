@@ -45,8 +45,8 @@ export function Waveform({
   progress,
   height = WAVE_HEIGHT,
   fluid = false,
-  color = "#6b6b76",
-  playedColor = "#c6ff3d",
+  color = "#c2b6a2",
+  playedColor = "#2e6b45",
 }: WaveformProps) {
   const width = peaks.length * (BAR_WIDTH + BAR_GAP) - BAR_GAP;
   const played = progress * peaks.length;

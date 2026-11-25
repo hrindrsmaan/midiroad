@@ -93,7 +93,7 @@ export function ChordPackCompare() {
           <TrackedLink
             href="/pricing"
             track={{ action: "click_pricing", category: "navigation", label: "chord_pack_compare" }}
-            className="inline-flex h-12 items-center rounded-key bg-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+            className="inline-flex h-12 items-center rounded-key bg-primary px-6 text-sm font-semibold text-on-brand transition-colors hover:bg-primary-hover"
           >
             Get chord MIDI downloads
           </TrackedLink>

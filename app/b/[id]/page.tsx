@@ -64,11 +64,11 @@ export default async function SharedBeatPage({ params, searchParams }: Params) {
           : "Press play to hear it. Change the tempo, key, sounds or mutes, then remix it and share your version."}
       </p>
       {(parentId || remixes > 0) && (
-        <p className="mt-2 text-sm text-white/50">
+        <p className="mt-2 text-sm text-muted">
           {parentId && (
             <>
               Remix of{" "}
-              <Link href={beatPath(parentId)} className="font-semibold text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">
+              <Link href={beatPath(parentId)} className="font-semibold text-foreground underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground">
                 beat {parentId}
               </Link>
             </>
