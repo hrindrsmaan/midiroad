@@ -5,6 +5,8 @@ import { BeatMakerPromo } from "@/components/BeatMakerPromo";
 import { ChordMaker } from "@/components/ChordMaker";
 import { ChordPackCompare } from "@/components/ChordPackCompare";
 import { FAQSection } from "@/components/FAQSection";
+import { FreeKitBanner } from "@/components/FreeKitCta";
+import { FREE_KIT_COUNT } from "@/lib/free-kit";
 import { GuidesTeaser } from "@/components/GuidesTeaser";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { BUNDLE_ID } from "@/lib/products";
@@ -28,6 +30,11 @@ export default function Page() {
 
       {/* Then the bundle: best value, every kit plus the one-shots */}
       <ProductDetail />
+
+      {/* Free starter kit for an email */}
+      <div className="bg-background px-5 pt-10 md:pt-14">
+        <FreeKitBanner source="home" count={FREE_KIT_COUNT} className="mx-auto max-w-6xl" />
+      </div>
 
       {/* Every kit, each with its own page */}
       <KitGrid tone="canvas" includeBundle={false} title="Or buy one kit at a time" />

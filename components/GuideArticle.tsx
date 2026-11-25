@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FaqList } from "@/components/FaqList";
+import { FreeKitBanner } from "@/components/FreeKitCta";
+import { FREE_KIT_COUNT } from "@/lib/free-kit";
 import { JsonLd } from "@/components/JsonLd";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
@@ -57,6 +59,8 @@ export function GuideArticle({ slug, children }: { slug: string; children: React
           >
             {children}
           </div>
+
+          <FreeKitBanner source="guide" count={FREE_KIT_COUNT} className="mt-14" />
 
           <FaqList faqs={guide.faqs} title="Frequently asked questions" />
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AccountLink } from "@/components/auth/AccountLink";
 import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
+import { FreeKitLink } from "@/components/FreeKitCta";
 import { Logo } from "@/components/Logo";
 import { TrackedLink } from "@/components/TrackedLink";
 import { formatUSD } from "@/lib/pricing";
@@ -14,6 +15,7 @@ const NAV_LINKS = [
   { href: "/midi", label: "Patterns" },
   { href: "/beat-maker", label: "Beat Maker" },
   { href: "/chord-maker", label: "Chord Maker" },
+  { href: "/free-midi-kit", label: "Free MIDI Kit" },
   { href: "/guides", label: "Guides" },
   { href: "/library", label: "Library" },
   { href: "/pricing", label: "Pricing" },
@@ -45,10 +47,17 @@ export function SiteNav() {
           <TrackedLink
             href="/chord-maker"
             track={{ action: "click_chord_maker", category: "navigation", label: "header" }}
-            className="text-sm font-medium text-muted transition-colors hover:text-ink"
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink min-[420px]:inline"
           >
             Chord Maker
           </TrackedLink>
+          <FreeKitLink
+            source="header"
+            className="inline-flex h-8 items-center rounded-key border border-brand/50 bg-brand/10 px-2.5 text-xs font-semibold text-brand transition-colors hover:bg-brand/20 md:h-9 md:px-3.5 md:text-sm"
+          >
+            <span className="md:hidden">Free kit</span>
+            <span className="hidden md:inline">Free MIDI kit</span>
+          </FreeKitLink>
           <AccountLink />
           <CartButton />
         </div>
