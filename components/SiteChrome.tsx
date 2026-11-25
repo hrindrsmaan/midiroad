@@ -17,7 +17,7 @@ const NAV_LINKS = [
   { href: "/beat-maker", label: "Beat Maker" },
   { href: "/chord-maker", label: "Chord Maker" },
   { href: BPM_KEY_PATH, label: "BPM & Key Finder" },
-  { href: "/free-midi-kit", label: "Free MIDI Kit" },
+  { href: "/free-midi-kit", label: "$1 Starter Kit" },
   { href: "/guides", label: "Guides" },
   { href: "/compare", label: "Compare" },
   { href: "/pricing", label: "Pricing" },
@@ -64,8 +64,8 @@ export function SiteNav() {
             source="header"
             className="inline-flex h-8 items-center rounded-key border border-brand/50 bg-brand/10 px-2.5 text-xs font-semibold text-brand transition-colors hover:bg-brand/20 md:h-9 md:px-3.5 md:text-sm"
           >
-            <span className="md:hidden">Free kit</span>
-            <span className="hidden md:inline">Free MIDI kit</span>
+            <span className="md:hidden">$1 kit</span>
+            <span className="hidden md:inline">$1 starter kit</span>
           </FreeKitLink>
           <AccountLink />
           <CartButton />

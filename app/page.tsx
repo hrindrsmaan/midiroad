@@ -1,15 +1,11 @@
 import Link from "next/link";
 import { HomeHero } from "@/components/HomeHero";
 import { VaultBand } from "@/components/VaultBand";
-import { KitGrid } from "@/components/KitGrid";
 import { TrackTable } from "@/components/catalog/TrackTable";
-import { BeatMakerPromo } from "@/components/BeatMakerPromo";
-import { ChordMaker } from "@/components/ChordMaker";
-import { ChordPackCompare } from "@/components/ChordPackCompare";
-import { FAQSection } from "@/components/FAQSection";
+import { FAQList } from "@/components/FAQSection";
+import { FreeToolsCards } from "@/components/FreeToolsCards";
 import { FreeKitBanner } from "@/components/FreeKitCta";
 import { FREE_KIT_COUNT } from "@/lib/free-kit";
-import { GuidesTeaser } from "@/components/GuidesTeaser";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { Testimonials } from "@/components/Testimonials";
 import { featuredTracks } from "@/lib/catalog";
@@ -30,7 +26,7 @@ export default function Page() {
       <SiteNav />
       <HomeHero />
 
-      <section aria-labelledby="previews-heading" className="px-5 pb-16">
+      <section aria-labelledby="previews-heading" className="px-5 pb-14">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -51,36 +47,32 @@ export default function Page() {
 
       <VaultBand />
 
-      <KitGrid tone="canvas" includeBundle={false} title="Or buy one kit at a time" />
+      <FreeToolsCards />
 
-      <div className="bg-background px-5 pb-4">
-        <FreeKitBanner source="home" count={FREE_KIT_COUNT} className="mx-auto max-w-6xl" />
-      </div>
-
-      <BeatMakerPromo />
-
-      <ChordMaker google={googleConfigured} heading="h2" />
-      <ChordPackCompare />
-
-      <GuidesTeaser tone="canvas" />
-
-      <section aria-labelledby="reviews-heading" className="bg-background px-5 py-16 md:py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 id="reviews-heading" className="mb-6 text-2xl md:text-[32px]">
-            What producers say
-          </h2>
-          <Testimonials />
-          <p className="mt-6 text-sm text-muted">
-            Not sure yet?{" "}
-            <Link href="/free-midi-kit" className="font-semibold text-ink underline underline-offset-4">
-              Download 12 patterns free
-            </Link>{" "}
-            and hear them in your DAW before you spend anything.
-          </p>
+      <section id="faq" aria-label="Reviews and questions" className="scroll-mt-16 bg-canvas px-5 py-16 md:py-20">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-14">
+          <div className="min-w-0">
+            <h2 id="reviews-heading" className="mb-6 text-2xl md:text-[32px]">
+              What producers say
+            </h2>
+            <Testimonials />
+            <FreeKitBanner source="home" count={FREE_KIT_COUNT} className="mt-6" />
+          </div>
+          <div className="min-w-0">
+            <h2 id="faq-heading" className="mb-2 text-2xl md:text-[32px]">
+              Questions, answered
+            </h2>
+            <p className="mb-6 text-sm text-muted">
+              Anything else? Email{" "}
+              <a href="mailto:support@inbox.midiroad.com" className="text-ink underline underline-offset-4 hover:text-brand">
+                support@inbox.midiroad.com
+              </a>
+              .
+            </p>
+            <FAQList />
+          </div>
         </div>
       </section>
-
-      <FAQSection tone="canvas" />
 
       <StickyBuyBar
         product={BUNDLE_ID}

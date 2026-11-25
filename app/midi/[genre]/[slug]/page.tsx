@@ -132,7 +132,7 @@ export default async function PatternPage({ params }: Params) {
               source="pattern-page"
               className="inline-flex items-center gap-2 text-sm font-semibold text-brand underline decoration-brand/40 underline-offset-4 hover:decoration-brand"
             >
-              Get {FREE_KIT_COUNT} free patterns
+              Get {FREE_KIT_COUNT} patterns for $1
               <span aria-hidden>→</span>
             </FreeKitLink>
           </div>

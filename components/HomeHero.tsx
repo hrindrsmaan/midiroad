@@ -3,7 +3,7 @@ import { BUY_BUTTON_CLASS, BuyButton } from "@/components/BuyButton";
 import { MIDI_PATTERN_COUNT } from "@/lib/midi-kits";
 import { ONE_SHOT_COUNT } from "@/lib/bundle";
 import { BUNDLE_ID, KIT_PRODUCTS } from "@/lib/products";
-import { BUNDLE_PRICE_NOW, PRICING, formatUSD } from "@/lib/pricing";
+import { BUNDLE_PRICE_NOW, PRICING, REFUND_DAYS, centsPerPattern, formatUSD } from "@/lib/pricing";
 
 const CHEAPEST_KIT = Math.min(...KIT_PRODUCTS.map((kit) => kit.price));
 
@@ -27,13 +27,20 @@ export function HomeHero() {
           </p>
           <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span className="font-wide text-[40px] leading-none text-ink">{formatUSD(BUNDLE_PRICE_NOW)}</span>
-            <span className="text-lg text-muted line-through">{formatUSD(PRICING.currentPrice)}</span>
+            {PRICING.originalPrice > BUNDLE_PRICE_NOW && (
+              <span className="text-lg text-muted line-through">{formatUSD(PRICING.originalPrice)}</span>
+            )}
             <span className="text-sm text-muted">one payment · yours forever</span>
+          </p>
+          <p className="mt-2 text-sm text-muted">
+            {PRICING.discountPercent}% less than buying the kits one by one · about {centsPerPattern(MIDI_PATTERN_COUNT)}¢ a
+            pattern
           </p>
           <div className="mt-5 max-w-sm">
             <BuyButton product={BUNDLE_ID} label="Homepage hero" className={BUY_BUTTON_CLASS}>
               Get The Complete Vault
             </BuyButton>
+            <p className="mt-2 text-xs text-muted">{REFUND_DAYS}-day money-back guarantee</p>
           </div>
           <p className="mt-4 text-sm text-muted">
             <Link href="/#main-cta" className="font-semibold text-ink underline underline-offset-4">
@@ -46,7 +53,7 @@ export function HomeHero() {
             from {formatUSD(CHEAPEST_KIT)}
             <span className="mx-2 text-line">·</span>
             <Link href="/free-midi-kit" className="font-semibold text-ink underline underline-offset-4">
-              Get 12 patterns free
+              Get 12 patterns for $1
             </Link>
           </p>
         </div>

@@ -8,7 +8,7 @@ import { event } from "@/lib/gtag";
 
 const PATH = "/free-midi-kit";
 
-/** A link to the free kit page that records which placement was clicked (GA + the signup's source). */
+/** A link to the $1 starter kit page that records which placement was clicked (GA + the signup's source). */
 export function FreeKitLink({
   source,
   children,
@@ -30,7 +30,7 @@ export function FreeKitLink({
   );
 }
 
-/** A slim band pointing to the free kit, for the homepage, hubs, pattern pages, guides and the beat maker. */
+/** A slim band pointing to the $1 starter kit, for the homepage, hubs, pattern pages, guides and the beat maker. */
 export function FreeKitBanner({
   source,
   count,
@@ -42,7 +42,7 @@ export function FreeKitBanner({
 }) {
   return (
     <aside
-      aria-label="Free MIDI kit"
+      aria-label="MIDI starter kit"
       className={`flex flex-col gap-4 rounded-md border border-brand/30 bg-gradient-to-r from-brand/[0.12] to-primary/[0.10] p-5 sm:flex-row sm:items-center sm:justify-between md:px-6 ${className}`}
     >
       <div className="flex items-start gap-3">
@@ -52,15 +52,15 @@ export function FreeKitBanner({
           ))}
         </span>
         <div>
-          <p className="font-semibold text-ink">Get {count} free MIDI drum patterns</p>
-          <p className="mt-0.5 text-sm text-muted">Trap, drill, dark trap and 808s. Royalty-free, sent to your inbox.</p>
+          <p className="font-semibold text-ink">Try {count} MIDI drum patterns for $1</p>
+          <p className="mt-0.5 text-sm text-muted">Trap, drill, dark trap and 808s. Royalty-free, instant download.</p>
         </div>
       </div>
       <FreeKitLink
         source={source}
         className="inline-flex h-11 shrink-0 items-center justify-center rounded-key bg-brand px-5 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover"
       >
-        Get the free kit
+        Get the $1 starter kit
       </FreeKitLink>
     </aside>
   );

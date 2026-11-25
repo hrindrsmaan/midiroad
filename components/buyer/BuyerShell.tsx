@@ -32,7 +32,7 @@ export function BuyerCtas({ label }: { label: string }) {
         source="compare"
         className="text-sm font-semibold text-ink underline underline-offset-4 hover:text-brand"
       >
-        Get the free kit
+        Get the $1 starter kit
       </FreeKitLink>
     </div>
   );

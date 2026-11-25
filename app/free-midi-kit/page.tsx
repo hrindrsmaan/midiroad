@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FaqList } from "@/components/FaqList";
-import { FreeKitForm } from "@/components/FreeKitForm";
+import { BUY_BUTTON_CLASS, BuyButton } from "@/components/BuyButton";
 import { JsonLd } from "@/components/JsonLd";
 import { TrackTable } from "@/components/catalog/TrackTable";
 import { toCatalogTrack } from "@/lib/catalog";
@@ -17,19 +17,20 @@ import {
   FREE_KIT_PATTERNS,
 } from "@/lib/free-kit";
 import { pageMetadata } from "@/lib/seo";
-import { FREE_KIT_LINK_DAYS } from "@/lib/signing";
+import { STARTER_ID, STARTER_PRICE } from "@/lib/products";
+import { formatUSD } from "@/lib/pricing";
 import { ORG_ID, SITE_NAME, SITE_URL, absoluteUrl, faqJsonLd } from "@/lib/site";
 
-const title = `Free MIDI Drum Kit: ${FREE_KIT_COUNT} Trap & Drill Patterns`;
-const description = `Download ${FREE_KIT_COUNT} free royalty-free MIDI drum patterns: hi-hats, snares, kicks and 808s for trap, drill and dark trap, ${FREE_KIT_MIN_BPM}–${FREE_KIT_MAX_BPM} BPM. Works in FL Studio, Ableton, Logic and any DAW.`;
+const title = `MIDI Drum Starter Kit: ${FREE_KIT_COUNT} Trap & Drill Patterns for $1`;
+const description = `Get ${FREE_KIT_COUNT} royalty-free MIDI drum patterns for $1: hi-hats, snares, kicks and 808s for trap, drill and dark trap, ${FREE_KIT_MIN_BPM}–${FREE_KIT_MAX_BPM} BPM. Works in FL Studio, Ableton, Logic and any DAW.`;
 const image = `${FREE_KIT_PATH}/opengraph-image`;
 
 export const metadata: Metadata = pageMetadata({ title, description, path: FREE_KIT_PATH, image });
 
 const FAQS: FaqItem[] = [
   {
-    q: "Is the MIDI kit really free?",
-    a: `Yes. Enter your email and you get a download link for all ${FREE_KIT_COUNT} patterns straight away, on the page and by email. No account, no password and no card.`,
+    q: "Why does the starter kit cost $1?",
+    a: `It's a taste of all six MidiRoad kits for less than a coffee: ${FREE_KIT_COUNT} patterns, one payment, and the download starts right after checkout. No account needed.`,
   },
   {
     q: "Can I use these patterns in released music?",
@@ -40,16 +41,16 @@ const FAQS: FaqItem[] = [
     a: "Any DAW that opens MIDI: FL Studio, Ableton Live, Logic Pro, Studio One, Reason, Cubase, Pro Tools and GarageBand. Drag a file onto a drum, hi-hat or 808 channel and set the project to the BPM in the file name.",
   },
   {
-    q: "What's in the free kit?",
+    q: "What's in the starter kit?",
     a: `${FREE_KIT_COUNT} patterns, two from each MidiRoad style: trap, street trap, melodic trap, dark trap, drill and 808 bass. They cover hi-hats, snares, kicks and 808 lines from ${FREE_KIT_MIN_BPM} to ${FREE_KIT_MAX_BPM} BPM.`,
   },
   {
-    q: "How long does the download link work?",
-    a: `${FREE_KIT_LINK_DAYS} days. If it has expired, enter your email on this page again and you'll get a fresh link.`,
+    q: "How do I get the files?",
+    a: "Right after checkout you land on a download page, and we email you a download link you can reuse anytime.",
   },
   {
-    q: "Will you email me?",
-    a: "Occasionally, with new patterns and offers. Every email has an unsubscribe link, and one click takes you off the list.",
+    q: "Can I upgrade to every kit later?",
+    a: "Yes. After you buy, the download page offers The Complete Vault for the difference, so your $1 counts toward it.",
   },
 ];
 
@@ -70,7 +71,7 @@ export default function FreeMidiKitPage() {
             url,
             offers: {
               "@type": "Offer",
-              price: "0.00",
+              price: STARTER_PRICE.toFixed(2),
               priceCurrency: "USD",
               availability: "https://schema.org/InStock",
               url,
@@ -89,7 +90,7 @@ export default function FreeMidiKitPage() {
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-              { "@type": "ListItem", position: 2, name: "Free MIDI kit", item: url },
+              { "@type": "ListItem", position: 2, name: "MIDI starter kit", item: url },
             ],
           },
         ]}
@@ -98,9 +99,9 @@ export default function FreeMidiKitPage() {
       <section id="get-kit" className="scroll-mt-20 px-5 pb-14 pt-14 md:pb-20 md:pt-20">
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 md:grid-cols-[1.1fr_1fr] md:gap-14">
           <div>
-            <Eyebrow className="mb-4">Free · royalty-free · any DAW</Eyebrow>
+            <Eyebrow className="mb-4">{formatUSD(STARTER_PRICE)} · royalty-free · any DAW</Eyebrow>
             <h1 className="text-balance text-[38px] leading-[0.98] tracking-[-0.02em] md:text-[60px]">
-              {FREE_KIT_COUNT} free MIDI drum patterns
+              {FREE_KIT_COUNT} MIDI drum patterns for $1
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-muted md:text-lg">
               Hi-hat rolls, snares, kicks and 808 lines from all six MidiRoad kits: trap, street trap, melodic trap,
@@ -110,13 +111,21 @@ export default function FreeMidiKitPage() {
             <ul className="mt-6 space-y-2 text-sm text-ink">
               <li>✓ {FREE_KIT_COUNT} .mid files in one zip</li>
               <li>✓ Royalty-free for released music</li>
-              <li>✓ Download link on screen and by email</li>
+              <li>✓ Instant download, and a link by email</li>
             </ul>
           </div>
           <div className="rounded-md border border-line bg-card p-6 shadow-[0_24px_60px_-30px_rgba(31,31,31,0.28)] md:p-8">
-            <h2 className="text-2xl">Get the free kit</h2>
-            <p className="mb-5 mt-2 text-sm text-muted">Enter your email and download it now.</p>
-            <FreeKitForm count={FREE_KIT_COUNT} />
+            <h2 className="text-2xl">Get the starter kit</h2>
+            <p className="mt-2 flex items-baseline gap-2">
+              <span className="font-wide text-[40px] leading-none text-brand">{formatUSD(STARTER_PRICE)}</span>
+              <span className="text-sm text-muted">one payment · yours forever</span>
+            </p>
+            <div className="mt-5">
+              <BuyButton product={STARTER_ID} label="Starter kit page" className={BUY_BUTTON_CLASS}>
+                Get {FREE_KIT_COUNT} patterns for {formatUSD(STARTER_PRICE)}
+              </BuyButton>
+            </div>
+            <p className="mt-3 text-xs text-muted">Secure checkout with Stripe. No account needed.</p>
           </div>
         </div>
       </section>
@@ -131,13 +140,13 @@ export default function FreeMidiKitPage() {
             Played here with MidiRoad drum samples. Each one links to its own page with tempo, length and the kit it
             comes from.
           </p>
-          <TrackTable tracks={FREE_KIT_PATTERNS.map((pattern) => toCatalogTrack(pattern))} label="Free kit patterns" />
+          <TrackTable tracks={FREE_KIT_PATTERNS.map((pattern) => toCatalogTrack(pattern))} label="Starter kit patterns" />
         </div>
       </section>
 
       <section className="px-5 pb-20">
         <div className="mx-auto max-w-3xl">
-          <FaqList faqs={FAQS} title="Free MIDI kit FAQ" />
+          <FaqList faqs={FAQS} title="Starter kit FAQ" />
           <p className="mt-10 text-sm text-muted">
             Want the full kits?{" "}
             <Link href="/#kits" className="font-semibold text-ink underline underline-offset-4">
