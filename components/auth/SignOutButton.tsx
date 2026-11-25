@@ -12,7 +12,7 @@ export function SignOutButton() {
         router.push("/");
         router.refresh();
       }}
-      className="h-11 rounded-key border border-line px-6 text-sm font-semibold transition-colors hover:bg-white/5"
+      className="h-11 rounded-key border border-line px-6 text-sm font-semibold transition-colors hover:bg-foreground/[0.03]"
     >
       Sign out
     </button>

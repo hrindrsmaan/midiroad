@@ -26,7 +26,7 @@ export function PatternPlayer({ pattern }: { pattern: PlayablePattern }) {
           aria-label={`${active ? "Stop" : "Play"} ${pattern.title}`}
           aria-pressed={active}
           className={`grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-full transition-colors [&_svg]:h-5 [&_svg]:w-5 ${
-            active ? "bg-brand text-on-brand" : "bg-primary text-white hover:bg-primary-hover"
+            active ? "bg-brand text-on-brand" : "bg-primary text-on-brand hover:bg-primary-hover"
           }`}
         >
           {active ? <PauseIcon /> : <PlayIcon />}

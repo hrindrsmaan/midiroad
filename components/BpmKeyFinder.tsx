@@ -231,7 +231,7 @@ export function BpmKeyFinder() {
                 aria-valuemax={100}
                 aria-valuenow={percent}
                 aria-label={status.stage}
-                className="h-1.5 overflow-hidden rounded-full bg-white/10"
+                className="h-1.5 overflow-hidden rounded-full bg-foreground/[0.06]"
               >
                 <div
                   className="h-full bg-primary transition-[width] duration-200 motion-reduce:transition-none"
@@ -247,7 +247,7 @@ export function BpmKeyFinder() {
             className={`mt-5 inline-flex h-11 cursor-pointer items-center rounded-key px-4 text-sm font-semibold ${
               working
                 ? "pointer-events-none border border-strong text-muted"
-                : "bg-primary text-white hover:bg-primary-hover"
+                : "bg-primary text-on-brand hover:bg-primary-hover"
             }`}
           >
             {working ? "Analyzing…" : status.state === "done" || status.state === "error" ? "Choose another file" : "Choose an audio file"}
@@ -346,7 +346,7 @@ function Result({ result, fileName }: { result: AnalysisResult; fileName: string
             <TrackedLink
               href={suggestion.band.href}
               track={{ action: "click_bpm_key_tempo", category: "bpm_key_finder", label: suggestion.band.slug }}
-              className="inline-flex h-11 items-center justify-center rounded-key border border-strong px-4 text-sm font-semibold text-ink hover:bg-white/10"
+              className="inline-flex h-11 items-center justify-center rounded-key border border-strong px-4 text-sm font-semibold text-ink hover:bg-foreground/[0.06]"
             >
               Patterns at {suggestion.band.label}
             </TrackedLink>

@@ -44,7 +44,7 @@ export function OneTimeProducts({ heading = "Prefer to own it once?" }: { headin
             <AddToCartButton
               product={BUNDLE_ID}
               label={`Add ${BUNDLE_NAME}`}
-              className="h-11 w-full rounded-key border border-strong text-sm font-semibold transition-colors hover:bg-white/10"
+              className="h-11 w-full rounded-key border border-strong text-sm font-semibold transition-colors hover:bg-foreground/[0.06]"
             />
           </div>
         </li>
@@ -65,7 +65,7 @@ export function OneTimeProducts({ heading = "Prefer to own it once?" }: { headin
                 <AddToCartButton
                   product={kit.id}
                   label={`Add ${kit.name}`}
-                  className="h-10 rounded-key border border-strong px-4 text-xs font-semibold transition-colors hover:bg-white/10"
+                  className="h-10 rounded-key border border-strong px-4 text-xs font-semibold transition-colors hover:bg-foreground/[0.06]"
                 />
               </div>
             </li>

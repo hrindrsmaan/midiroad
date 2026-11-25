@@ -42,7 +42,7 @@ export function BundlePreviews() {
                 className={`grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-key border transition-colors [&_svg]:h-3.5 [&_svg]:w-3.5 ${
                   active
                     ? "border-brand text-brand"
-                    : "border-strong text-ink hover:bg-white/10"
+                    : "border-strong text-ink hover:bg-foreground/[0.06]"
                 }`}
               >
                 {active ? <PauseIcon /> : <PlayIcon />}
@@ -75,7 +75,7 @@ export function KitCardPlay({ kitId, kitName }: { kitId: string; kitName: string
       aria-label={`${active ? "Stop" : "Play"} a ${kitName} pattern`}
       aria-pressed={active}
       className={`flex h-9 cursor-pointer items-center gap-1.5 rounded-key border px-3 text-[13px] font-semibold transition-colors [&_svg]:h-3 [&_svg]:w-3 ${
-        active ? "border-brand text-brand" : "border-strong hover:bg-white/10"
+        active ? "border-brand text-brand" : "border-strong hover:bg-foreground/[0.06]"
       }`}
     >
       {active ? <PauseIcon /> : <PlayIcon />}

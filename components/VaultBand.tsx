@@ -31,7 +31,7 @@ export function VaultBand() {
           <p className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-2">
             <span className="text-xl tabular-nums text-muted line-through">{formatUSD(PRICING.originalPrice)}</span>
             <span className="font-wide text-[34px] leading-none text-brand md:text-[44px]">{formatUSD(PRICING.currentPrice)}</span>
-            <span className="self-center rounded-key bg-primary px-2.5 py-1 text-xs font-bold text-white">
+            <span className="self-center rounded-key bg-primary px-2.5 py-1 text-xs font-bold text-on-brand">
               {BLACK_FRIDAY.active ? "Black Friday · " : ""}Save {PRICING.discountPercent}%
             </span>
           </p>
@@ -40,7 +40,7 @@ export function VaultBand() {
           </div>
           <div className="mt-6 max-w-md space-y-3">
             <AddToCartButton product={BUNDLE_ID} className={BUY_BUTTON_CLASS} />
-            <BuyButton product={BUNDLE_ID} label="Product Section Button" className="h-12 w-full rounded-key border border-strong bg-transparent text-sm font-semibold text-ink shadow-none hover:bg-white/10">
+            <BuyButton product={BUNDLE_ID} label="Product Section Button" className="h-12 w-full rounded-key border border-strong bg-transparent text-sm font-semibold text-ink shadow-none hover:bg-foreground/[0.06]">
               Buy it now
             </BuyButton>
           </div>

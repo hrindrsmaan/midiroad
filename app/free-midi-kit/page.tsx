@@ -113,7 +113,7 @@ export default function FreeMidiKitPage() {
               <li>✓ Download link on screen and by email</li>
             </ul>
           </div>
-          <div className="rounded-md border border-line bg-card p-6 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.7)] md:p-8">
+          <div className="rounded-md border border-line bg-card p-6 shadow-[0_24px_60px_-30px_rgba(31,31,31,0.28)] md:p-8">
             <h2 className="text-2xl">Get the free kit</h2>
             <p className="mb-5 mt-2 text-sm text-muted">Enter your email and download it now.</p>
             <FreeKitForm count={FREE_KIT_COUNT} />

@@ -2,8 +2,8 @@ import type { MidiPattern } from "@/lib/midi-kits";
 
 /** Below this a bucket is drawn as a rest dot, not a hit. */
 const HIT_THRESHOLD = 0.08;
-const INK = "#6b6b76";
-const BRAND = "#c6ff3d";
+const INK = "#c2b6a2";
+const BRAND = "#2e6b45";
 
 /**
  * A pattern drawn like a lane in a MIDI editor: hits as pills, faint bar

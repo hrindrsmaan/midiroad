@@ -102,7 +102,7 @@ export function FreeKitForm({ source = "free-kit-page", count }: { source?: Sign
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={state.step === "error" || undefined}
           aria-describedby="free-kit-note"
-          className="h-12 min-w-0 flex-1 rounded-key border border-strong bg-black/20 px-4 text-[15px] text-ink placeholder:text-muted/70 focus:border-brand focus:outline-none"
+          className="h-12 min-w-0 flex-1 rounded-key border border-strong bg-background px-4 text-[15px] text-ink placeholder:text-muted/70 focus:border-brand focus:outline-none"
         />
         {/* Honeypot: hidden from people and screen readers, filled by bots. */}
         <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">

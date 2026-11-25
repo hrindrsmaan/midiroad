@@ -83,7 +83,7 @@ export default function KitsIndexPage() {
                   </Link>
                   <div className="mt-4 flex items-center justify-between gap-3">
                     <p className="font-wide text-lg text-brand">{formatUSD(kit.price)}</p>
-                    <AddToCartButton product={kit.id} label={`Add ${kit.name}`} className="h-10 rounded-key border border-strong px-4 text-xs font-semibold hover:bg-white/10" />
+                    <AddToCartButton product={kit.id} label={`Add ${kit.name}`} className="h-10 rounded-key border border-strong px-4 text-xs font-semibold hover:bg-foreground/[0.06]" />
                   </div>
                 </li>
               );

@@ -49,7 +49,7 @@ export function SignInForm({ google, callbackURL }: { google: boolean; callbackU
     <div className="space-y-5">
       {google && (
         <>
-          <button onClick={onGoogle} className={`${BUTTON} border border-line bg-card hover:bg-white/5`}>
+          <button onClick={onGoogle} className={`${BUTTON} border border-line bg-card hover:bg-foreground/[0.03]`}>
             <GoogleIcon />
             Continue with Google
           </button>

@@ -141,7 +141,7 @@ function TransportButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-ink transition-colors hover:bg-white/10 disabled:cursor-default disabled:text-muted/40 [&_svg]:h-4 [&_svg]:w-4"
+      className="grid h-9 w-9 cursor-pointer place-items-center rounded-full text-ink transition-colors hover:bg-foreground/[0.06] disabled:cursor-default disabled:text-muted/40 [&_svg]:h-4 [&_svg]:w-4"
     >
       {children}
     </button>

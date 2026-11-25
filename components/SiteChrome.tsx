@@ -106,11 +106,11 @@ export function StickyBuyBar({
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-canvas text-white">
+    <footer className="border-t border-line bg-canvas text-foreground">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 md:flex-row md:items-start md:justify-between">
         <div className="max-w-xs">
           <Logo />
-          <p className="mt-4 text-sm leading-relaxed text-white/60">
+          <p className="mt-4 text-sm leading-relaxed text-muted">
             Drag-and-drop MIDI drum kits and trap one-shots for producers.
           </p>
         </div>
@@ -118,7 +118,7 @@ export function SiteFooter() {
           <ul className="space-y-3">
             {NAV_LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="text-white/60 transition-colors hover:text-white">
+                <Link href={l.href} className="text-muted transition-colors hover:text-foreground">
                   {l.label}
                 </Link>
               </li>
@@ -128,13 +128,13 @@ export function SiteFooter() {
             <li className="text-muted">Styles</li>
             {GENRES.map((genre) => (
               <li key={genre.slug}>
-                <Link href={genrePath(genre)} className="text-white/60 transition-colors hover:text-white">
+                <Link href={genrePath(genre)} className="text-muted transition-colors hover:text-foreground">
                   {genre.name}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/midi/bpm" className="text-white/60 transition-colors hover:text-white">
+              <Link href="/midi/bpm" className="text-muted transition-colors hover:text-foreground">
                 By tempo
               </Link>
             </li>
@@ -142,24 +142,24 @@ export function SiteFooter() {
           <ul className="space-y-3">
             <li className="text-muted">Support</li>
             <li>
-              <a href="mailto:support@inbox.midiroad.com" className="text-white/60 transition-colors hover:text-white">
+              <a href="mailto:support@inbox.midiroad.com" className="text-muted transition-colors hover:text-foreground">
                 support@inbox.midiroad.com
               </a>
             </li>
             <li>
-              <Link href="/license" className="text-white/60 transition-colors hover:text-white">
+              <Link href="/license" className="text-muted transition-colors hover:text-foreground">
                 License
               </Link>
             </li>
             <li>
-              <a href={YOUTUBE_URL} rel="me noopener" className="text-white/60 transition-colors hover:text-white">
+              <a href={YOUTUBE_URL} rel="me noopener" className="text-muted transition-colors hover:text-foreground">
                 YouTube
               </a>
             </li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-white/10">
+      <div className="border-t border-line">
         <p className="mx-auto max-w-6xl px-5 py-6 text-xs text-muted">
           © {new Date().getFullYear()} MidiRoad. All rights reserved.
         </p>

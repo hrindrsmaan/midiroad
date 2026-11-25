@@ -67,7 +67,7 @@ export function ProductHero({
           <div className="md:sticky md:top-24">
             <div className={`rounded-md bg-canvas ${compact ? "p-6 md:p-8" : "p-8 md:p-12"}`}>
               <div
-                className={`mx-auto max-w-md ${compact ? "" : "drop-shadow-[0_24px_24px_rgba(0,0,0,0.28)]"}`}
+                className={`mx-auto max-w-md ${compact ? "" : "drop-shadow-[0_24px_24px_rgba(31,31,31,0.22)]"}`}
               >
                 {cover}
               </div>
@@ -87,7 +87,7 @@ export function ProductHero({
                   {formatUSD(price)}
                 </span>
                 {badge && (
-                  <span className="self-center rounded-key bg-primary px-2.5 py-1 text-xs font-bold text-white">
+                  <span className="self-center rounded-key bg-primary px-2.5 py-1 text-xs font-bold text-on-brand">
                     {badge}
                   </span>
                 )}
@@ -101,7 +101,7 @@ export function ProductHero({
                 product={product}
                 label={label}
                 size="default"
-                className="h-12 w-full rounded-key border border-strong bg-transparent text-sm font-semibold text-ink shadow-none transition-colors hover:bg-white/10"
+                className="h-12 w-full rounded-key border border-strong bg-transparent text-sm font-semibold text-ink shadow-none transition-colors hover:bg-foreground/[0.06]"
                 aria-label={`Buy ${title} now for ${formatUSD(price)}`}
               >
                 Buy it now

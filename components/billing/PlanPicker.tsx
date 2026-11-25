@@ -40,7 +40,7 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
             <button
               key={String(y)}
               onClick={() => setYearly(y)}
-              className={`rounded-key px-5 py-2 transition-colors ${yearly === y ? "bg-primary text-white" : "text-muted hover:text-ink"}`}
+              className={`rounded-key px-5 py-2 transition-colors ${yearly === y ? "bg-primary text-on-brand" : "text-muted hover:text-ink"}`}
             >
               {y ? "Yearly · 2 months free" : "Monthly"}
             </button>
@@ -59,7 +59,7 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
               className={`relative flex flex-col rounded-md border bg-card p-6 ${p.featured ? "border-2 border-brand" : "border-line"}`}
             >
               {p.featured && (
-                <span className="absolute -top-3 left-6 rounded-key bg-primary px-3 py-1 text-xs font-bold text-white">
+                <span className="absolute -top-3 left-6 rounded-key bg-primary px-3 py-1 text-xs font-bold text-on-brand">
                   Most popular
                 </span>
               )}
@@ -84,7 +84,7 @@ export function PlanPicker({ signedIn, current }: { signedIn: boolean; current: 
                 onClick={() => choose(p.id)}
                 disabled={busy !== null || isCurrent}
                 className={`mt-6 h-12 rounded-key text-sm font-semibold transition-colors disabled:opacity-60 ${
-                  p.featured ? " bg-brand text-on-brand hover:bg-brand-hover" : "border border-strong hover:bg-white/5"
+                  p.featured ? " bg-brand text-on-brand hover:bg-brand-hover" : "border border-strong hover:bg-foreground/[0.03]"
                 }`}
               >
                 {isCurrent ? "Your plan" : busy === p.id ? "Opening checkout…" : current ? "Switch plan" : "Subscribe"}

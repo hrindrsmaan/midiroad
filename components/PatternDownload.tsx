@@ -58,7 +58,7 @@ export function PatternDownload({
           else void download();
         }}
         disabled={busy}
-        className="h-11 cursor-pointer rounded-key border border-strong px-6 text-sm font-semibold transition-colors hover:bg-white/10 disabled:opacity-60"
+        className="h-11 cursor-pointer rounded-key border border-strong px-6 text-sm font-semibold transition-colors hover:bg-foreground/[0.06] disabled:opacity-60"
       >
         {busy ? "Saving…" : "Unlock this file · 1 credit"}
       </button>

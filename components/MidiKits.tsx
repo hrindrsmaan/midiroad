@@ -21,8 +21,8 @@ const HIT_THRESHOLD = 0.08;
 /** Query param that resumes a download after sign-in: ?download=<libraryId>. */
 const RESUME_PARAM = "download";
 /** One palette for every kit: slate at rest, play green while playing. */
-const INK = "#6b6b76";
-const BRAND = "#c6ff3d";
+const INK = "#c2b6a2";
+const BRAND = "#2e6b45";
 
 /**
  * A pattern drawn like a lane in a MIDI editor: hits as pills, faint bar
@@ -115,12 +115,12 @@ function Chip({
       onClick={onClick}
       className={`cursor-pointer rounded-key border px-4 py-2 text-[13px] font-medium transition-colors ${
         selected
-          ? "border-primary bg-primary text-white"
+          ? "border-primary bg-primary text-on-brand"
           : "border-line bg-card text-ink hover:border-strong"
       }`}
     >
       {label}
-      <span className={`ml-1.5 ${selected ? "text-white/85" : "text-muted"}`}>
+      <span className={`ml-1.5 ${selected ? "text-foreground/85" : "text-muted"}`}>
         {count}
       </span>
     </button>
@@ -351,7 +351,7 @@ export function MidiKits({
                   aria-label={`${active ? "Stop" : "Play"} ${kitDisplayName(pattern.kitId, pattern.kitName)} ${pattern.name}`}
                   aria-pressed={active}
                   className={`grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-full transition-colors [&_svg]:h-4 [&_svg]:w-4 ${
-                    active ? "bg-brand text-on-brand" : "bg-primary text-white hover:bg-primary-hover"
+                    active ? "bg-brand text-on-brand" : "bg-primary text-on-brand hover:bg-primary-hover"
                   }`}
                 >
                   {active ? <PauseIcon /> : <PlayIcon />}
@@ -387,7 +387,7 @@ export function MidiKits({
                   className={`grid h-9 w-9 shrink-0 cursor-pointer place-items-center self-start rounded-full border transition-colors disabled:cursor-default [&_svg]:h-4 [&_svg]:w-4 ${
                     saved.has(pattern.id)
                       ? "border-brand/30 bg-brand/5 text-brand"
-                      : "border-line text-ink hover:border-strong hover:bg-white/10 disabled:hover:border-line disabled:hover:bg-transparent disabled:hover:text-ink"
+                      : "border-line text-ink hover:border-strong hover:bg-foreground/[0.06] disabled:hover:border-line disabled:hover:bg-transparent disabled:hover:text-ink"
                   }`}
                 >
                   {busy === pattern.id ? <Spinner /> : saved.has(pattern.id) ? <CheckIcon /> : <DownloadIcon />}
@@ -403,7 +403,7 @@ export function MidiKits({
           <button
             type="button"
             onClick={() => setExpanded((e) => !e)}
-            className="h-11 cursor-pointer rounded-key border border-strong px-6 text-sm font-semibold transition-colors hover:bg-white/10"
+            className="h-11 cursor-pointer rounded-key border border-strong px-6 text-sm font-semibold transition-colors hover:bg-foreground/[0.06]"
           >
             {expanded ? "Show fewer" : `Show all ${filtered.length}`}
           </button>
@@ -418,12 +418,12 @@ export function MidiKits({
       {notice && (
         <div
           role="status"
-          className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-sm rounded-md border border-line bg-card px-4 py-3 text-center text-sm text-white shadow-2xl md:bottom-6"
+          className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-sm rounded-md border border-line bg-card px-4 py-3 text-center text-sm text-foreground shadow-2xl md:bottom-6"
         >
           {notice.ok ? (
             <>
               <span className="font-semibold">Saved {notice.filename}</span>
-              <span className="text-white/60">
+              <span className="text-muted">
                 {" "}
                 · {notice.charged ? "1 credit used" : "already yours, free"} · {notice.credits} left
               </span>

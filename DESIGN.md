@@ -4,24 +4,24 @@ Generated with the ui-ux-pro-max skill (`--design-system`, query "music producti
 
 ## UI style
 
-**Dark mode (studio).** Deep navy surfaces, light text, one green action per screen. Producers work in dark DAWs late at night, so the site matches the room they're in. Flat surfaces with a 1px light border; no gradients or glassmorphism. Glow is reserved for things that are actually sounding (a note or playhead while a beat plays).
+**Warm paper.** Cream page, near-white cards, near-black ink, one forest green for every action. The palette is sampled from a light editorial reference, so the site reads like paper and ink rather than a lit screen. Flat surfaces with a 1px warm border; no gradients or glassmorphism. The kit cover artwork stays dark, so it reads like a record sleeve on a cream wall. Glow is reserved for things that are actually sounding (a note or playhead while a beat plays).
 
 ## Color
 
 | Role | Token | Hex | Use |
 |---|---|---|---|
-| Background | `background` | `#0F172A` | Page and hero sections |
-| Alternate section | `canvas` | `#131B2F` | Every other home-page section, cover panels |
-| Card | `card` | `#192134` | Cards, drawers, modals, inputs |
-| Foreground | `foreground` / `ink` | `#F8FAFC` | Headings and body text |
-| Muted text | `muted` | `#94A3B8` | Secondary text (7.0:1 on background, 6.3:1 on card) |
-| Border | `line` | `rgb(255 255 255 / 0.08)` | Card and divider lines |
-| Strong border | `strong` | `rgb(255 255 255 / 0.2)` | Outline buttons, hover borders |
-| Primary | `primary` | `#7C3AED` | Selected chips and tabs, focus ring, secondary actions, logo tile |
-| Accent / CTA | `brand` | `#22C55E` | Prices, Add to cart, Play. Text on it is `on-brand` `#0F172A` (7.8:1) |
-| Destructive | `destructive` | `#DC2626` | Errors |
+| Background | `background` | `#F8F1E7` | Page and hero sections |
+| Alternate section | `canvas` | `#F1E8DA` | Every other home-page section, cover panels |
+| Card | `card` | `#FEFAF7` | Cards, drawers, modals, inputs |
+| Foreground | `foreground` / `ink` | `#1F1F1F` | Headings and body text |
+| Muted text | `muted` | `#6B6357` | Secondary text (5.3:1 on background, 5.7:1 on card) |
+| Border | `line` | `#E3D8C5` | Card and divider lines |
+| Strong border | `strong` | `#B5A48F` | Outline buttons, hover borders, form fields |
+| Primary | `primary` | `#2E6B45` | Selected chips and tabs, badges, secondary actions |
+| Accent / CTA | `brand` | `#2E6B45` | Prices, Add to cart, Play. Text on it is `on-brand` `#FEFAF7` (6.1:1) |
+| Destructive | `destructive` | `#B3261E` | Errors |
 
-White text on the green CTA fails contrast (2.3:1), so green buttons always use `text-on-brand`. White on primary passes (5.7:1).
+Every text pair clears WCAG AA: ink on background 14.7:1, muted on canvas 4.9:1, green on background 5.7:1, cream on green 6.1:1. Green buttons always use `text-on-brand`, never white-on-green. The logo tile is ink `#1F1F1F` with a cream road and green notes, matching the reference.
 
 ## Chart colors
 
@@ -29,20 +29,22 @@ Used for the beat maker's four lanes and the pattern waveforms. Each lane also h
 
 | Lane | Token | Hex |
 |---|---|---|
-| Hats | `chart-hats` | `#A5B4FC` |
-| Snare / clap | `chart-snare` | `#C084FC` |
-| Kick | `chart-kick` | `#6366F1` |
-| 808 | `chart-bass` | `#22C55E` |
-| Waveform at rest | `chart-rest` | `#64748B` (MidiKits) / `#475569` |
-| Waveform played | – | `#22C55E` |
+| Hats | `chart-hats` | `#9B8CE8` |
+| Snare / clap | `chart-snare` | `#D07BD4` |
+| Kick | `chart-kick` | `#6A4CE8` |
+| 808 | `chart-bass` | `#3F8F5E` |
+| Waveform at rest | `chart-rest` | `#C2B6A2` (MidiKits) / `#C2B6A2` |
+| Waveform played | – | `#2E6B45` |
+
+The 808 lane is a mid green rather than the full brand green, so the dark note label stays readable on top of it. The beat maker and chord maker keep their lane colours even though they no longer sit on a dark panel.
 
 ## Typography
 
 | Role | Font | Notes |
 |---|---|---|
-| Display (h1, h2, logo) | Righteous 400 | Only at 20px and up |
-| Body, h3/h4, UI | Poppins 400/500/600/700 | |
-| Numbers, prices, stats, BPM | Poppins 700, `tabular-nums` (`font-wide` utility) | Righteous numerals are too stylized to read at a glance |
+| Display (h1, h2, logo) | Roboto 900 | Headings track tight so the weight still feels modern |
+| Body, h3/h4, UI | Roboto 400/500/600/700 | |
+| Numbers, prices, stats, BPM | Roboto 700, `tabular-nums` (`font-wide` utility) | |
 
 - Minimum text size is 12px (`text-xs`). Body is 15–16px with 1.5–1.65 line height.
 - Keep paragraphs under about 75 characters (`max-w-xl`).
@@ -64,9 +66,9 @@ Radius `rounded-key` (10px). Minimum height 44px for anything tapped often (36px
 | Kind | Classes | Use |
 |---|---|---|
 | CTA | `bg-brand text-on-brand hover:bg-brand-hover` | One per screen: Add to cart, Subscribe (featured), Play |
-| Primary | `bg-primary text-white hover:bg-primary-hover` | New beat, selected chip or tab |
-| Outline | `border border-strong hover:bg-white/10` | Buy it now, Add to cart in grids, Show all |
-| Ghost | `hover:bg-white/5` | Icon buttons, close |
+| Primary | `bg-primary text-on-brand hover:bg-primary-hover` | New beat, selected chip or tab |
+| Outline | `border border-strong hover:bg-foreground/[0.06]` | Buy it now, Add to cart in grids, Show all |
+| Ghost | `hover:bg-foreground/[0.03]` | Icon buttons, close |
 
 Focus: 2px `primary` outline, 2px offset, on every interactive element.
 
@@ -76,7 +78,7 @@ Focus: 2px `primary` outline, 2px offset, on every interactive element.
 
 ## Anti-patterns to avoid
 
-- Pure white page or section backgrounds (the skill's main anti-pattern for this style).
+- Pure white page or section backgrounds, or a cold blue-grey that fights the warm paper.
 - White text on the green CTA.
 - Righteous for numbers, prices, or anything under 20px.
 - Text under 12px, or gray-on-gray below 4.5:1.
@@ -85,3 +87,4 @@ Focus: 2px `primary` outline, 2px offset, on every interactive element.
 - Emoji as icons; use the existing inline SVGs.
 - Decorative glow, gradients or animation on things that aren't playing.
 - Animations that ignore `prefers-reduced-motion`.
+- Raw `text-white`, `bg-white/10` or `bg-black/20` utilities. Use the tokens; they now mean "light on paper", not "light on dark".

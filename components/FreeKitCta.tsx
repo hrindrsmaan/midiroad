@@ -48,7 +48,7 @@ export function FreeKitBanner({
       <div className="flex items-start gap-3">
         <span aria-hidden className="mt-1 grid shrink-0 grid-cols-4 gap-[3px]">
           {[1, 0, 1, 1, 0, 1, 0, 1].map((on, i) => (
-            <span key={i} className={`h-2 w-2 rounded-[1.5px] ${on ? "bg-brand" : "bg-white/15"}`} />
+            <span key={i} className={`h-2 w-2 rounded-[1.5px] ${on ? "bg-brand" : "bg-foreground/[0.08]"}`} />
           ))}
         </span>
         <div>

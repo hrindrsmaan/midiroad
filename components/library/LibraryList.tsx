@@ -82,7 +82,7 @@ export function LibraryList({
                     onClick={() => download(item)}
                     disabled={busy !== null}
                     className={`h-8 shrink-0 rounded-key px-4 text-xs font-semibold transition-colors disabled:opacity-60 ${
-                      have ? "border border-line hover:bg-white/5" : "bg-primary text-white hover:bg-primary-hover"
+                      have ? "border border-line hover:bg-foreground/[0.03]" : "bg-primary text-on-brand hover:bg-primary-hover"
                     }`}
                   >
                     {busy === item.id ? "…" : have ? "Download" : "1 credit"}
