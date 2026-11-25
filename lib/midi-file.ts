@@ -9,7 +9,7 @@ import type { DrumPart, GeneratedPattern } from "@/lib/midi-generator";
  * track per part, which DAWs split onto separate channels on import.
  */
 
-const PPQ = 96;
+export const PPQ = 96;
 const ROOT = 60;
 
 const TRACK_NAMES: Record<DrumPart, string> = {
@@ -28,15 +28,15 @@ const vlq = (n: number) => {
 
 const text = (s: string) => [...new TextEncoder().encode(s)];
 
-function chunk(type: string, body: number[]) {
+export function chunk(type: string, body: number[]) {
   const len = body.length;
   return [...text(type), (len >>> 24) & 255, (len >>> 16) & 255, (len >>> 8) & 255, len & 255, ...body];
 }
 
 /** Events as [tick, order, bytes]; note-offs sort before note-ons at the same tick. */
-type Event = [number, number, number[]];
+export type Event = [number, number, number[]];
 
-function trackChunk(name: string, events: Event[]) {
+export function trackChunk(name: string, events: Event[]) {
   events.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
   const body = [0, 0xff, 0x03, ...vlq(text(name).length), ...text(name)];
   let last = 0;

@@ -5,11 +5,13 @@ import { useEffect, useRef } from "react";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { SIGNUP_CREDITS } from "@/lib/plans";
 
-export type DownloadGate = "sign_in" | "no_credits";
+export type DownloadGate = "sign_in" | "no_credits" | "no_subscription";
 
 /**
  * Shown when a download needs an account (sign up, get free credits) or more
- * credits. `callbackURL` is where sign-in lands, so the download can resume.
+ * credits, or (`no_subscription`) a plan. With `subscribersOnly`, sign-in talks
+ * about plans instead of free credits. `callbackURL` is where sign-in lands,
+ * so the download can resume.
  */
 export function SignInModal({
   reason,
@@ -17,12 +19,14 @@ export function SignInModal({
   google,
   callbackURL,
   onClose,
+  subscribersOnly = false,
 }: {
   reason: DownloadGate | null;
   fileName?: string;
   google: boolean;
   callbackURL: string;
   onClose: () => void;
+  subscribersOnly?: boolean;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const open = reason !== null;
@@ -65,7 +69,54 @@ export function SignInModal({
           </svg>
         </button>
 
-        {reason === "sign_in" ? (
+        {reason === "sign_in" && subscribersOnly ? (
+          <>
+            <span className="inline-flex items-center gap-1.5 rounded-key bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
+              For subscribers
+            </span>
+            <h2 id="signin-modal-title" className="mt-4 pr-8 text-2xl leading-tight">
+              Sign in to download
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              Downloading the MIDI is included with every plan. Sign in with the account you subscribed with
+              {fileName && (
+                <>
+                  , and <span className="text-ink">{fileName}</span> downloads as soon as you&apos;re in
+                </>
+              )}
+              . No plan yet? Sign in, then pick one.
+            </p>
+            <div className="mt-6">
+              <SignInForm google={google} callbackURL={callbackURL} />
+            </div>
+            <p className="mt-4 text-center text-xs text-muted">No password needed.</p>
+          </>
+        ) : reason === "no_subscription" ? (
+          <>
+            <h2 id="signin-modal-title" className="pr-8 text-2xl leading-tight">
+              Downloads are for subscribers
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              Playing and editing chords is free. Downloading the MIDI comes with every plan, from{" "}
+              <span className="text-ink">Starter</span> up, and doesn&apos;t use credits.
+              {fileName && (
+                <>
+                  {" "}
+                  Your progression is saved here, so <span className="text-ink">{fileName}</span> is ready when you
+                  come back.
+                </>
+              )}
+            </p>
+            <div className="mt-6 flex flex-col gap-3">
+              <Link
+                href="/pricing"
+                className="flex h-12 items-center justify-center rounded-key bg-brand text-sm font-semibold text-on-brand transition-colors hover:bg-brand-hover"
+              >
+                See plans
+              </Link>
+            </div>
+          </>
+        ) : reason === "sign_in" ? (
           <>
             <span className="inline-flex items-center gap-1.5 rounded-key bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

@@ -4,6 +4,8 @@ import { VaultBand } from "@/components/VaultBand";
 import { KitGrid } from "@/components/KitGrid";
 import { TrackTable } from "@/components/catalog/TrackTable";
 import { BeatMakerPromo } from "@/components/BeatMakerPromo";
+import { ChordMaker } from "@/components/ChordMaker";
+import { ChordPackCompare } from "@/components/ChordPackCompare";
 import { FAQSection } from "@/components/FAQSection";
 import { FreeKitBanner } from "@/components/FreeKitCta";
 import { FREE_KIT_COUNT } from "@/lib/free-kit";
@@ -27,6 +29,9 @@ export default function Page() {
       <JsonLd data={[...homeJsonLd(), faqJsonLd(FAQS)]} />
       <SiteNav />
       <HomeHero />
+
+      <ChordMaker google={googleConfigured} heading="h2" />
+      <ChordPackCompare />
 
       <section aria-labelledby="previews-heading" className="px-5 pb-16">
         <div className="mx-auto max-w-6xl">
