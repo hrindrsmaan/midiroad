@@ -11,6 +11,7 @@ import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { toCatalogTrack } from "@/lib/catalog";
 import { catalogMetadata } from "@/lib/catalog-meta";
 import { FREE_KIT_COUNT } from "@/lib/free-kit";
+import { GENRE_BUY_LINK } from "@/lib/buyer-intent";
 import { genreCopy } from "@/lib/genre-content";
 import { prepareListing, type ListingSearch } from "@/lib/listing";
 import { GENRES, genrePath, genreStats, patternListJsonLd } from "@/lib/patterns";
@@ -117,6 +118,15 @@ export default async function GenrePage({ params, searchParams }: Params) {
                 </Link>
                 .
               </p>
+              {GENRE_BUY_LINK[genre.slug] && (
+                <p>
+                  Shopping for a kit rather than browsing files? See{" "}
+                  <Link href={GENRE_BUY_LINK[genre.slug].href} className="text-ink underline underline-offset-4">
+                    {GENRE_BUY_LINK[genre.slug].label}
+                  </Link>
+                  .
+                </p>
+              )}
             </div>
           </section>
           <CatalogListing

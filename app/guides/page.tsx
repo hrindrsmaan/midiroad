@@ -69,7 +69,22 @@ export default function GuidesIndexPage() {
             ))}
           </ul>
           <FreeKitBanner source="guide" count={FREE_KIT_COUNT} className="mt-10" />
-          <p className="mt-10 text-sm text-muted">
+          <p className="mt-10 text-sm leading-relaxed text-muted">
+            Buying rather than learning the steps?{" "}
+            <Link href="/compare" className="font-semibold text-ink underline underline-offset-4">
+              Compare MIDI drum kits
+            </Link>
+            , or read the{" "}
+            <Link href="/trap-midi-drum-kits" className="font-semibold text-ink underline underline-offset-4">
+              trap
+            </Link>{" "}
+            and{" "}
+            <Link href="/drill-midi-drum-kits" className="font-semibold text-ink underline underline-offset-4">
+              drill
+            </Link>{" "}
+            buying pages. The pattern hubs stay the place to preview files.
+          </p>
+          <p className="mt-4 text-sm text-muted">
             Ready to try one?{" "}
             <Link href="/midi" className="font-semibold text-ink underline underline-offset-4">
               Browse MIDI patterns

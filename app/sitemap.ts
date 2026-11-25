@@ -4,6 +4,7 @@ import { BPM_RANGES, GENRES, PATTERNS, bpmPath, genrePath, patternPath, patterns
 import { GUIDES, guidePath } from "@/lib/guides";
 import { KIT_PRODUCTS } from "@/lib/products";
 import { PAGE_SIZE } from "@/lib/listing";
+import { allBuyerPaths } from "@/lib/buyer-intent";
 import { absoluteUrl } from "@/lib/site";
 
 /**
@@ -63,6 +64,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
         ...extra(`/kits/${kit.slug}`, count),
       ];
     }),
+    ...allBuyerPaths().map((page) => ({
+      url: absoluteUrl(page.path),
+      changeFrequency: "monthly" as const,
+      priority: page.priority,
+    })),
     { url: absoluteUrl("/guides"), changeFrequency: "monthly", priority: 0.7 },
     ...GUIDES.map((guide) => ({
       url: absoluteUrl(guidePath(guide)),
