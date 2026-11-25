@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
     { url: absoluteUrl("/beat-maker"), changeFrequency: "monthly", priority: 0.9 },
+    { url: absoluteUrl("/chord-maker"), changeFrequency: "monthly", priority: 0.8 },
     { url: absoluteUrl("/midi"), changeFrequency: "weekly", priority: 0.9 },
     ...GENRES.map((genre) => ({
       url: absoluteUrl(genrePath(genre)),

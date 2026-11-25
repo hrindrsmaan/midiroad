@@ -2,6 +2,8 @@ import { ProductDetail } from "@/components/ProductDetail";
 import { KitGrid } from "@/components/KitGrid";
 import { MidiKits } from "@/components/MidiKits";
 import { BeatMakerPromo } from "@/components/BeatMakerPromo";
+import { ChordMaker } from "@/components/ChordMaker";
+import { ChordPackCompare } from "@/components/ChordPackCompare";
 import { FAQSection } from "@/components/FAQSection";
 import { GuidesTeaser } from "@/components/GuidesTeaser";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
@@ -18,7 +20,13 @@ export default function Page() {
       <JsonLd data={[...homeJsonLd(), faqJsonLd(FAQS)]} />
       <SiteNav />
 
-      {/* The bundle leads: best value, every kit plus the one-shots */}
+      {/* The chord maker leads, playable right here (also at /chord-maker) */}
+      <ChordMaker google={googleConfigured} heading="h2" />
+
+      {/* Why the chord maker beats a folder of chord files */}
+      <ChordPackCompare />
+
+      {/* Then the bundle: best value, every kit plus the one-shots */}
       <ProductDetail />
 
       {/* Every kit, each with its own page */}
