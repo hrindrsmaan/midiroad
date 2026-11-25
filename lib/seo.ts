@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { fitMetaDescription } from "@/lib/meta-text";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
 /**
@@ -30,13 +31,14 @@ export function pageMetadata({
   image?: string;
 }): Metadata {
   const url = absoluteUrl(path);
+  const summary = fitMetaDescription(description);
   return {
     title,
-    description,
+    description: summary,
     alternates: { canonical: url },
     openGraph: {
       title,
-      description,
+      description: summary,
       url,
       type: "website",
       siteName: SITE_NAME,
@@ -46,7 +48,7 @@ export function pageMetadata({
     twitter: {
       card: "summary_large_image",
       title,
-      description,
+      description: summary,
       images: image,
     },
     ...(index

@@ -11,10 +11,10 @@ export const contentType = "image/png";
 const STEPS = 64;
 /** Rows and colors as in the beat maker (DESIGN.md chart colors). */
 const ROWS: { id: string; label: string; parts: DrumPart[]; color: string }[] = [
-  { id: "hats", label: "HATS", parts: ["hihat", "open-hat"], color: "#a5b4fc" },
-  { id: "snare", label: "SNARE", parts: ["snare"], color: "#c084fc" },
-  { id: "kick", label: "KICK", parts: ["kick"], color: "#6366f1" },
-  { id: "808", label: "808", parts: ["808"], color: "#22c55e" },
+  { id: "hats", label: "HATS", parts: ["hihat", "open-hat"], color: "#c4b5fd" },
+  { id: "snare", label: "SNARE", parts: ["snare"], color: "#f0abfc" },
+  { id: "kick", label: "KICK", parts: ["kick"], color: "#7c5cff" },
+  { id: "808", label: "808", parts: ["808"], color: "#c6ff3d" },
 ];
 
 /** Share card for /b/<id>: the beat's step grid, tempo and key, and the MidiRoad mark. */
@@ -43,7 +43,7 @@ export default async function BeatImage({ params }: { params: Promise<{ id: stri
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "56px 64px",
-          background: "#0f172a",
+          background: "#0a0a0b",
           color: "white",
           fontFamily: "sans-serif",
         }}
@@ -58,7 +58,7 @@ export default async function BeatImage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "flex-end", gap: 28 }}>
-          <div style={{ display: "flex", fontSize: 120, fontWeight: 800, lineHeight: 0.9, letterSpacing: -4, color: "#22c55e" }}>
+          <div style={{ display: "flex", fontSize: 120, fontWeight: 800, lineHeight: 0.9, letterSpacing: -4, color: "#c6ff3d" }}>
             {pattern ? String(pattern.bpm) : "—"}
           </div>
           <div style={{ display: "flex", flexDirection: "column", paddingBottom: 6 }}>
@@ -68,7 +68,7 @@ export default async function BeatImage({ params }: { params: Promise<{ id: stri
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, background: "#111a2d", borderRadius: 10, padding: "18px 20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, background: "#111113", borderRadius: 10, padding: "18px 20px" }}>
           {grid.map((row) => (
             <div key={row.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ display: "flex", width: 56, fontSize: 15, fontWeight: 700, color: "rgba(255,255,255,0.5)" }}>

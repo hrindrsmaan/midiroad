@@ -36,6 +36,7 @@ ${kits.join("\n")}
 - [Free trap beat maker](${absoluteUrl("/beat-maker")}): generates a trap beat (hats, snare, kick, 808) in the browser, with tempo, key, sound picks and mutes. Export the whole beat or a single track as MIDI.
 - [Free chord progression maker](${absoluteUrl("/chord-maker")}): builds a four-bar chord progression in any major or minor key, editable on a piano roll, with rhythm, sound and bass options. Playing is free; the MIDI download is for subscribers.
 - [MIDI pattern pages](${absoluteUrl("/midi")}): one public page per pattern, with a browser preview. The MIDI file stays a paid download (buy the kit, or unlock one file with 1 credit).
+- [All kits](${absoluteUrl("/kits")}): each MIDI kit on its own page, plus ${BUNDLE_NAME}.
 ${GENRES.map((genre) => `- [${genre.name} MIDI patterns](${absoluteUrl(genrePath(genre))})`).join("\n")}
 - [Patterns by tempo](${absoluteUrl("/midi/bpm")})
 - [Pricing](${absoluteUrl("/pricing")}): monthly MIDI credit plans for the library and the beat maker. New accounts get free credits.

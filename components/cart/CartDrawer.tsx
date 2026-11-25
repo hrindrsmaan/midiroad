@@ -63,7 +63,7 @@ export function CartDrawer() {
         aria-modal="true"
         aria-label="Shopping cart"
         tabIndex={-1}
-        className={`absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-card shadow-2xl outline-none transition-transform duration-300 ease-out ${
+        className={`absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-card shadow-2xl outline-none transition-transform duration-300 ease-out md:max-w-3xl ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -98,6 +98,7 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
+            <div className="flex min-h-0 flex-1 flex-col md:grid md:grid-cols-[minmax(0,1fr)_18rem]">
             <ul className="flex-1 divide-y divide-line overflow-y-auto px-6">
               {items.map((item) => {
                 const kit = kitById(item.id);
@@ -134,7 +135,7 @@ export function CartDrawer() {
               })}
             </ul>
 
-            <div className="border-t border-line px-6 py-5">
+            <div className="border-t border-line px-6 py-5 md:border-l md:border-t-0">
               {/* Two or more kits: point out the bundle */}
               {kitCount >= 2 && (
                 <div className="mb-5 rounded-md bg-canvas p-4">
@@ -199,6 +200,7 @@ export function CartDrawer() {
                 </button>
               </form>
               <p className="mt-3 text-center text-xs text-muted">Secure checkout via Stripe · Instant download</p>
+            </div>
             </div>
           </>
         )}

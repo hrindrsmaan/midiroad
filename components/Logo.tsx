@@ -83,7 +83,7 @@ export function Logo({
       <span
         className={`font-heading text-[22px] leading-none ${inverted ? "text-ivory" : "text-ink"}`}
       >
-        MIDI<span className={"text-brand"}>ROAD</span>
+        MIDI<span className="text-[#22c55e]">ROAD</span>
       </span>
     </span>
   );

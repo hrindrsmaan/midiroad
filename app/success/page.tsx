@@ -111,31 +111,50 @@ export default async function Success({
       </nav>
 
       <section className="px-5 py-14 md:py-20">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <div>
-            <Eyebrow className="mb-3 flex items-center gap-2">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
-                <path d="m9.55 17.6-4.95-4.95 1.41-1.41 3.54 3.54 8.49-8.49 1.41 1.42-9.9 9.9Z" />
-              </svg>
-              Order confirmed
-            </Eyebrow>
-            <h1 className="text-3xl md:text-[42px] leading-tight">
-              {order?.free ? "You're all set." : "Thanks for your order."}
-            </h1>
-            <p className="mt-3 text-base text-muted">
-              Your files are ready to download.
-              {order?.email ? (
-                <>
-                  {" "}We&apos;ve also emailed the links to <span className="font-medium text-ink">{order.email}</span>.
-                </>
-              ) : (
-                " We've also emailed you the links."
-              )}
+        <div className="mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div className="space-y-6">
+            <div>
+              <Eyebrow className="mb-3 flex items-center gap-2">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+                  <path d="m9.55 17.6-4.95-4.95 1.41-1.41 3.54 3.54 8.49-8.49 1.41 1.42-9.9 9.9Z" />
+                </svg>
+                Order confirmed
+              </Eyebrow>
+              <h1 className="text-3xl leading-tight md:text-[42px]">
+                {order?.free ? "You're all set." : "Thanks for your order."}
+              </h1>
+              <p className="mt-3 text-base text-muted">
+                Your files are ready to download.
+                {order?.email ? (
+                  <>
+                    {" "}We&apos;ve also emailed the links to <span className="font-medium text-ink">{order.email}</span>.
+                  </>
+                ) : (
+                  " We've also emailed you the links."
+                )}
+              </p>
+            </div>
+            <article className="rounded-md border border-line bg-card p-5 sm:p-6">
+              <h2 className="text-lg">Start in 30 seconds</h2>
+              <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
+                {QUICK_START.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+            </article>
+            <p className="text-sm text-muted">
+              Need help? Email{" "}
+              <a href="mailto:support@inbox.midiroad.com" className="text-ink underline underline-offset-4">
+                support@inbox.midiroad.com
+              </a>{" "}
+              and we&apos;ll sort it out.{" "}
+              <Link href="/" className="text-ink underline underline-offset-4">
+                Back to the store
+              </Link>
             </p>
           </div>
 
-          {/* What was bought + downloads */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {products.map((p) => {
               const kit = kitById(p.id);
               const href = downloadHref(p.id);
@@ -178,13 +197,12 @@ export default async function Success({
                 </article>
               );
             })}
-          </div>
 
           {/* Bundle upgrade at the difference */}
           {upgradeFrom && sessionId && (
             <article className="rounded-md border border-brand/30 bg-card p-5 sm:p-6">
               <Eyebrow>Only on this page</Eyebrow>
-              <h2 className="mt-2 text-xl md:text-2xl leading-tight">
+              <h2 className="mt-2 text-xl leading-tight md:text-2xl">
                 Get everything else for {formatUSD(upgradePrice(upgradeFrom))}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -216,27 +234,7 @@ export default async function Success({
               </div>
             </article>
           )}
-
-          {/* Quick start */}
-          <article className="rounded-md border border-line bg-card p-5 sm:p-6">
-            <h2 className="text-lg">Start in 30 seconds</h2>
-            <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted">
-              {QUICK_START.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ol>
-          </article>
-
-          <p className="text-sm text-muted">
-            Need help? Email{" "}
-            <a href="mailto:support@inbox.midiroad.com" className="text-ink underline underline-offset-4">
-              support@inbox.midiroad.com
-            </a>{" "}
-            and we&apos;ll sort it out.{" "}
-            <Link href="/" className="text-ink underline underline-offset-4">
-              Back to the store
-            </Link>
-          </p>
+          </div>
         </div>
       </section>
 

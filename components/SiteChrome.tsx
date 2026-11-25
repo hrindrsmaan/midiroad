@@ -10,14 +10,13 @@ import { GENRES, genrePath } from "@/lib/patterns";
 import { YOUTUBE_URL } from "@/lib/site";
 
 const NAV_LINKS = [
+  { href: "/kits", label: "Kits" },
   { href: "/#kits", label: "MIDI Packs" },
-  { href: "/#midi-kits", label: "Listen" },
   { href: "/midi", label: "Patterns" },
   { href: "/beat-maker", label: "Beat Maker" },
   { href: "/chord-maker", label: "Chord Maker" },
   { href: "/free-midi-kit", label: "Free MIDI Kit" },
   { href: "/guides", label: "Guides" },
-  { href: "/library", label: "Library" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
 ];
@@ -38,9 +37,16 @@ export function SiteNav() {
         </Link>
         <div className="flex items-center gap-3.5 whitespace-nowrap md:gap-7">
           <TrackedLink
+            href="/kits"
+            track={{ action: "click_kits", category: "navigation", label: "header" }}
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink sm:inline"
+          >
+            Kits
+          </TrackedLink>
+          <TrackedLink
             href="/midi"
             track={{ action: "click_patterns", category: "navigation", label: "header" }}
-            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink min-[480px]:inline"
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink md:inline"
           >
             Patterns
           </TrackedLink>
@@ -78,7 +84,7 @@ export function StickyBuyBar({
   originalPrice?: number;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-background/95 px-4 py-3 backdrop-blur md:hidden">
+    <div className="sticky-buy fixed inset-x-0 bottom-0 z-50 border-t border-line bg-background/95 px-4 py-3 backdrop-blur md:hidden">
       <div className="flex items-center gap-4">
         <p className="shrink-0 leading-tight">
           {originalPrice !== undefined && (
@@ -97,7 +103,7 @@ export function StickyBuyBar({
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line bg-[#0b1222] text-white">
+    <footer className="border-t border-line bg-canvas text-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-5 py-14 md:flex-row md:items-start md:justify-between">
         <div className="max-w-xs">
           <Logo />

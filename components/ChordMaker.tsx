@@ -36,7 +36,7 @@ const MAX_BPM = 180;
 
 /** Chart colors (DESIGN.md): chords violet, bass play green. */
 const CHORD = "#c084fc";
-const BASS = "#22c55e";
+const BASS = "#c6ff3d";
 
 /** Pitches on the roll, high to low like a DAW. */
 const ROWS = Array.from({ length: HIGH - LOW + 1 }, (_, i) => HIGH - i);
@@ -543,7 +543,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
           </div>
 
           {/* Piano roll: click to add or remove a note in that bar's chord */}
-          <div className="relative grid grid-cols-[2.5rem_1fr] bg-[#111a2d] md:grid-cols-[3.5rem_1fr]">
+          <div className="relative grid grid-cols-[2.5rem_1fr] bg-canvas md:grid-cols-[3.5rem_1fr]">
             <div className="border-r border-white/[0.06]" aria-hidden>
               {ROWS.map((n) => (
                 <div
@@ -636,7 +636,7 @@ export function ChordMaker({ google, heading = "h1" }: { google: boolean; headin
 
           {/* Bass lane */}
           {withBass && (
-            <div className="grid grid-cols-[2.5rem_1fr] border-t border-white/[0.06] bg-[#111a2d] md:grid-cols-[3.5rem_1fr]">
+            <div className="grid grid-cols-[2.5rem_1fr] border-t border-white/[0.06] bg-canvas md:grid-cols-[3.5rem_1fr]">
               <div className="flex items-center justify-center border-r border-white/[0.06] text-xs font-semibold text-white/55">Bass</div>
               <div className="relative h-9">
                 {notes.bass.map((n, i) => (

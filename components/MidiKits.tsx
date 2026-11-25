@@ -21,8 +21,8 @@ const HIT_THRESHOLD = 0.08;
 /** Query param that resumes a download after sign-in: ?download=<libraryId>. */
 const RESUME_PARAM = "download";
 /** One palette for every kit: slate at rest, play green while playing. */
-const INK = "#64748b";
-const BRAND = "#22c55e";
+const INK = "#6b6b76";
+const BRAND = "#c6ff3d";
 
 /**
  * A pattern drawn like a lane in a MIDI editor: hits as pills, faint bar

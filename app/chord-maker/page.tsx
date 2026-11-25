@@ -9,7 +9,7 @@ import { pageMetadata } from "@/lib/seo";
 
 const title = "Free Chord Progression Maker – Export MIDI to Your DAW";
 const description =
-  "Make a chord progression in any key: pick a preset or shuffle, edit chords on a piano roll, change rhythm and tempo, and download the MIDI for FL Studio, Ableton, Logic or any DAW.";
+  "Make chord progressions in any key. Edit them on a piano roll, set rhythm and tempo, and download MIDI for FL Studio, Ableton, Logic or any DAW.";
 
 export const metadata: Metadata = pageMetadata({ title, description, path: "/chord-maker" });
 
