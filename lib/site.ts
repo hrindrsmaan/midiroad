@@ -97,6 +97,22 @@ export const beatMakerJsonLd = () => [
   },
 ];
 
+/** The free chord maker, for its own page. */
+export const chordMakerJsonLd = () => [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "MidiRoad Free Chord Progression Maker",
+    url: absoluteUrl("/chord-maker"),
+    applicationCategory: "MultimediaApplication",
+    operatingSystem: "Any (runs in the browser)",
+    description:
+      "Build a four-bar chord progression in any major or minor key, edit the chords on a piano roll, choose a rhythm and sound, and download the MIDI with a subscription.",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    publisher: { "@id": ORG_ID },
+  },
+];
+
 /** One kit's product page. */
 export const kitJsonLd = (kit: KitProduct) => {
   const url = absoluteUrl(`/kits/${kit.slug}`);

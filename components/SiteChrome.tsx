@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { href: "/#midi-kits", label: "Listen" },
   { href: "/midi", label: "Patterns" },
   { href: "/beat-maker", label: "Beat Maker" },
+  { href: "/chord-maker", label: "Chord Maker" },
   { href: "/free-midi-kit", label: "Free MIDI Kit" },
   { href: "/guides", label: "Guides" },
   { href: "/library", label: "Library" },
@@ -21,7 +22,7 @@ const NAV_LINKS = [
   { href: "/#faq", label: "FAQ" },
 ];
 
-/** Sticky top bar, kept to the essentials: logo, beat maker, account and cart. Every other page is linked from the footer. */
+/** Sticky top bar, kept to the essentials: logo, chord maker, account and cart. Every other page is linked from the footer. */
 export function SiteNav() {
   return (
     <>
@@ -44,11 +45,11 @@ export function SiteNav() {
             Patterns
           </TrackedLink>
           <TrackedLink
-            href="/beat-maker"
-            track={{ action: "click_beat_maker", category: "navigation", label: "header" }}
+            href="/chord-maker"
+            track={{ action: "click_chord_maker", category: "navigation", label: "header" }}
             className="hidden text-sm font-medium text-muted transition-colors hover:text-ink min-[420px]:inline"
           >
-            Beat Maker
+            Chord Maker
           </TrackedLink>
           <FreeKitLink
             source="header"
