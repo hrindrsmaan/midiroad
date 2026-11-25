@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { LogoMark } from "@/components/Logo";
 import { FREE_KIT_COUNT, FREE_KIT_MAX_BPM, FREE_KIT_MIN_BPM } from "@/lib/free-kit";
 
-export const alt = `MidiRoad free MIDI drum kit: ${FREE_KIT_COUNT} royalty-free trap and drill patterns`;
+export const alt = `MidiRoad MIDI drum starter kit: ${FREE_KIT_COUNT} royalty-free trap and drill patterns`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -51,7 +51,7 @@ export default function FreeKitImage() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1.02, letterSpacing: -2 }}>
-            {`${FREE_KIT_COUNT} free MIDI drum patterns`}
+            {`${FREE_KIT_COUNT} MIDI drum patterns for $1`}
           </div>
           <div style={{ fontSize: 32, color: "rgba(31,31,31,0.62)" }}>
             {`Trap · Drill · Dark trap · 808s · ${FREE_KIT_MIN_BPM}–${FREE_KIT_MAX_BPM} BPM · Any DAW`}

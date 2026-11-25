@@ -151,7 +151,7 @@ export const COMPETITORS: Competitor[] = [
       },
       {
         q: "How much is the Unison Trap MIDI Drum Collection?",
-        a: "It was listed at $17 when we checked in November 2026. Unison discounts collections, so the price on the page can be lower. MidiRoad kits are a one-time $4.99 to $9.99, and The Complete Vault is $14.99.",
+        a: "It was listed at $17 when we checked in November 2026. Unison discounts collections, so the price on the page can be lower. MidiRoad kits are a one-time $4.99 to $9.99, and The Complete Vault is $29.99.",
       },
       {
         q: "Will either pack work in FL Studio?",
@@ -272,7 +272,7 @@ export const COMPETITORS: Competitor[] = [
     compareFaqs: [
       {
         q: "Which is cheaper if I only need drum MIDI?",
-        a: "A MidiRoad kit is one payment from $4.99 to $9.99, or $14.99 for every kit. Splice Sounds was $12.99/month when we checked, and a MIDI file can take up to 3 credits. The subscription is the better deal if you also download samples and presets all month. The kit is the better deal if you want one drum library and then stop paying.",
+        a: "A MidiRoad kit is one payment from $4.99 to $9.99, or $29.99 for every kit. Splice Sounds was $12.99/month when we checked, and a MIDI file can take up to 3 credits. The subscription is the better deal if you also download samples and presets all month. The kit is the better deal if you want one drum library and then stop paying.",
       },
       {
         q: "Can I preview MIDI on both sites?",
@@ -353,7 +353,7 @@ export const COMPETITORS: Competitor[] = [
       },
       {
         q: "What do the Cymatics genre packs cost?",
-        a: "On the APEX overview we checked, each genre collection was listed at $20. Bundle prices on that offer change, so read the page. MidiRoad kits are $4.99 to $9.99, or $14.99 for every kit.",
+        a: "On the APEX overview we checked, each genre collection was listed at $20. Bundle prices on that offer change, so read the page. MidiRoad kits are $4.99 to $9.99, or $29.99 for every kit.",
       },
       {
         q: "Can I sell beats made with Cymatics MIDI?",
@@ -479,7 +479,7 @@ export const COMPETITORS: Competitor[] = [
       },
       {
         q: "What does the whole thing cost?",
-        a: "Ghosthack Trap Drums was €37 including VAT on the page we loaded, and they discount packs. MidiRoad's six kits together are The Complete Vault at $14.99, which is MIDI plus 77 one-shots, not a gigabyte of loops. Compare the contents, not just the number.",
+        a: "Ghosthack Trap Drums was €37 including VAT on the page we loaded, and they discount packs. MidiRoad's six kits together are The Complete Vault at $29.99, which is MIDI plus 77 one-shots, not a gigabyte of loops. Compare the contents, not just the number.",
       },
     ],
     alternative: {
@@ -573,7 +573,7 @@ export const COMPETITORS: Competitor[] = [
       },
       {
         q: "What does $29 include?",
-        a: "MIDI only, from about 70 tracks with variations. The sounds are EZdrummer or Superior Drummer, sold separately. MidiRoad's $14.99 bundle is 210 patterns and 77 one-shots. It isn't a live-drummer library.",
+        a: "MIDI only, from about 70 tracks with variations. The sounds are EZdrummer or Superior Drummer, sold separately. MidiRoad's $29.99 bundle is 210 patterns and 77 one-shots. It isn't a live-drummer library.",
       },
       {
         q: "Will the MIDI open in FL Studio if I don't own EZdrummer?",
@@ -636,7 +636,7 @@ export const DAW_PAGES: DawPage[] = [
     name: "FL Studio",
     metaTitle: "MIDI Drum Kits for FL Studio",
     description:
-      "MIDI drum kits for FL Studio: royalty-free trap and drill patterns for the Channel Rack, with browser previews and a free kit.",
+      "MIDI drum kits for FL Studio: royalty-free trap and drill patterns for the Channel Rack, with browser previews and a $1 starter kit.",
     h1: "MIDI drum kits for FL Studio",
     lede: "FL Studio plays standard MIDI, so a drum kit doesn't need a special FL edition. What matters is the shape of the files. MidiRoad splits hats, snares, kicks and 808s into separate .mid files, which matches the Channel Rack: one sound, one channel. This page is what to buy. The click-by-click import is in the FL Studio guide.",
     guide: "/guides/how-to-use-midi-drums-in-fl-studio",
@@ -659,7 +659,7 @@ export const DAW_PAGES: DawPage[] = [
       },
       {
         q: "Can I try a pattern in FL Studio before I buy a kit?",
-        a: "Preview any pattern on the site, or get the free kit and drag those files in. The beat maker also exports MIDI you can drop on a channel.",
+        a: "Preview any pattern on the site, or get the $1 starter kit and drag those files in. The beat maker also exports MIDI you can drop on a channel.",
       },
     ],
   },
@@ -668,7 +668,7 @@ export const DAW_PAGES: DawPage[] = [
     name: "Ableton Live",
     metaTitle: "MIDI Drum Kits for Ableton Live",
     description:
-      "MIDI drum kits for Ableton Live: royalty-free trap and drill clips for a Drum Rack, with browser previews and a free kit.",
+      "MIDI drum kits for Ableton Live: royalty-free trap and drill clips for a Drum Rack, with browser previews and a $1 starter kit.",
     h1: "MIDI drum kits for Ableton Live",
     lede: "Ableton Live turns a .mid file into a clip at your project tempo. For drums, that clip lands on a Drum Rack, and the notes have to hit the pads that hold your samples. MidiRoad kits are built as separate part files so you can drop a hat clip, a snare clip and an 808 clip on their own racks or chains. Import, mapping and the Groove Pool are in the Ableton guide. This page is which kit to buy.",
     guide: "/guides/how-to-use-midi-drums-in-ableton",
@@ -687,7 +687,7 @@ export const DAW_PAGES: DawPage[] = [
       },
       {
         q: "Do I need a MidiRoad subscription to use the kits in Live?",
-        a: "No. Kits are a one-time purchase. A credit plan exists if you'd rather unlock single files. The free kit doesn't need an account.",
+        a: "No. Kits are a one-time purchase. A credit plan exists if you'd rather unlock single files. The $1 starter kit doesn't need an account.",
       },
       {
         q: "Where are the trap and drill patterns?",
@@ -700,7 +700,7 @@ export const DAW_PAGES: DawPage[] = [
     name: "Logic Pro",
     metaTitle: "MIDI Drum Kits for Logic Pro",
     description:
-      "MIDI drum kits for Logic Pro: royalty-free trap and drill MIDI for any software instrument, with browser previews and a free kit.",
+      "MIDI drum kits for Logic Pro: royalty-free trap and drill MIDI for any software instrument, with browser previews and a $1 starter kit.",
     h1: "MIDI drum kits for Logic Pro",
     lede: "Logic Pro opens standard MIDI, so these kits don't need a Logic-only export. Drag a .mid file from Finder onto a software instrument track, then point the notes at Drum Machine Designer, Quick Sampler, or whichever sampler holds your drums. There's no separate Logic import guide on this site. The short version is below, and the trap and drill kits are the same files FL Studio and Live use.",
     faqs: [
@@ -722,7 +722,7 @@ export const DAW_PAGES: DawPage[] = [
       },
       {
         q: "What should I download first?",
-        a: "Preview a pattern on the site, or take the free kit and drop it on a track. Essentials Vault is the large trap kit. Decoy Protocol is the drill kit. The Complete Vault is every kit plus 77 one-shots.",
+        a: "Preview a pattern on the site, or take the $1 starter kit and drop it on a track. Essentials Vault is the large trap kit. Decoy Protocol is the drill kit. The Complete Vault is every kit plus 77 one-shots.",
       },
     ],
   },

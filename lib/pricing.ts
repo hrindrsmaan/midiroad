@@ -7,7 +7,7 @@ import { BUNDLE_ID, BUNDLE_PRICE, KITS_TOTAL } from "./products";
  * and the code stops working.
  */
 export const BLACK_FRIDAY = {
-  active: true,
+  active: false,
   /** The bundle's regular price, shown struck through during the sale. */
   wasPrice: 29,
   /** Coupon for an extra discount on the bundle (case-insensitive). */
@@ -69,6 +69,14 @@ export function priceWithCoupon(productId: string, price: number, coupon: string
   if (!validCoupon(coupon) || productId !== BUNDLE_ID) return price;
   return round2(Math.max(0, price - BLACK_FRIDAY.couponAmount));
 }
+
+/** What one pattern in the bundle costs, in whole cents, e.g. 14 for $29.99 / 210. */
+export function centsPerPattern(patternCount: number): number {
+  return Math.round((BUNDLE_PRICE_NOW / patternCount) * 100);
+}
+
+/** Days a buyer has to ask for a full refund (see the FAQ). */
+export const REFUND_DAYS = 30;
 
 export function formatUSD(amount: number): string {
   return `$${amount.toFixed(2)}`;

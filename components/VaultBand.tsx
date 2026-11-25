@@ -7,7 +7,7 @@ import { AddToCartButton } from "@/components/cart/CartButtons";
 import { Eyebrow } from "@/components/Section";
 import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 import { BUNDLE_ID, BUNDLE_NAME, KITS_TOTAL, KIT_PRODUCTS } from "@/lib/products";
-import { BLACK_FRIDAY, PRICING, formatUSD } from "@/lib/pricing";
+import { BLACK_FRIDAY, PRICING, REFUND_DAYS, centsPerPattern, formatUSD } from "@/lib/pricing";
 
 const STATS = [
   { value: KIT_PRODUCTS.length, label: "MIDI kits" },
@@ -46,6 +46,9 @@ export function VaultBand() {
             <BuyButton product={BUNDLE_ID} label="Product Section Button" className="h-12 w-full rounded-key border border-strong bg-transparent text-sm font-semibold text-ink shadow-none hover:bg-foreground/[0.06]">
               Buy it now
             </BuyButton>
+            <p className="text-center text-xs text-muted">
+              {REFUND_DAYS}-day money-back guarantee · about {centsPerPattern(MIDI_PATTERN_COUNT)}¢ a pattern
+            </p>
           </div>
           <dl className="mt-8 grid max-w-md grid-cols-3 divide-x divide-line overflow-hidden rounded-md border border-line">
             {STATS.map((stat) => (

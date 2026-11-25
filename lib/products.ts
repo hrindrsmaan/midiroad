@@ -106,7 +106,7 @@ export const KIT_PRODUCTS: KitProduct[] = [
 ];
 
 export const BUNDLE_ID = "bundle";
-export const BUNDLE_PRICE = 14.99;
+export const BUNDLE_PRICE = 29.99;
 export const BUNDLE_NAME = "The Complete Vault";
 
 /** What the six kits cost bought one by one. */
@@ -176,6 +176,13 @@ export const TEST_ID = "test";
  */
 export const UPGRADE_PREFIX = "upgrade-";
 
+/**
+ * The 12-pattern starter kit (lib/free-kit.json, private/free-kit.zip), sold
+ * for $1 on /free-midi-kit. It used to be free for an email address.
+ */
+export const STARTER_ID = "starter";
+export const STARTER_PRICE = 1;
+
 /** The product an upgrade id upgrades from, if it's a valid upgrade. */
 export function upgradeBase(id: string): Sellable | undefined {
   if (!id.startsWith(UPGRADE_PREFIX)) return undefined;
@@ -198,6 +205,18 @@ export function sellable(id: string): Sellable | undefined {
       name: `${BUNDLE_NAME} – Upgrade`,
       description: `Every other kit plus 77 one-shots, at the difference from your ${base.name.replace(/ – .*$/, "")} order.`,
       price: upgradePrice(base),
+    };
+  }
+  if (id === STARTER_ID) {
+    return {
+      id,
+      name: "MidiRoad Starter MIDI Kit – 12 Patterns",
+      description:
+        "12 drag-and-drop MIDI drum patterns, two from each MidiRoad kit: trap, street trap, melodic trap, dark trap, drill and 808 bass. Royalty-free, works in any DAW. Instant download.",
+      price: STARTER_PRICE,
+      file: "free-kit.zip",
+      downloadName: "midiroad-starter-kit.zip",
+      path: "/free-midi-kit",
     };
   }
   if (id === TEST_ID) {
