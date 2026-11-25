@@ -20,7 +20,7 @@ export const FAQS: FaqItem[] = [
   },
   {
     q: "Can I use them in music I release?",
-    a: "Yes. Everything is royalty-free for your own songs and beats, including commercial releases on Spotify, Apple Music and YouTube. No credit needed. You just can't resell or share the raw files.",
+    a: "Yes. Everything is royalty-free for your own songs and beats, including commercial releases on Spotify, Apple Music and YouTube. No credit needed. You just can't resell or share the raw files. The full license is in every download, and it's also on the /license page.",
   },
   {
     q: "How do I get the files?",

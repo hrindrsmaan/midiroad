@@ -1192,7 +1192,7 @@ function DownloadNotice({ state, signedOut }: { state: PaidDownload | null; sign
         Browse patterns
       </Link>{" "}
       or{" "}
-      <a href="#main-cta" className={NOTICE_LINK}>
+      <a href="#bundle" className={NOTICE_LINK}>
         get the bundle
       </a>
       .

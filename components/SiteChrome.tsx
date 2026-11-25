@@ -147,6 +147,11 @@ export function SiteFooter() {
               </a>
             </li>
             <li>
+              <Link href="/license" className="text-white/60 transition-colors hover:text-white">
+                License
+              </Link>
+            </li>
+            <li>
               <a href={YOUTUBE_URL} rel="me noopener" className="text-white/60 transition-colors hover:text-white">
                 YouTube
               </a>

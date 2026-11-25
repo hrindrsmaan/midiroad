@@ -46,6 +46,7 @@ export function CatalogListing({
   downloads = false,
   google = false,
   label = "Patterns",
+  creditNote,
 }: {
   path: string;
   query: ListingQuery;
@@ -55,6 +56,8 @@ export function CatalogListing({
   downloads?: boolean;
   google?: boolean;
   label?: string;
+  /** Overrides the default credit line under the pattern rows. */
+  creditNote?: React.ReactNode;
 }) {
   const onMidi = path === "/midi" || path.startsWith("/midi/");
   const pages = view.pages;
@@ -115,7 +118,14 @@ export function CatalogListing({
         {pages > 1 ? ` · page ${view.page} of ${pages}` : ""}
       </p>
 
-      <TrackTable tracks={tracks} showKit={showKit} downloads={downloads} google={google} label={label} />
+      <TrackTable
+        tracks={tracks}
+        showKit={showKit}
+        downloads={downloads}
+        google={google}
+        label={label}
+        creditNote={creditNote}
+      />
 
       {pages > 1 && (
         <nav aria-label="Pagination" className="mt-6 flex flex-wrap items-center gap-1.5">

@@ -26,7 +26,6 @@ type CartContext = {
   coupon?: string;
   /** Applies a code; returns false if it isn't valid. */
   applyCoupon: (code: string) => boolean;
-  removeCoupon: () => void;
 };
 
 const Ctx = createContext<CartContext | null>(null);
@@ -48,9 +47,13 @@ function save(ids: string[]) {
   }
 }
 
-function loadCoupon(): string | undefined {
+function loadCoupon(fallback?: string): string | undefined {
   try {
-    return validCoupon(window.localStorage.getItem(COUPON_KEY));
+    const saved = validCoupon(window.localStorage.getItem(COUPON_KEY));
+    if (saved) return saved;
+    // The sale code is applied by default, so the price the site advertises is
+    // the price a buyer pays.
+    return validCoupon(fallback);
   } catch {
     return undefined;
   }
@@ -66,26 +69,28 @@ function saveCoupon(code: string | undefined) {
 }
 
 /** Cart state for the whole site, saved in the browser between visits. */
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children, initialCoupon }: { children: ReactNode; initialCoupon?: string }) {
   const [ids, setIds] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [coupon, setCoupon] = useState<string | undefined>();
+  // Seeded on the server so the coupon is in the first HTML: a buy button
+  // clicked before hydration still gets the advertised price.
+  const [coupon, setCoupon] = useState<string | undefined>(initialCoupon);
 
   useEffect(() => {
     // Read the saved cart once on mount; it isn't available during SSR.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIds(load());
-    setCoupon(loadCoupon());
+    setCoupon(loadCoupon(initialCoupon));
     setReady(true);
     // Keep tabs in sync.
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setIds(load());
-      if (e.key === COUPON_KEY) setCoupon(loadCoupon());
+      if (e.key === COUPON_KEY) setCoupon(loadCoupon(initialCoupon));
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  }, [initialCoupon]);
 
   const update = useCallback((next: (prev: string[]) => string[]) => {
     setIds((prev) => {
@@ -119,10 +124,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setCoupon(valid);
         saveCoupon(valid);
         return true;
-      },
-      removeCoupon: () => {
-        setCoupon(undefined);
-        saveCoupon(undefined);
       },
     }),
     [ids, ready, isOpen, update, coupon],

@@ -33,6 +33,15 @@ function round2(n: number) {
  */
 const ANCHOR = BLACK_FRIDAY.active ? BLACK_FRIDAY.wasPrice : KITS_TOTAL;
 
+/**
+ * The price a buyer actually pays for the bundle right now. The sale code is
+ * applied by default in the cart, so this is the number to show as the price,
+ * not the pre-coupon one. With the sale off it is just the bundle price.
+ */
+export const BUNDLE_PRICE_NOW = BLACK_FRIDAY.active
+  ? round2(BUNDLE_PRICE - BLACK_FRIDAY.couponAmount)
+  : BUNDLE_PRICE;
+
 /** Bundle pricing for the page. */
 export const PRICING = {
   originalPrice: ANCHOR,
@@ -41,7 +50,7 @@ export const PRICING = {
   /** Final amount the customer sees and pays today, before any coupon. */
   currentPrice: BUNDLE_PRICE,
   /** Price with the Black Friday coupon applied. */
-  couponPrice: round2(BUNDLE_PRICE - BLACK_FRIDAY.couponAmount),
+  couponPrice: BUNDLE_PRICE_NOW,
 } as const;
 
 /** The normalized coupon code if it's valid right now, else undefined. */

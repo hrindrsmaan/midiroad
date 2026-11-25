@@ -57,6 +57,7 @@ export function TrackTable({
   downloads = false,
   google = false,
   label = "Patterns",
+  creditNote,
 }: {
   tracks: CatalogTrack[];
   /** Prev/next list. Defaults to `tracks`. */
@@ -65,6 +66,12 @@ export function TrackTable({
   downloads?: boolean;
   google?: boolean;
   label?: string;
+  /**
+   * Replaces the default credit line. Used where the patterns are already
+   * part of something the visitor has bought, so the "1 credit" wording
+   * would read as a second charge for the same files.
+   */
+  creditNote?: React.ReactNode;
 }) {
   const player = usePlayer();
   const list = queue ?? tracks;
@@ -198,8 +205,12 @@ export function TrackTable({
       </ul>
       {downloads && (
         <p className="mt-3 text-xs text-muted">
-          Every pattern downloads as a MIDI file for 1 credit.
-          {!isPending && !session ? ` New accounts get ${SIGNUP_CREDITS} free credits.` : ""}
+          {creditNote ?? (
+            <>
+              Every pattern downloads as a MIDI file for 1 credit.
+              {!isPending && !session ? ` New accounts get ${SIGNUP_CREDITS} free credits.` : ""}
+            </>
+          )}
         </p>
       )}
       {notice && (

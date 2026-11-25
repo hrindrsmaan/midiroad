@@ -17,7 +17,7 @@ export function BlackFridayBar() {
       <Link href="/#main-cta" className="font-semibold underline underline-offset-2">
         Code {BLACK_FRIDAY.couponCode}
       </Link>{" "}
-      takes an extra ${BLACK_FRIDAY.couponAmount} off.
+      takes an extra ${BLACK_FRIDAY.couponAmount} off &mdash; already applied in your cart.
     </div>
   );
 }
@@ -33,18 +33,11 @@ export function CouponField({ className = "" }: { className?: string }) {
 
   if (cart.coupon) {
     return (
-      <p className={`flex items-center justify-between gap-3 text-sm ${className}`}>
+      <p className={`flex items-center gap-2 text-sm ${className}`}>
         <span>
           <span className="font-semibold text-brand">✓ {cart.coupon}</span>{" "}
           <span className="text-muted">applied: extra ${BLACK_FRIDAY.couponAmount} off the bundle</span>
         </span>
-        <button
-          type="button"
-          onClick={cart.removeCoupon}
-          className="shrink-0 cursor-pointer text-xs text-muted underline underline-offset-2 hover:text-ink"
-        >
-          Remove
-        </button>
       </p>
     );
   }
