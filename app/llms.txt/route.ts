@@ -5,6 +5,7 @@ import { BUNDLE_NAME, BUNDLE_PRICE, KIT_PRODUCTS, kitStats } from "@/lib/product
 import { GUIDES, guidePath } from "@/lib/guides";
 import { FREE_KIT_COUNT, FREE_KIT_MAX_BPM, FREE_KIT_MIN_BPM, FREE_KIT_PATH } from "@/lib/free-kit";
 import { GENRES, genrePath } from "@/lib/patterns";
+import { buyerLlmsLines } from "@/lib/buyer-intent";
 import { SITE_DESCRIPTION, absoluteUrl } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -42,6 +43,11 @@ ${kits.join("\n")}
 ${GENRES.map((genre) => `- [${genre.name} MIDI patterns](${absoluteUrl(genrePath(genre))})`).join("\n")}
 - [Patterns by tempo](${absoluteUrl("/midi/bpm")})
 - [Pricing](${absoluteUrl("/pricing")}): monthly MIDI credit plans for the library and the beat maker. New accounts get free credits.
+
+## Comparisons and buying guides
+
+Prices and competitor details were checked in November 2026 and can change. Trademarks belong to their owners.
+${buyerLlmsLines().join("\n")}
 
 ## Guides
 

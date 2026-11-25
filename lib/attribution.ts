@@ -16,6 +16,7 @@ export const SIGNUP_SOURCES = [
   "genre-page",
   "guide",
   "shared-beat",
+  "compare",
 ] as const;
 
 export type SignupSource = (typeof SIGNUP_SOURCES)[number];

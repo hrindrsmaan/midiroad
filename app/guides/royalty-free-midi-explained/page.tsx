@@ -116,8 +116,9 @@ export default function Page() {
         Every pattern has a free preview page. Start with <Link href="/midi/trap">trap</Link>,{" "}
         <Link href="/midi/drill">drill</Link>, <Link href="/midi/dark-trap">dark trap</Link>,{" "}
         <Link href="/midi/melodic-trap">melodic trap</Link>, <Link href="/midi/street-trap">street trap</Link>{" "}
-        or <Link href="/midi/808-bass">808 bass</Link>, or try the{" "}
-        <Link href="/beat-maker">free trap beat maker</Link>. New to MIDI? Start with{" "}
+        or <Link href="/midi/808-bass">808 bass</Link>,         or try the{" "}
+        <Link href="/beat-maker">free trap beat maker</Link>. How a few other MIDI packs describe their own
+        licenses is on the <Link href="/compare">comparison pages</Link>. New to MIDI? Start with{" "}
         <Link href="/guides/what-are-midi-drum-patterns">what MIDI drum patterns are</Link>.
       </p>
     </GuideArticle>

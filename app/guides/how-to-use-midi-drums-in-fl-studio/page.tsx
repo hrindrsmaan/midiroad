@@ -153,7 +153,8 @@ export default function Page() {
       </p>
       <p>
         New to programming trap? Read <Link href="/guides/how-to-make-trap-drums">how to make trap drums</Link>{" "}
-        next.
+        next. Choosing a kit, rather than the import steps, is on{" "}
+        <Link href="/midi-drums-for/fl-studio">MIDI drum kits for FL Studio</Link>.
       </p>
     </GuideArticle>
   );

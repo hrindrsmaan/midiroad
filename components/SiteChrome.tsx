@@ -19,6 +19,7 @@ const NAV_LINKS = [
   { href: BPM_KEY_PATH, label: "BPM & Key Finder" },
   { href: "/free-midi-kit", label: "Free MIDI Kit" },
   { href: "/guides", label: "Guides" },
+  { href: "/compare", label: "Compare" },
   { href: "/pricing", label: "Pricing" },
   { href: "/#faq", label: "FAQ" },
 ];

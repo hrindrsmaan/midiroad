@@ -25,6 +25,16 @@ const PAGES = process.argv.slice(2).length
       "/midi/drill/rolling-hi-hat-drill-132-bpm",
       "/guides",
       "/guides/how-to-make-trap-drums",
+      "/compare",
+      "/alternatives",
+      "/alternatives/unison",
+      "/compare/midiroad-vs-splice",
+      "/compare/midiroad-vs-cymatics",
+      "/best-midi-drum-kits",
+      "/trap-midi-drum-kits",
+      "/drill-midi-drum-kits",
+      "/midi-drums-for/fl-studio",
+      "/midi-drums-for/logic",
     ];
 
 const errors = [];

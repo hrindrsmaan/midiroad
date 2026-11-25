@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Eyebrow } from "@/components/Section";
 import { TrackedLink } from "@/components/TrackedLink";
 
@@ -101,7 +102,12 @@ export function ChordPackCompare() {
 
         <p className="mt-8 max-w-3xl text-xs leading-relaxed text-muted">
           Unison and Unison MIDI Chord Pack belong to their owner. MidiRoad isn&apos;t affiliated with or endorsed by
-          Unison. Pack details are from Unison&apos;s own product page and may have changed since.
+          Unison. Pack details are from Unison&apos;s own product page and may have changed since. For their trap
+          drum collection, which is a different product, see{" "}
+          <Link href="/compare/midiroad-vs-unison" className="underline underline-offset-4 hover:text-ink">
+            MidiRoad vs Unison MIDI drums
+          </Link>
+          .
         </p>
       </div>
     </section>

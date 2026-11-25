@@ -159,7 +159,9 @@ export default function Page() {
       </p>
       <p>
         Using FL Studio as well? See{" "}
-        <Link href="/guides/how-to-use-midi-drums-in-fl-studio">how to use MIDI drums in FL Studio</Link>.
+        <Link href="/guides/how-to-use-midi-drums-in-fl-studio">how to use MIDI drums in FL Studio</Link>. The
+        buying page, separate from these steps, is{" "}
+        <Link href="/midi-drums-for/ableton">MIDI drum kits for Ableton Live</Link>.
       </p>
     </GuideArticle>
   );
