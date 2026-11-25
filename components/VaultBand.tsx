@@ -1,4 +1,6 @@
-import { BundleSpread } from "@/components/KitCover";
+import Link from "next/link";
+import { KitCardPlay } from "@/components/BundlePreviews";
+import { KitCover } from "@/components/KitCover";
 import { BlackFridayDeal } from "@/components/BlackFriday";
 import { BUY_BUTTON_CLASS, BuyButton } from "@/components/BuyButton";
 import { AddToCartButton } from "@/components/cart/CartButtons";
@@ -13,14 +15,15 @@ const STATS = [
   { value: ONE_SHOT_COUNT, label: "One-shots", note: "Bundle only" },
 ];
 
-/** The Complete Vault, visible on the homepage without taking over the page. */
+/**
+ * The Complete Vault and the single kits in one section, so each kit cover
+ * shows once on the homepage: the bundle pitch on one side, the kits it
+ * contains (each buyable on its own) on the other.
+ */
 export function VaultBand() {
   return (
-    <section id="main-cta" className="scroll-mt-16 bg-canvas px-5 py-16 md:py-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[0.8fr_1.2fr] md:gap-16">
-        <div className="mx-auto w-full max-w-sm">
-          <BundleSpread />
-        </div>
+    <section id="main-cta" className="scroll-mt-16 bg-canvas px-5 py-16 md:py-20">
+      <div className="mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
         <div>
           <Eyebrow className="mb-3">{BLACK_FRIDAY.active ? "Black Friday sale · Every kit" : "Best value · Every kit"}</Eyebrow>
           <h2 className="text-[32px] leading-[1] tracking-[-0.03em] md:text-[48px]">{BUNDLE_NAME}</h2>
@@ -58,6 +61,38 @@ export function VaultBand() {
             Every kit in the store in one download, for dark trap, RnB and soul. Bought separately the kits cost{" "}
             {formatUSD(KITS_TOTAL)}; the one-shots are only in the bundle.
           </p>
+        </div>
+
+        <div id="kits" className="scroll-mt-16">
+          <h3 className="mb-4 text-lg font-semibold">Or buy one kit at a time</h3>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3">
+            {KIT_PRODUCTS.map((kit) => (
+              <li key={kit.id}>
+                <Link
+                  href={`/kits/${kit.slug}`}
+                  className="group block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                >
+                  <div className="transition-transform duration-300 group-hover:-translate-y-1">
+                    <KitCover kit={kit} />
+                  </div>
+                  <p className="mt-3 text-sm font-medium leading-snug">{kit.name}</p>
+                  <p className="mt-1 text-sm tabular-nums">
+                    {kit.originalPrice !== undefined && (
+                      <span className="mr-2 text-muted line-through">{formatUSD(kit.originalPrice)}</span>
+                    )}
+                    <span className="font-bold text-brand">{formatUSD(kit.price)}</span>
+                  </p>
+                </Link>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <KitCardPlay kitId={kit.id} kitName={kit.name} />
+                  <AddToCartButton
+                    product={kit.id}
+                    className="h-9 rounded-key border border-strong px-3 text-[13px] font-semibold transition-colors hover:bg-foreground/[0.06]"
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
