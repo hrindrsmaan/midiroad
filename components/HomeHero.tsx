@@ -1,61 +1,83 @@
-import Link from "next/link";
-import { BUY_BUTTON_CLASS, BuyButton } from "@/components/BuyButton";
+import { BuyButton } from "@/components/BuyButton";
+import { HeroPlayer } from "@/components/HeroPlayer";
+import { KitCoverFront } from "@/components/KitCover";
+import { featuredBeat } from "@/lib/featured-beat";
 import { MIDI_PATTERN_COUNT } from "@/lib/midi-kits";
 import { ONE_SHOT_COUNT } from "@/lib/bundle";
 import { BUNDLE_ID, KIT_PRODUCTS } from "@/lib/products";
 import { BUNDLE_PRICE_NOW, PRICING, REFUND_DAYS, centsPerPattern, formatUSD } from "@/lib/pricing";
 
-const CHEAPEST_KIT = Math.min(...KIT_PRODUCTS.map((kit) => kit.price));
+/**
+ * BUY_BUTTON_CLASS lives in a client module, so a server component can pass it
+ * along but can't build a new string from it; this is its hero-sized copy.
+ */
+const HERO_BUY_CLASS =
+  "w-full h-[52px] rounded-key bg-brand hover:bg-brand-hover text-on-brand text-base font-semibold shadow-none transition-colors md:w-auto md:px-7";
 
-/** Keyword-first homepage hero. The vault sits below it, not in place of it. */
+/**
+ * Homepage hero: hear the drums first. A full beat from one kit plays on the
+ * right (under the headline on a phone), and the Vault is the one offer.
+ */
 export function HomeHero() {
-  return (
-    <section className="px-5 pb-8 pt-16 md:pb-12 md:pt-24">
-      <div className="mx-auto max-w-6xl">
-        <p className="text-sm font-semibold text-muted">Royalty-free MIDI · one-time purchase</p>
-        <h1 className="mt-4 max-w-4xl text-[42px] leading-[0.95] tracking-[-0.04em] md:text-[76px]">
-          MIDI drum kits for trap, drill & more
-        </h1>
-        <p className="mt-6 max-w-xl text-base leading-relaxed text-muted md:text-lg">
-          {MIDI_PATTERN_COUNT} hi-hats, snares, kicks and 808s you can preview in the browser, then drag into FL
-          Studio, Ableton, Logic or any DAW.
-        </p>
+  const beat = featuredBeat();
+  const kit = KIT_PRODUCTS.find((product) => product.id === beat.kitId);
+  const cover = kit ? <KitCoverFront kit={kit} /> : null;
 
-        <div className="mt-8 max-w-xl">
-          <p className="text-sm font-semibold text-brand">
-            The Complete Vault · every kit + {ONE_SHOT_COUNT} one-shots
+  return (
+    <section className="px-5 pb-10 pt-6 md:pb-16 md:pt-[72px]">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] md:grid-rows-[auto_auto] md:gap-x-16">
+        <div className="min-w-0 md:self-end">
+          <p className="text-[13px] font-semibold text-muted md:text-sm">
+            MIDI drum kits for trap, drill &amp; RnB<span className="hidden md:inline"> · royalty-free</span>
           </p>
-          <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="font-wide text-[40px] leading-none text-ink">{formatUSD(BUNDLE_PRICE_NOW)}</span>
-            {PRICING.originalPrice > BUNDLE_PRICE_NOW && (
-              <span className="text-lg text-muted line-through">{formatUSD(PRICING.originalPrice)}</span>
-            )}
-            <span className="text-sm text-muted">one payment · yours forever</span>
+          <h1 className="mt-2.5 text-balance text-[40px] leading-[0.98] tracking-[-0.045em] md:mt-4 md:text-[72px] md:leading-[0.95]">
+            Hear the drums before you buy them.
+          </h1>
+          <p className="mt-6 hidden max-w-[520px] text-pretty text-lg leading-relaxed text-muted md:block">
+            {MIDI_PATTERN_COUNT} hi-hat, snare, kick and 808 patterns. Press play on any of them, then drag the MIDI into
+            FL Studio, Ableton, Logic or any DAW.
           </p>
-          <p className="mt-2 text-sm text-muted">
-            {PRICING.discountPercent}% less than buying the kits one by one · about {centsPerPattern(MIDI_PATTERN_COUNT)}¢ a
-            pattern
-          </p>
-          <div className="mt-5 max-w-sm">
-            <BuyButton product={BUNDLE_ID} label="Homepage hero" className={BUY_BUTTON_CLASS}>
+        </div>
+
+        {/* Right column on desktop; between the headline and the price on a phone. */}
+        <div className="mt-5 min-w-0 md:col-start-2 md:row-span-2 md:row-start-1 md:mt-0 md:self-center">
+          <HeroPlayer beat={beat} cover={cover} />
+        </div>
+
+        <div className="min-w-0 md:col-start-1 md:row-start-2">
+          <div className="mt-[22px] flex flex-col gap-1 md:mt-9 md:gap-1.5">
+            <p className="text-[13px] font-semibold text-brand md:text-sm">
+              The Complete Vault · every kit + {ONE_SHOT_COUNT} one-shots
+            </p>
+            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span className="font-wide text-[34px] leading-none text-ink md:text-[40px]">{formatUSD(BUNDLE_PRICE_NOW)}</span>
+              <span className="text-[13px] text-muted md:text-[15px]">
+                one payment<span className="md:hidden"> · about {centsPerPattern(MIDI_PATTERN_COUNT)}¢ a pattern</span>
+                <span className="hidden md:inline">
+                  {" "}
+                  · yours forever
+                  {PRICING.originalPrice > BUNDLE_PRICE_NOW && <> · {formatUSD(PRICING.originalPrice)} if you bought each kit</>}
+                </span>
+              </span>
+            </p>
+            <p className="hidden text-sm text-muted md:block">
+              {PRICING.discountPercent}% less than buying the kits one by one · about {centsPerPattern(MIDI_PATTERN_COUNT)}¢ a
+              pattern
+            </p>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-2.5 md:mt-6 md:flex-row md:items-center md:gap-5">
+            <BuyButton
+              product={BUNDLE_ID}
+              label="Homepage hero"
+              className={HERO_BUY_CLASS}
+            >
               Get The Complete Vault
             </BuyButton>
-            <p className="mt-2 text-xs text-muted">{REFUND_DAYS}-day money-back guarantee</p>
+            <p className="text-center text-xs text-muted md:text-left md:text-[13px]">
+              {REFUND_DAYS}-day money-back guarantee
+            </p>
           </div>
-          <p className="mt-4 text-sm text-muted">
-            <Link href="/#main-cta" className="font-semibold text-ink underline underline-offset-4">
-              See what&apos;s in it
-            </Link>
-            <span className="mx-2 text-line">·</span>
-            <Link href="/kits" className="font-semibold text-ink underline underline-offset-4">
-              Or buy one kit at a time
-            </Link>{" "}
-            from {formatUSD(CHEAPEST_KIT)}
-            <span className="mx-2 text-line">·</span>
-            <Link href="/free-midi-kit" className="font-semibold text-ink underline underline-offset-4">
-              Get 12 patterns for $1
-            </Link>
-          </p>
         </div>
       </div>
     </section>

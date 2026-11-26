@@ -97,11 +97,12 @@ export function useMidiPlayer() {
   /**
    * Starts `pattern`, or stops it if it is playing. With `loop` (seconds per
    * cycle) it repeats until stopped, scheduling each cycle just ahead of time.
+   * Resolves to false when its notes or samples failed to load.
    */
-  const toggle = async (pattern: Playable, layers?: MidiLayer[], loop?: number) => {
+  const toggle = async (pattern: Playable, layers?: MidiLayer[], loop?: number): Promise<boolean> => {
     const wasPlaying = playingId === pattern.id;
     stop();
-    if (wasPlaying) return;
+    if (wasPlaying) return true;
     claimPlayback(voiceRef);
     const request = requestRef.current;
 
@@ -123,10 +124,10 @@ export function useMidiPlayer() {
     } catch {
       notesRef.current = null;
       setPlayingId((id) => (id === pattern.id ? null : id));
-      return;
+      return false;
     }
     // Another pattern was started (or this one stopped) while loading.
-    if (requestRef.current !== request) return;
+    if (requestRef.current !== request) return true;
 
     const master = ctx.createGain();
     master.connect(ctx.destination);
@@ -192,6 +193,7 @@ export function useMidiPlayer() {
       frameRef.current = requestAnimationFrame(tick);
     };
     tick();
+    return true;
   };
 
   /** Silences these samples, live on what's playing and on anything played next. */
