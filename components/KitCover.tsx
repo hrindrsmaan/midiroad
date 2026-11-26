@@ -388,6 +388,15 @@ export function KitCover({
   );
 }
 
+/** Just the front face, flat at 3:4, like a record sleeve (the home hero's player). */
+export function KitCoverFront({ kit }: { kit: KitProduct }) {
+  return (
+    <div role="img" aria-label={`${kit.name} cover`} className="relative aspect-[3/4] w-full overflow-hidden bg-[#040805]">
+      <Front kit={kit} id={`kcf-${kit.id}`} />
+    </div>
+  );
+}
+
 /** A box seen from slightly left: front face plus spine, centered in a square. */
 function Box({ label, spine, children }: { label?: string; spine: ReactNode; children: ReactNode }) {
   return (
