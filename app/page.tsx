@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { HomeHero } from "@/components/HomeHero";
-import { VaultBand } from "@/components/VaultBand";
+import { KitShelf } from "@/components/KitShelf";
 import { TrackTable } from "@/components/catalog/TrackTable";
 import { FAQList } from "@/components/FAQSection";
 import { FreeToolsCards } from "@/components/FreeToolsCards";
-import { FreeKitBanner } from "@/components/FreeKitCta";
-import { FREE_KIT_COUNT } from "@/lib/free-kit";
 import { SiteFooter, SiteNav, StickyBuyBar } from "@/components/SiteChrome";
 import { Testimonials } from "@/components/Testimonials";
 import { featuredTracks } from "@/lib/catalog";
@@ -23,10 +21,10 @@ export default function Page() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-background pb-24 md:pb-0">
       <JsonLd data={[...homeJsonLd(), faqJsonLd(FAQS)]} />
-      <SiteNav />
+      <SiteNav tone="night" />
       <HomeHero />
 
-      <section aria-labelledby="previews-heading" className="px-5 pb-14">
+      <section aria-labelledby="previews-heading" className="px-5 pb-14 pt-12 md:pt-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -41,11 +39,11 @@ export default function Page() {
               </p>
             </div>
           </div>
-          <TrackTable tracks={previews} downloads google={googleConfigured} label="Featured previews" />
+          <TrackTable tracks={previews} downloads covers google={googleConfigured} label="Featured previews" />
         </div>
       </section>
 
-      <VaultBand />
+      <KitShelf />
 
       <FreeToolsCards />
 
@@ -55,8 +53,7 @@ export default function Page() {
             <h2 id="reviews-heading" className="mb-6 text-2xl md:text-[32px]">
               What producers say
             </h2>
-            <Testimonials />
-            <FreeKitBanner source="home" count={FREE_KIT_COUNT} className="mt-6" />
+            <Testimonials layout="stack" />
           </div>
           <div className="min-w-0">
             <h2 id="faq-heading" className="mb-2 text-2xl md:text-[32px]">

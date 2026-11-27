@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { KitCover } from "@/components/KitCover";
+import { KitCover, VaultStack } from "@/components/KitCover";
 import { AddToCartButton } from "@/components/cart/CartButtons";
 import { Eyebrow } from "@/components/Section";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
@@ -57,6 +57,9 @@ export default function KitsIndexPage() {
           <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <li className="rounded-md border border-brand/40 bg-card p-4">
               <Link href="/#main-cta" className="block">
+                <div className="mb-4 overflow-hidden rounded-[4px] bg-[#0d0f0c] bg-[radial-gradient(ellipse_at_50%_85%,rgba(46,107,69,0.55),transparent_65%)] px-4 pb-2 pt-5">
+                  <VaultStack idPrefix="kits-vault" />
+                </div>
                 <p className="text-xs font-semibold text-brand">Best value</p>
                 <h2 className="mt-2 font-sans text-xl font-semibold">{BUNDLE_NAME}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted">Every kit, plus one-shots that are only in the bundle.</p>
@@ -71,7 +74,7 @@ export default function KitsIndexPage() {
               const stats = kitStats(kit);
               return (
                 <li key={kit.id} className="rounded-md border border-line bg-card p-4">
-                  <Link href={`/kits/${kit.slug}`} className="grid grid-cols-[5.5rem_1fr] gap-4">
+                  <Link href={`/kits/${kit.slug}`} className="grid grid-cols-[7.5rem_1fr] gap-4">
                     <KitCover kit={kit} />
                     <span>
                       <h2 className="font-sans text-lg font-semibold leading-tight">{kit.name}</h2>

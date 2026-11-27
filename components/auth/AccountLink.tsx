@@ -23,7 +23,7 @@ export function AccountLink() {
   if (isPending) return <span className="w-14" aria-hidden />;
   if (!data) {
     return (
-      <Link href="/login" className="text-sm font-medium text-muted transition-colors hover:text-ink">
+      <Link href="/login" className="inline-flex h-11 items-center text-sm font-medium text-muted transition-colors hover:text-ink md:h-9">
         Sign in
       </Link>
     );

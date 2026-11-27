@@ -1,28 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 import { KIT_PRODUCTS, kitStats, type KitProduct } from "@/lib/products";
 
 /**
- * Cover for a kit: a 3D product box with trap-style art on the front and the
- * kit name down the spine. Uses the kit's `image` instead when one is set.
+ * Kit covers, drawn as glossy product boxes in one series.
  *
- * Everything is SVG with a fixed 3:4 viewBox, so type and art scale together
- * at any size. Each kit has its own art; the frame (label, stats band, grain)
- * is shared.
+ * Every front shares the same furniture: a big Anton title in the top band,
+ * lit from below in the kit's accent; one glossy object in the middle with a
+ * bloom behind it; and a black label strip with MIDIROAD, a 16-step pattern
+ * and the catalogue number. What changes per kit is the ground colour, the
+ * accent and the object.
+ *
+ * All of it is SVG on fixed viewBoxes (front 300 × 400, box 360 × 436), so
+ * type and art scale together from 64px in the cart to 400px on a kit page.
  */
 
 const W = 300;
 const H = 400;
-/** Spine depth as a share of the box width. */
-const DEPTH = 0.13;
+/** The box: a 44px spine on the left, the front face beside it. */
+const BOX_W = 360;
+const BOX_H = 436;
+const BOX_H_REFLECT = 520;
 
 const ANTON = { fontFamily: "var(--font-anton), Impact, sans-serif" };
-const STENCIL = { fontFamily: "var(--font-black-ops), Impact, sans-serif" };
+const ROBOTO = { fontFamily: "var(--font-roboto), Roboto, sans-serif" };
 const MONO = { fontFamily: "var(--font-space-grotesk), ui-monospace, monospace" };
 
-/** Small deterministic PRNG so server and client draw the same stars/scratches. */
+/** Deterministic PRNG so the server and the client draw the same details. */
 function rng(seed: string) {
   let s = [...seed].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 7);
   return () => {
@@ -30,331 +35,547 @@ function rng(seed: string) {
     return s / 2 ** 32;
   };
 }
+const r1 = (n: number) => Math.round(n * 10) / 10;
 
-type Art = (kit: KitProduct, id: string) => ReactNode;
+type Look = Pick<KitProduct, "id" | "name" | "accent" | "accent2">;
 
-const ARTS: Record<string, Art> = {
-  essentials: (kit, id) => {
-    const a = kit.accent;
-    return (
-      <>
-        <rect width={W} height={H} fill="#040805" />
-        <circle cx={150} cy={160} r={150} fill={`url(#${id}-glow)`} />
-        {/* Vault door */}
-        <circle cx={150} cy={160} r={100} fill="#0a140d" stroke={a} strokeWidth={3} />
-        <circle cx={150} cy={160} r={86} fill="none" stroke={a} strokeOpacity={0.5} strokeDasharray="2 6" strokeWidth={6} />
-        {Array.from({ length: 12 }, (_, i) => {
-          const t = (i / 12) * Math.PI * 2;
-          return <circle key={i} cx={150 + Math.cos(t) * 93} cy={160 + Math.sin(t) * 93} r={3.2} fill={a} />;
-        })}
-        <circle cx={150} cy={160} r={58} fill="#06100a" stroke={a} strokeWidth={2} />
-        {[0, 60, 120].map((r) => (
-          <rect key={r} x={146} y={108} width={8} height={104} rx={4} fill={a} transform={`rotate(${r} 150 160)`} />
-        ))}
-        <circle cx={150} cy={160} r={16} fill="#040805" stroke={a} strokeWidth={3} />
-        <text x={150} y={300} textAnchor="middle" fontSize={56} fill="#fff" style={ANTON} textLength={260} lengthAdjust="spacingAndGlyphs">
-          ESSENTIALS
-        </text>
-        <text x={150} y={346} textAnchor="middle" fontSize={44} fill="none" stroke={a} strokeWidth={1.6} style={ANTON} letterSpacing={14}>
-          VAULT
-        </text>
-      </>
-    );
+type Motif = { defs?: ReactNode; body: ReactNode };
+
+type Spec = {
+  /** Small tracked line above the title. */
+  small: string;
+  /** The title in the top band. */
+  big: string;
+  /** Genre, after "MIDI DRUM KIT ·". */
+  category: string;
+  motif: (kit: Look, id: string) => Motif;
+};
+
+/** A chrome-ball gradient tinted with the kit's colours. */
+function chrome(id: string, kit: Look) {
+  return (
+    <radialGradient id={id} cx="0.36" cy="0.3" r="0.75">
+      <stop offset="0" stopColor="#fff" />
+      <stop offset="0.18" stopColor={kit.accent} stopOpacity={0.95} />
+      <stop offset="0.62" stopColor={kit.accent2} />
+      <stop offset="1" stopColor="#050505" />
+    </radialGradient>
+  );
+}
+
+const SPECS: Record<string, Spec> = {
+  essentials: {
+    small: "VAULT",
+    big: "ESSENTIALS",
+    category: "TRAP · DRILL · RNB",
+    // A piano roll in perspective, a chrome sun on the horizon, notes riding the lanes.
+    motif: (kit, id) => {
+      const a = kit.accent;
+      const hz = 190;
+      const random = rng(kit.id);
+      const notes = Array.from({ length: 14 }, () => {
+        const lane = Math.floor(random() * 8);
+        const t = 0.15 + random() * 0.8;
+        const y = hz + t ** 1.8 * 150;
+        const xc = 150 + (-60 + (lane + 0.5) * 52.5 - 150) * ((y - hz) / 150);
+        const w = 10 + t * 30;
+        const h = 2 + t * 6;
+        return { x: r1(xc - w / 2), y: r1(y - h), w: r1(w), h: r1(h), o: r1(0.55 + t * 0.45) };
+      });
+      return {
+        defs: chrome(`${id}-sun`, kit),
+        body: (
+          <>
+            <circle cx={150} cy={168} r={62} fill={a} fillOpacity={0.18} filter={`url(#${id}-soft)`} />
+            <circle cx={150} cy={168} r={44} fill={`url(#${id}-sun)`} />
+            <rect y={hz - 1} width={W} height={150} fill={kit.accent2} fillOpacity={0.85} />
+            <rect y={hz - 1} width={W} height={1.6} fill={a} filter={`url(#${id}-glow)`} />
+            {Array.from({ length: 9 }, (_, i) => (
+              <line
+                key={`l${i}`}
+                x1={150}
+                y1={hz}
+                x2={r1(-60 + i * 52.5)}
+                y2={340}
+                stroke={a}
+                strokeOpacity={i === 4 ? 0.5 : 0.28}
+                strokeWidth={i % 4 === 0 ? 1.4 : 0.8}
+              />
+            ))}
+            {Array.from({ length: 9 }, (_, i) => {
+              const t = ((i + 1) / 9) ** 1.8;
+              const y = r1(hz + t * 150);
+              return <line key={`r${i}`} x1={0} y1={y} x2={W} y2={y} stroke={a} strokeOpacity={r1(0.12 + t * 0.3)} strokeWidth={0.8} />;
+            })}
+            {notes.map((n, i) => (
+              <rect key={`n${i}`} x={n.x} y={n.y} width={n.w} height={n.h} rx={1.5} fill={a} fillOpacity={n.o} filter={`url(#${id}-glow)`} />
+            ))}
+          </>
+        ),
+      };
+    },
   },
-
-  "black-market": (kit, id) => {
-    const a = kit.accent;
-    const tape = (y: number, rot: number, key: string) => (
-      <g key={key} transform={`rotate(${rot} 150 ${y})`}>
-        <rect x={-60} y={y - 14} width={420} height={28} fill={a} />
-        <rect x={-60} y={y - 14} width={420} height={28} fill={`url(#${id}-hazard)`} opacity={0.35} />
-        <text x={150} y={y + 5} textAnchor="middle" fontSize={14} fill="#000" style={ANTON} letterSpacing={3}>
-          BLACK MARKET • DO NOT CROSS • BLACK MARKET
-        </text>
-      </g>
-    );
-    return (
-      <>
-        <rect width={W} height={H} fill="#0b0904" />
-        <circle cx={150} cy={90} r={190} fill={`url(#${id}-glow)`} />
-        <text x={150} y={250} textAnchor="middle" fontSize={300} fill={a} opacity={0.12} style={STENCIL}>
-          $
-        </text>
-        {tape(96, -14, "t1")}
-        {tape(190, 9, "t2")}
-        {/* Stamp */}
-        <g transform="rotate(-12 205 140)" opacity={0.9}>
-          <rect x={150} y={124} width={112} height={34} fill="none" stroke="#e5322d" strokeWidth={3} />
-          <text x={206} y={148} textAnchor="middle" fontSize={20} fill="#e5322d" style={STENCIL}>
-            CLASSIFIED
+  "black-market": {
+    small: "BLACK MARKET",
+    big: "HEIST",
+    category: "STREET TRAP",
+    // A chrome vault dial behind two crossed hazard tapes.
+    motif: (kit, id) => {
+      const a = kit.accent;
+      const tape = (rot: number, y: number) => (
+        <g transform={`rotate(${rot} 150 ${y})`}>
+          <rect x={-80} y={y - 15} width={460} height={30} fill={`url(#${id}-haz)`} />
+          <rect x={-80} y={y - 15} width={460} height={30} fill={`url(#${id}-sheen)`} />
+          <text
+            x={150}
+            y={y + 4.5}
+            textAnchor="middle"
+            fontSize={13}
+            letterSpacing={3}
+            fill="#0d0a04"
+            stroke={a}
+            strokeWidth={3}
+            paintOrder="stroke"
+            style={ANTON}
+          >
+            DO NOT CROSS · MIDIROAD · DO NOT CROSS
           </text>
         </g>
-        <text x={150} y={286} textAnchor="middle" fontSize={34} fill={a} style={STENCIL} textLength={250} lengthAdjust="spacingAndGlyphs">
-          BLACK MARKET
-        </text>
-        <text x={150} y={350} textAnchor="middle" fontSize={72} fill="#fff" style={ANTON} letterSpacing={6}>
-          HEIST
-        </text>
-      </>
-    );
+      );
+      return {
+        defs: (
+          <>
+            {chrome(`${id}-dial`, kit)}
+            <linearGradient id={`${id}-bar`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#5a4208" />
+              <stop offset="0.5" stopColor="#ffe7a3" />
+              <stop offset="1" stopColor="#5a4208" />
+            </linearGradient>
+            <pattern id={`${id}-haz`} width={22} height={30} patternUnits="userSpaceOnUse" patternTransform="skewX(-35)">
+              <rect width={22} height={30} fill="#141008" />
+              <rect width={11} height={30} fill={a} />
+            </pattern>
+            <linearGradient id={`${id}-sheen`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#fff" stopOpacity={0.35} />
+              <stop offset="0.45" stopColor="#fff" stopOpacity={0} />
+              <stop offset="1" stopColor="#000" stopOpacity={0.35} />
+            </linearGradient>
+          </>
+        ),
+        body: (
+          <>
+            <circle cx={150} cy={210} r={100} fill={a} fillOpacity={0.16} filter={`url(#${id}-soft)`} />
+            <circle cx={150} cy={210} r={88} fill={`url(#${id}-dial)`} stroke={a} strokeOpacity={0.6} strokeWidth={2} />
+            {Array.from({ length: 60 }, (_, i) => {
+              const ang = (i / 60) * Math.PI * 2;
+              const major = i % 5 === 0;
+              const r0 = major ? 70 : 75;
+              return (
+                <line
+                  key={i}
+                  x1={r1(150 + Math.cos(ang) * r0)}
+                  y1={r1(210 + Math.sin(ang) * r0)}
+                  x2={r1(150 + Math.cos(ang) * 80)}
+                  y2={r1(210 + Math.sin(ang) * 80)}
+                  stroke="#f3e6c4"
+                  strokeOpacity={major ? 0.9 : 0.4}
+                  strokeWidth={major ? 1.6 : 0.8}
+                />
+              );
+            })}
+            <circle cx={150} cy={210} r={62} fill="#0d0a04" fillOpacity={0.55} />
+            {[0, 1, 2].map((i) => (
+              <rect key={i} x={146} y={150} width={8} height={120} rx={4} fill={`url(#${id}-bar)`} transform={`rotate(${i * 60 + 15} 150 210)`} />
+            ))}
+            <circle cx={150} cy={210} r={18} fill={`url(#${id}-dial)`} stroke="#ffe7a3" strokeWidth={1.2} />
+            {tape(-16, 175)}
+            {tape(12, 262)}
+          </>
+        ),
+      };
+    },
   },
-
-  odyssey: (kit, id) => {
-    const a = kit.accent;
-    const r = rng(kit.id);
-    return (
-      <>
-        <rect width={W} height={H} fill={`url(#${id}-sky)`} />
-        {Array.from({ length: 60 }, (_, i) => (
-          <circle key={i} cx={r() * W} cy={r() * 230} r={r() * 1.3 + 0.3} fill="#fff" opacity={r() * 0.7 + 0.2} />
-        ))}
-        <circle cx={150} cy={150} r={120} fill={a} opacity={0.35} filter={`url(#${id}-blur)`} />
-        <circle cx={150} cy={150} r={68} fill={`url(#${id}-orb)`} />
-        <ellipse cx={150} cy={150} rx={118} ry={20} fill="none" stroke="#fff" strokeOpacity={0.7} strokeWidth={1.5} transform="rotate(-14 150 150)" />
-        {/* Four-point star */}
-        <path d="M150 112 L156 144 L188 150 L156 156 L150 188 L144 156 L112 150 L144 144 Z" fill="#fff" opacity={0.95} />
-        <rect y={225} width={W} height={H - 225} fill={`url(#${id}-horizon)`} />
-        <text x={150} y={276} textAnchor="middle" fontSize={20} fill="#fff" style={ANTON} letterSpacing={12}>
-          MIDNIGHT
-        </text>
-        <text x={150} y={346} textAnchor="middle" fontSize={68} fill="#fff" style={ANTON} textLength={256} lengthAdjust="spacingAndGlyphs">
-          ODYSSEY
-        </text>
-      </>
-    );
+  odyssey: {
+    small: "MIDNIGHT",
+    big: "ODYSSEY",
+    category: "MELODIC TRAP",
+    // A ringed planet in a star field.
+    motif: (kit, id) => {
+      const a = kit.accent;
+      const random = rng(kit.id);
+      const stars = Array.from({ length: 46 }, () => ({
+        x: r1(random() * W),
+        y: r1(100 + random() * 240),
+        r: r1(0.4 + random() * 1.2),
+        o: r1(0.3 + random() * 0.7),
+      }));
+      return {
+        defs: (
+          <>
+            {chrome(`${id}-planet`, kit)}
+            <linearGradient id={`${id}-ring`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor={a} stopOpacity={0.1} />
+              <stop offset="0.5" stopColor="#e6e1ff" />
+              <stop offset="1" stopColor={a} stopOpacity={0.1} />
+            </linearGradient>
+          </>
+        ),
+        body: (
+          <>
+            {stars.map((s, i) => (
+              <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#fff" fillOpacity={s.o} />
+            ))}
+            <circle cx={150} cy={215} r={96} fill={a} fillOpacity={0.22} filter={`url(#${id}-soft)`} />
+            <g transform="rotate(-18 150 215)">
+              <ellipse cx={150} cy={215} rx={132} ry={26} fill="none" stroke={`url(#${id}-ring)`} strokeWidth={7} strokeOpacity={0.55} />
+            </g>
+            <circle cx={150} cy={215} r={70} fill={`url(#${id}-planet)`} />
+            <path d="M88 190 Q150 176 212 190 M82 218 Q150 204 218 218 M90 246 Q150 232 210 246" stroke="#fff" strokeOpacity={0.12} strokeWidth={5} fill="none" />
+            <g transform="rotate(-18 150 215)">
+              <path d="M18 215 A132 26 0 0 0 282 215" fill="none" stroke={`url(#${id}-ring)`} strokeWidth={7} />
+              <path d="M30 218 A120 22 0 0 0 270 218" fill="none" stroke="#fff" strokeOpacity={0.35} strokeWidth={1} />
+            </g>
+            <circle cx={236} cy={132} r={9} fill={`url(#${id}-planet)`} />
+          </>
+        ),
+      };
+    },
   },
-
-  psycho: (kit, id) => {
-    const a = kit.accent;
-    const r = rng(kit.id);
-    return (
-      <>
-        <rect width={W} height={H} fill="#090203" />
-        <circle cx={150} cy={170} r={170} fill={`url(#${id}-glow)`} />
-        {Array.from({ length: 26 }, (_, i) => {
-          const x = r() * W;
-          const y = r() * 260;
-          const len = 30 + r() * 90;
-          const ang = -70 + r() * 40;
-          return (
-            <line
-              key={i}
-              x1={x}
-              y1={y}
-              x2={x + Math.cos((ang * Math.PI) / 180) * len}
-              y2={y + Math.sin((ang * Math.PI) / 180) * len}
-              stroke="#fff"
-              strokeOpacity={0.1 + r() * 0.15}
-              strokeWidth={0.6 + r()}
+  psycho: {
+    small: "WARD",
+    big: "PSYCHO",
+    category: "DARK TRAP",
+    // A glossy cross that drips, on a scratched ground.
+    motif: (kit, id) => {
+      const a = kit.accent;
+      const random = rng(kit.id);
+      const scratches = Array.from({ length: 18 }, () => {
+        const x = random() * W;
+        const y = 100 + random() * 250;
+        return { x1: r1(x), y1: r1(y), x2: r1(x + 6 + random() * 22), y2: r1(y + (random() - 0.5) * 8), o: r1(0.08 + random() * 0.2) };
+      });
+      const drips = Array.from({ length: 9 }, () => {
+        const x = 112 + random() * 76;
+        const len = 14 + random() * 40;
+        const top = 290;
+        return `M${r1(x - 3)} ${top} L${r1(x - 2)} ${r1(top + len)} Q${r1(x)} ${r1(top + len + 7)} ${r1(x + 2)} ${r1(top + len)} L${r1(x + 3)} ${top} Z`;
+      });
+      return {
+        defs: (
+          <linearGradient id={`${id}-blood`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ffd1d8" />
+            <stop offset="0.25" stopColor={a} />
+            <stop offset="0.7" stopColor="#8a0a1f" />
+            <stop offset="1" stopColor="#2a0208" />
+          </linearGradient>
+        ),
+        body: (
+          <>
+            {scratches.map((s, i) => (
+              <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke="#ffd7dd" strokeOpacity={s.o} strokeWidth={0.7} />
+            ))}
+            <circle cx={150} cy={210} r={104} fill={a} fillOpacity={0.2} filter={`url(#${id}-soft)`} />
+            <path
+              d="M126 112 H174 V176 H226 V224 H174 V292 H126 V224 H74 V176 H126 Z"
+              fill={`url(#${id}-blood)`}
+              stroke="#ffd1d8"
+              strokeOpacity={0.6}
+              strokeWidth={1.2}
             />
-          );
-        })}
-        {/* Broken medical cross with drips */}
-        <g filter={`url(#${id}-shadow)`}>
-          <rect x={122} y={70} width={56} height={170} fill={a} />
-          <rect x={65} y={127} width={170} height={56} fill={a} />
-          {[[132, 240, 26], [150, 240, 44], [166, 240, 18], [75, 183, 16], [214, 183, 30]].map(([x, y, h], i) => (
-            <rect key={i} x={x} y={y - 2} width={6} height={h} rx={3} fill={a} />
-          ))}
-        </g>
-        {/* Glitch slices */}
-        {[[60, 138, 140, 5], [100, 160, 120, 3], [118, 92, 70, 4]].map(([x, y, w, h], i) => (
-          <rect key={i} x={x} y={y} width={w} height={h} fill="#090203" />
-        ))}
-        <rect x={140} y={150} width={90} height={4} fill="#38e8ff" opacity={0.6} />
-        {/* Glitched title */}
-        <g style={ANTON} fontSize={78} textAnchor="middle">
-          <text x={146} y={318} fill="#38e8ff" opacity={0.7} textLength={262} lengthAdjust="spacingAndGlyphs">PSYCHO</text>
-          <text x={154} y={318} fill={a} opacity={0.8} textLength={262} lengthAdjust="spacingAndGlyphs">PSYCHO</text>
-          <text x={150} y={318} fill="#fff" textLength={262} lengthAdjust="spacingAndGlyphs">PSYCHO</text>
-        </g>
-        <rect x={30} y={284} width={240} height={3} fill="#090203" />
-        <g transform="rotate(-4 150 340)">
-          <rect x={100} y={326} width={100} height={26} fill="#e9e4d8" />
-          <text x={150} y={346} textAnchor="middle" fontSize={20} fill="#000" style={STENCIL} letterSpacing={4}>
-            WARD
-          </text>
-        </g>
-      </>
-    );
+            <path d="M130 116 H170 V180" stroke="#fff" strokeOpacity={0.55} strokeWidth={2} fill="none" />
+            {drips.map((d, i) => (
+              <path key={i} d={d} fill={`url(#${id}-blood)`} />
+            ))}
+          </>
+        ),
+      };
+    },
   },
-
-  decoy: (kit, id) => {
-    const a = kit.accent;
-    return (
-      <>
-        <rect width={W} height={H} fill="#02080c" />
-        <rect width={W} height={H} fill={`url(#${id}-grid)`} />
-        <circle cx={150} cy={150} r={150} fill={`url(#${id}-glow)`} />
-        {/* Crosshair */}
-        <g stroke={a} fill="none">
-          <circle cx={150} cy={150} r={86} strokeWidth={2} strokeDasharray="120 15" />
-          <circle cx={150} cy={150} r={56} strokeWidth={1.5} strokeOpacity={0.7} />
-          <circle cx={150} cy={150} r={22} strokeWidth={2} />
-          <path d="M150 50 V118 M150 182 V250 M50 150 H118 M182 150 H250" strokeWidth={2} />
-          <path d="M40 40 h22 M40 40 v22 M260 40 h-22 M260 40 v22 M40 260 h22 M40 260 v-22 M260 260 h-22 M260 260 v-22" strokeWidth={3} />
-        </g>
-        <circle cx={150} cy={150} r={4} fill="#ff3b3b" />
-        <g style={MONO} fontSize={8} fill={a} letterSpacing={1.5}>
-          <text x={46} y={76}>TARGET: LOCKED</text>
-          <text x={254} y={232} textAnchor="end">51.5072° N 0.1276° W</text>
-        </g>
-        <text x={150} y={322} textAnchor="middle" fontSize={84} fill="#fff" style={ANTON} letterSpacing={4} filter={`url(#${id}-shadow)`}>
-          DECOY
-        </text>
-        <text x={150} y={350} textAnchor="middle" fontSize={17} fill={a} style={ANTON} letterSpacing={11}>
-          PROTOCOL
-        </text>
-      </>
-    );
+  decoy: {
+    small: "PROTOCOL",
+    big: "DECOY",
+    category: "DRILL",
+    // A targeting reticle with a radar sweep and a locked target.
+    motif: (kit, id) => {
+      const a = kit.accent;
+      const bracket = (x: number, y: number, sx: number, sy: number) => (
+        <path d={`M${x} ${y + sy * 18} V${y} H${x + sx * 18}`} stroke={a} strokeWidth={2.4} fill="none" filter={`url(#${id}-glow)`} />
+      );
+      return {
+        defs: (
+          <>
+            <radialGradient id={`${id}-core`} cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0" stopColor="#fff" />
+              <stop offset="0.35" stopColor={a} />
+              <stop offset="1" stopColor={a} stopOpacity={0} />
+            </radialGradient>
+            <linearGradient id={`${id}-sweep`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor={a} stopOpacity={0} />
+              <stop offset="1" stopColor={a} stopOpacity={0.45} />
+            </linearGradient>
+          </>
+        ),
+        body: (
+          <>
+            {Array.from({ length: 60 }, (_, i) => (
+              <rect key={i} y={100 + i * 4} width={W} height={1} fill={a} fillOpacity={0.05} />
+            ))}
+            <circle cx={150} cy={212} r={110} fill={a} fillOpacity={0.12} filter={`url(#${id}-soft)`} />
+            <path d="M150 212 L246 212 A96 96 0 0 0 218 144 Z" fill={`url(#${id}-sweep)`} />
+            {[96, 72, 48].map((r, i) => (
+              <circle
+                key={r}
+                cx={150}
+                cy={212}
+                r={r}
+                fill="none"
+                stroke={a}
+                strokeOpacity={0.35 + i * 0.2}
+                strokeWidth={i === 2 ? 1.6 : 1}
+                strokeDasharray={i === 0 ? "3 5" : undefined}
+              />
+            ))}
+            <line x1={30} y1={212} x2={270} y2={212} stroke={a} strokeOpacity={0.5} strokeWidth={0.8} />
+            <line x1={150} y1={98} x2={150} y2={326} stroke={a} strokeOpacity={0.5} strokeWidth={0.8} />
+            {bracket(92, 154, 1, 1)}
+            {bracket(208, 154, -1, 1)}
+            {bracket(92, 270, 1, -1)}
+            {bracket(208, 270, -1, -1)}
+            <circle cx={182} cy={186} r={16} fill={`url(#${id}-core)`} />
+            <text x={200} y={176} fontSize={7} letterSpacing={1.2} fill={a} style={MONO}>
+              LOCK 0.98
+            </text>
+          </>
+        ),
+      };
+    },
   },
-
-  focus: (kit, id) => {
-    const a = kit.accent;
-    return (
-      <>
-        <rect width={W} height={H} fill="#0c0209" />
-        <circle cx={150} cy={150} r={170} fill={`url(#${id}-glow)`} />
-        {/* Speaker */}
-        <circle cx={150} cy={150} r={104} fill="#1a1018" stroke="#2c1e29" strokeWidth={6} />
-        {Array.from({ length: 8 }, (_, i) => {
-          const t = (i / 8) * Math.PI * 2 + Math.PI / 8;
-          return <circle key={i} cx={150 + Math.cos(t) * 97} cy={150 + Math.sin(t) * 97} r={3} fill="#5a4656" />;
-        })}
-        <circle cx={150} cy={150} r={84} fill={`url(#${id}-cone)`} />
-        {[70, 56, 42].map((rad) => (
-          <circle key={rad} cx={150} cy={150} r={rad} fill="none" stroke={a} strokeOpacity={0.35} />
-        ))}
-        <circle cx={150} cy={150} r={26} fill={a} />
-        <circle cx={144} cy={143} r={8} fill="#fff" opacity={0.45} />
-        <text x={150} y={280} textAnchor="middle" fontSize={20} fill={a} style={ANTON} letterSpacing={14}>
-          FOCUS
-        </text>
-        <text x={150} y={352} textAnchor="middle" fontSize={78} fill="#fff" style={ANTON} letterSpacing={2}>
-          808 LAB
-        </text>
-      </>
-    );
+  focus: {
+    small: "FOCUS",
+    big: "808 LAB",
+    category: "808 BASS",
+    // A speaker cone with a chrome dust cap.
+    motif: (kit, id) => {
+      const a = kit.accent;
+      return {
+        defs: (
+          <>
+            {chrome(`${id}-cap`, kit)}
+            <radialGradient id={`${id}-cone`} cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0.3" stopColor="#0a0308" />
+              <stop offset="0.85" stopColor="#2a0a24" />
+              <stop offset="1" stopColor={a} stopOpacity={0.6} />
+            </radialGradient>
+            <radialGradient id={`${id}-surr`} cx="0.45" cy="0.4" r="0.6">
+              <stop offset="0.7" stopColor="#3a1032" />
+              <stop offset="0.86" stopColor={a} stopOpacity={0.85} />
+              <stop offset="1" stopColor="#14040f" />
+            </radialGradient>
+          </>
+        ),
+        body: (
+          <>
+            <circle cx={150} cy={214} r={124} fill={a} fillOpacity={0.2} filter={`url(#${id}-soft)`} />
+            <circle cx={150} cy={214} r={116} fill="#120410" stroke={a} strokeOpacity={0.4} />
+            {Array.from({ length: 8 }, (_, i) => {
+              const ang = (i / 8) * Math.PI * 2 + Math.PI / 8;
+              return <circle key={i} cx={r1(150 + Math.cos(ang) * 106)} cy={r1(214 + Math.sin(ang) * 106)} r={3.4} fill={`url(#${id}-cap)`} />;
+            })}
+            <circle cx={150} cy={214} r={96} fill={`url(#${id}-surr)`} />
+            <circle cx={150} cy={214} r={80} fill={`url(#${id}-cone)`} />
+            {[66, 54, 42].map((r) => (
+              <circle key={r} cx={150} cy={214} r={r} fill="none" stroke={a} strokeOpacity={0.18} />
+            ))}
+            <circle cx={150} cy={214} r={30} fill={`url(#${id}-cap)`} />
+            <ellipse cx={140} cy={203} rx={10} ry={6} fill="#fff" fillOpacity={0.55} />
+          </>
+        ),
+      };
+    },
   },
 };
 
-/** Fallback art for a kit without its own design. */
-const DEFAULT_ART: Art = (kit, id) => (
-  <>
-    <rect width={W} height={H} fill="#07080a" />
-    <circle cx={150} cy={150} r={170} fill={`url(#${id}-glow)`} />
-    <text x={150} y={330} textAnchor="middle" fontSize={56} fill="#fff" style={ANTON} textLength={260} lengthAdjust="spacingAndGlyphs">
-      {kit.name.toUpperCase()}
-    </text>
-  </>
-);
+/** Any kit without its own art: the name as the title and a lit orb. */
+function specFor(kit: Look): Spec {
+  return (
+    SPECS[kit.id] ?? {
+      small: "MIDIROAD",
+      big: kit.name.toUpperCase(),
+      category: "TRAP",
+      motif: (k, id) => ({
+        defs: chrome(`${id}-orb`, k),
+        body: (
+          <>
+            <circle cx={150} cy={214} r={100} fill={k.accent} fillOpacity={0.2} filter={`url(#${id}-soft)`} />
+            <circle cx={150} cy={214} r={62} fill={`url(#${id}-orb)`} />
+          </>
+        ),
+      }),
+    }
+  );
+}
 
-function Defs({ kit, id }: { kit: KitProduct; id: string }) {
+/** The catalogue number: MR-001 … MR-006 in kit order. */
+function catalogueNumber(kit: Look) {
+  const index = KIT_PRODUCTS.findIndex((product) => product.id === kit.id);
+  return index < 0 ? "MR-000" : `MR-${String(index + 1).padStart(3, "0")}`;
+}
+
+/** The 16 steps printed on every label strip. */
+const LABEL_STEPS = new Set([0, 3, 6, 8, 10, 12, 14, 15]);
+
+/** The front face's contents, drawn in a 300 × 400 space. */
+function FrontArt({ kit, id }: { kit: Look; id: string }) {
+  const spec = specFor(kit);
+  const motif = spec.motif(kit, id);
   const a = kit.accent;
-  const b = kit.accent2;
+  const titleWidth = spec.big.length > 6 ? 262 : Math.min(262, spec.big.length * 42);
+  const title = (extra: Record<string, unknown>) => (
+    <text
+      x={150}
+      y={92}
+      textAnchor="middle"
+      fontSize={64}
+      textLength={titleWidth}
+      lengthAdjust="spacingAndGlyphs"
+      style={ANTON}
+      {...extra}
+    >
+      {spec.big}
+    </text>
+  );
   return (
-    <defs>
-      <radialGradient id={`${id}-glow`}>
-        <stop offset="0%" stopColor={a} stopOpacity={0.45} />
-        <stop offset="100%" stopColor={a} stopOpacity={0} />
-      </radialGradient>
-      <linearGradient id={`${id}-sky`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="#05040f" />
-        <stop offset="100%" stopColor={b} />
-      </linearGradient>
-      <radialGradient id={`${id}-orb`} cx="40%" cy="35%">
-        <stop offset="0%" stopColor="#fff" />
-        <stop offset="45%" stopColor={a} />
-        <stop offset="100%" stopColor={b} />
-      </radialGradient>
-      <linearGradient id={`${id}-horizon`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={a} stopOpacity={0.55} />
-        <stop offset="35%" stopColor={b} stopOpacity={0.9} />
-        <stop offset="100%" stopColor="#05040f" />
-      </linearGradient>
-      <radialGradient id={`${id}-cone`} cx="50%" cy="45%">
-        <stop offset="0%" stopColor="#3a2436" />
-        <stop offset="80%" stopColor="#120910" />
-        <stop offset="100%" stopColor="#24161f" />
-      </radialGradient>
-      <pattern id={`${id}-hazard`} width={20} height={20} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <rect width={10} height={20} fill="#000" />
-      </pattern>
-      <pattern id={`${id}-grid`} width={20} height={20} patternUnits="userSpaceOnUse">
-        <path d="M20 0 H0 V20" fill="none" stroke={a} strokeOpacity={0.12} />
-      </pattern>
-      <filter id={`${id}-blur`} x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation={24} />
-      </filter>
-      <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx={0} dy={0} stdDeviation={6} floodColor={a} floodOpacity={0.7} />
-      </filter>
-      <filter id={`${id}-grain`}>
-        <feTurbulence type="fractalNoise" baseFrequency={0.9} numOctaves={2} stitchTiles="stitch" />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      <linearGradient id={`${id}-gloss`} x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#fff" stopOpacity={0.18} />
-        <stop offset="35%" stopColor="#fff" stopOpacity={0} />
-        <stop offset="60%" stopColor="#fff" stopOpacity={0} />
-        <stop offset="72%" stopColor="#fff" stopOpacity={0.08} />
-        <stop offset="80%" stopColor="#fff" stopOpacity={0} />
-      </linearGradient>
-    </defs>
+    <>
+      <defs>
+        <clipPath id={`${id}-clip`}>
+          <rect width={W} height={H} rx={3} />
+        </clipPath>
+        <filter id={`${id}-glow`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation={2.2} result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id={`${id}-soft`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation={22} />
+        </filter>
+        <filter id={`${id}-grain`} x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency={0.9} numOctaves={2} stitchTiles="stitch" />
+          <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.09 0" />
+        </filter>
+        <linearGradient id={`${id}-title`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" />
+          <stop offset="0.55" stopColor="#fff" />
+          <stop offset="1" stopColor={a} />
+        </linearGradient>
+        <linearGradient id={`${id}-scrim`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#050505" stopOpacity={0.92} />
+          <stop offset="1" stopColor="#050505" stopOpacity={0} />
+        </linearGradient>
+        <linearGradient id={`${id}-gloss`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity={0.16} />
+          <stop offset="0.38" stopColor="#fff" stopOpacity={0.02} />
+          <stop offset="0.4" stopColor="#fff" stopOpacity={0} />
+          <stop offset="1" stopColor="#fff" stopOpacity={0.05} />
+        </linearGradient>
+        <radialGradient id={`${id}-vig`} cx="0.5" cy="0.52" r="0.72">
+          <stop offset="0.55" stopColor="#000" stopOpacity={0} />
+          <stop offset="1" stopColor="#000" stopOpacity={0.6} />
+        </radialGradient>
+        {motif.defs}
+      </defs>
+      <g clipPath={`url(#${id}-clip)`}>
+        {/* Ground: the kit's deep tone under a dark wash, so no two boxes are the same black. */}
+        <rect width={W} height={H} fill={kit.accent2} />
+        <rect width={W} height={H} fill="#0a0a0a" fillOpacity={0.5} />
+        {motif.body}
+        <rect width={W} height={H} fill={`url(#${id}-vig)`} />
+        <rect width={W} height={130} fill={`url(#${id}-scrim)`} />
+
+        <text x={150} y={30} textAnchor="middle" fontSize={9} fontWeight={700} letterSpacing={4.5} fill={a} style={ROBOTO}>
+          {spec.small}
+        </text>
+        {title({ fill: a, fillOpacity: 0.55, filter: `url(#${id}-soft)` })}
+        {title({ fill: `url(#${id}-title)`, stroke: "#000", strokeOpacity: 0.35, strokeWidth: 1 })}
+        <text x={150} y={108} textAnchor="middle" fontSize={7.5} fontWeight={500} letterSpacing={2.6} fill="#fff" fillOpacity={0.72} style={ROBOTO}>
+          MIDI DRUM KIT · {spec.category}
+        </text>
+
+        {/* The label strip, the same on every box. */}
+        <rect y={352} width={W} height={48} fill="#050505" fillOpacity={0.88} />
+        <rect y={352} width={W} height={1} fill={a} fillOpacity={0.6} />
+        <text x={14} y={381} fontSize={10} fontWeight={900} letterSpacing={1.6} fill="#fff" style={ROBOTO}>
+          MIDIROAD
+        </text>
+        {Array.from({ length: 16 }, (_, i) => (
+          <rect
+            key={i}
+            x={100 + i * 6.4}
+            y={377}
+            width={4.4}
+            height={4.4}
+            rx={1}
+            fill={LABEL_STEPS.has(i) ? a : "#fff"}
+            fillOpacity={LABEL_STEPS.has(i) ? 0.95 : 0.16}
+          />
+        ))}
+        <text x={286} y={381} textAnchor="end" fontSize={8} letterSpacing={1.2} fill={a} style={MONO}>
+          {catalogueNumber(kit)}
+        </text>
+
+        {/* Print texture and the gloss. */}
+        <rect width={W} height={H} filter={`url(#${id}-grain)`} />
+        <rect width={W} height={H} fill={`url(#${id}-gloss)`} />
+        <rect x={6} y={6} width={288} height={388} rx={2} fill="none" stroke="#fff" strokeOpacity={0.1} />
+      </g>
+    </>
   );
 }
 
-function Front({ kit, id }: { kit: KitProduct; id: string }) {
-  const stats = kitStats(kit);
-  const art = (ARTS[kit.id] ?? DEFAULT_ART)(kit, id);
+/** The box seen from slightly left: spine, front and, on posters, a floor reflection. */
+function BoxSvg({ kit, id, reflect = false, className }: { kit: Look; id: string; reflect?: boolean; className?: string }) {
+  const spec = specFor(kit);
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" aria-hidden>
-      <Defs kit={kit} id={id} />
-      {art}
-
-      {/* Top label */}
-      <text x={16} y={24} fontSize={8} fill="#fff" fillOpacity={0.75} style={MONO} letterSpacing={3}>
-        MIDIROAD PRESENTS
+    <svg viewBox={`0 0 ${BOX_W} ${reflect ? BOX_H_REFLECT : BOX_H}`} className={className} aria-hidden overflow="visible">
+      <defs>
+        <linearGradient id={`${id}-spine`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#000" />
+          <stop offset="1" stopColor={kit.accent2} />
+        </linearGradient>
+        <filter id={`${id}-floor`} x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation={9} />
+        </filter>
+        {reflect && (
+          <>
+            <linearGradient id={`${id}-fade`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#fff" stopOpacity={0.28} />
+              <stop offset="0.3" stopColor="#fff" stopOpacity={0} />
+            </linearGradient>
+            <mask id={`${id}-mask`}>
+              <rect y={424} width={BOX_W} height={96} fill={`url(#${id}-fade)`} />
+            </mask>
+          </>
+        )}
+      </defs>
+      <ellipse cx={200} cy={428} rx={170} ry={9} fill="#000" fillOpacity={0.35} filter={`url(#${id}-floor)`} />
+      <polygon points="8,40 44,24 44,424 8,410" fill={`url(#${id}-spine)`} />
+      <polygon points="8,40 44,24 44,424 8,410" fill="none" stroke={kit.accent} strokeOpacity={0.35} strokeWidth={0.8} />
+      <text transform="translate(30 226) rotate(-90)" textAnchor="middle" fontSize={15} letterSpacing={3} fill={kit.accent} style={ANTON}>
+        {spec.big} · {catalogueNumber(kit)}
       </text>
-      <rect x={W - 74} y={13} width={60} height={15} rx={7.5} fill={kit.accent} />
-      <text x={W - 44} y={24} textAnchor="middle" fontSize={8} fill="#000" style={MONO} fontWeight={700} letterSpacing={1.5}>
-        MIDI KIT
-      </text>
-
-      {/* Stats band */}
-      <rect y={H - 34} width={W} height={34} fill="#000" fillOpacity={0.85} />
-      <rect y={H - 34} width={W} height={1.5} fill={kit.accent} />
-      <text x={16} y={H - 13} fontSize={9} fill="#fff" style={MONO} letterSpacing={2}>
-        {stats.patterns} DRUM MIDI
-      </text>
-      <text x={W - 16} y={H - 13} textAnchor="end" fontSize={9} fill={kit.accent} style={MONO} letterSpacing={2}>
-        {stats.minBpm}–{stats.maxBpm} BPM
-      </text>
-
-      {/* Grain and shrink-wrap gloss */}
-      <rect width={W} height={H} filter={`url(#${id}-grain)`} opacity={0.14} style={{ mixBlendMode: "overlay" }} />
-      <rect width={W} height={H} fill={`url(#${id}-gloss)`} />
-    </svg>
-  );
-}
-
-function Spine({ kit }: { kit: Pick<KitProduct, "name" | "accent" | "accent2"> }) {
-  const w = W * DEPTH;
-  return (
-    <svg viewBox={`0 0 ${w} ${H}`} className="h-full w-full" aria-hidden>
-      <rect width={w} height={H} fill={kit.accent2} />
-      <rect width={w} height={H} fill="#000" opacity={0.35} />
-      <rect x={w - 2} width={2} height={H} fill="#fff" opacity={0.15} />
-      <rect x={w / 2 - 7} y={14} width={14} height={14} rx={7} fill={kit.accent} />
-      <text
-        transform={`translate(${w / 2 + 5} ${H - 20}) rotate(-90)`}
-        fontSize={14}
-        fill="#fff"
-        style={ANTON}
-        letterSpacing={3}
-      >
-        {kit.name.toUpperCase()}
-      </text>
+      <g transform="translate(44 24)">
+        <FrontArt kit={kit} id={id} />
+      </g>
+      {reflect && (
+        <g mask={`url(#${id}-mask)`}>
+          <g transform="translate(44 848) scale(1 -1)">
+            <rect width={W} height={H} fill={kit.accent2} />
+            <rect width={W} height={H} fill="#0a0a0a" fillOpacity={0.4} />
+            <rect y={352} width={W} height={48} fill="#050505" />
+          </g>
+        </g>
+      )}
     </svg>
   );
 }
@@ -362,8 +583,14 @@ function Spine({ kit }: { kit: Pick<KitProduct, "name" | "accent" | "accent2"> }
 export function KitCover({
   kit,
   priority = false,
+  idPrefix = "kc",
 }: {
   kit: KitProduct;
+  /**
+   * Prefix for the SVG's gradient and filter ids. Give a second copy of the same
+   * kit on one page its own, so a hidden copy can't take the visible one's art.
+   */
+  idPrefix?: string;
   /** Kept for existing callers; the cover scales to its container. */
   size?: "md" | "lg";
   priority?: boolean;
@@ -382,170 +609,70 @@ export function KitCover({
   }
 
   return (
-    <Box label={`${kit.name} cover`} spine={<Spine kit={kit} />}>
-      <Front kit={kit} id={`kc-${kit.id}`} />
-    </Box>
-  );
-}
-
-/** Just the front face, flat at 3:4, like a record sleeve (the home hero's player). */
-export function KitCoverFront({ kit }: { kit: KitProduct }) {
-  return (
-    <div role="img" aria-label={`${kit.name} cover`} className="relative aspect-[3/4] w-full overflow-hidden bg-[#040805]">
-      <Front kit={kit} id={`kcf-${kit.id}`} />
+    <div role="img" aria-label={`${kit.name} cover`} className="flex aspect-square w-full items-center justify-center">
+      <BoxSvg kit={kit} id={`${idPrefix}-${kit.id}`} className="h-[96%] w-auto max-w-full" />
     </div>
   );
 }
 
-/** A box seen from slightly left: front face plus spine, centered in a square. */
-function Box({ label, spine, children }: { label?: string; spine: ReactNode; children: ReactNode }) {
+/** Just the front face, flat at 3:4 (the bundle spread). */
+function Front({ kit, id }: { kit: Look; id: string }) {
   return (
-    <div
-      role={label ? "img" : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
-      className="flex aspect-square w-full items-center justify-center [perspective:1400px]"
-    >
-      <div
-        className="relative aspect-[3/4] h-[94%] [transform-style:preserve-3d] [transform:rotateY(24deg)]"
-        style={{ marginLeft: `${DEPTH * 75}%` }}
-      >
-        <div
-          className="absolute right-full top-0 h-full origin-right [transform:rotateY(-90deg)]"
-          style={{ width: `${DEPTH * 100}%` }}
-        >
-          {spine}
-        </div>
-        <div className="absolute inset-0 overflow-hidden">{children}</div>
-      </div>
-    </div>
-  );
-}
-
-const BUNDLE_LOOK = { name: "The Complete Vault", accent: "#f5c542", accent2: "#3a2a05" };
-
-/** Front of the bundle box: every kit's art as a tile under the bundle title. */
-function BundleFront() {
-  const id = "kc-bundle";
-  const a = BUNDLE_LOOK.accent;
-  const tileW = 80;
-  const tileH = 107;
-  const gap = 10;
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" aria-hidden>
-      <defs>
-        <radialGradient id={`${id}-glow`}>
-          <stop offset="0%" stopColor={a} stopOpacity={0.35} />
-          <stop offset="100%" stopColor={a} stopOpacity={0} />
-        </radialGradient>
-        <linearGradient id={`${id}-gold`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fff3c4" />
-          <stop offset="50%" stopColor={a} />
-          <stop offset="100%" stopColor="#b8860b" />
-        </linearGradient>
-        <filter id={`${id}-grain`}>
-          <feTurbulence type="fractalNoise" baseFrequency={0.9} numOctaves={2} stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <linearGradient id={`${id}-gloss`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#fff" stopOpacity={0.18} />
-          <stop offset="35%" stopColor="#fff" stopOpacity={0} />
-          <stop offset="72%" stopColor="#fff" stopOpacity={0.08} />
-          <stop offset="80%" stopColor="#fff" stopOpacity={0} />
-        </linearGradient>
-      </defs>
-
-      <rect width={W} height={H} fill="#060504" />
-      <circle cx={150} cy={260} r={200} fill={`url(#${id}-glow)`} />
-
-      {/* Every kit, as a tile */}
-      {KIT_PRODUCTS.slice(0, 6).map((kit, i) => {
-        const x = 20 + (i % 3) * (tileW + gap);
-        const y = 40 + Math.floor(i / 3) * (tileH + gap);
-        const kid = `kc-${kit.id}`;
-        return (
-          <g key={kit.id}>
-            <svg x={x} y={y} width={tileW} height={tileH} viewBox={`0 0 ${W} ${H}`}>
-              <Defs kit={kit} id={kid} />
-              {(ARTS[kit.id] ?? DEFAULT_ART)(kit, kid)}
-            </svg>
-            <rect x={x} y={y} width={tileW} height={tileH} fill="none" stroke={a} strokeOpacity={0.5} />
-          </g>
-        );
-      })}
-
-      <text x={150} y={293} textAnchor="middle" fontSize={17} fill="#fff" style={ANTON} letterSpacing={10}>
-        THE COMPLETE
-      </text>
-      <text
-        x={150}
-        y={352}
-        textAnchor="middle"
-        fontSize={64}
-        fill={`url(#${id}-gold)`}
-        style={ANTON}
-        letterSpacing={10}
-      >
-        VAULT
-      </text>
-
-      {/* Top label */}
-      <text x={16} y={26} fontSize={8} fill="#fff" fillOpacity={0.75} style={MONO} letterSpacing={3}>
-        MIDIROAD PRESENTS
-      </text>
-      <rect x={W - 74} y={15} width={60} height={15} rx={7.5} fill={a} />
-      <text x={W - 44} y={26} textAnchor="middle" fontSize={8} fill="#000" style={MONO} fontWeight={700} letterSpacing={1.5}>
-        BUNDLE
-      </text>
-
-      {/* Stats band */}
-      <rect y={H - 34} width={W} height={34} fill="#000" fillOpacity={0.85} />
-      <rect y={H - 34} width={W} height={1.5} fill={a} />
-      <text x={16} y={H - 13} fontSize={9} fill="#fff" style={MONO} letterSpacing={1.5}>
-        {MIDI_PATTERN_COUNT} MIDI + {ONE_SHOT_COUNT} ONE-SHOTS
-      </text>
-      <text x={W - 16} y={H - 13} textAnchor="end" fontSize={9} fill={a} style={MONO} letterSpacing={2}>
-        {KIT_PRODUCTS.length} KITS
-      </text>
-
-      <rect width={W} height={H} filter={`url(#${id}-grain)`} opacity={0.14} style={{ mixBlendMode: "overlay" }} />
-      <rect width={W} height={H} fill={`url(#${id}-gloss)`} />
+    <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" aria-hidden preserveAspectRatio="xMidYMid slice">
+      <FrontArt kit={kit} id={id} />
     </svg>
   );
 }
 
+
+/** Back row, then front row, as on the Vault poster. */
+const STACK_BACK = ["black-market", "odyssey", "psycho"];
+const STACK_FRONT = ["decoy", "essentials", "focus"];
+
 /**
- * The bundle as a stack: two kit boxes behind, the bundle box in front.
+ * Every kit's box in two rows, the way the Vault poster shows them.
+ * Drawn in a 760 × 500 space (560 with the floor reflection) and scaled to its container.
  */
-export function BundleCover() {
-  const behind = [KIT_PRODUCTS[2], KIT_PRODUCTS[3]].filter(Boolean);
+export function VaultStack({ reflect = false, idPrefix = "vs" }: { reflect?: boolean; idPrefix?: string }) {
+  const byId = (id: string) => KIT_PRODUCTS.find((k) => k.id === id);
+  const back = STACK_BACK.map(byId).filter((k): k is KitProduct => Boolean(k));
+  const front = STACK_FRONT.map(byId).filter((k): k is KitProduct => Boolean(k));
+  const spaceH = reflect ? 560 : 500;
+  // Positions in percent of the space: back boxes 230 wide, front 262.
+  const place = (i: number, step: number, w: number, top: number) => ({
+    left: `${((380 + (i - 1) * step - w / 2) / 760) * 100}%`,
+    top: `${(top / spaceH) * 100}%`,
+    width: `${(w / 760) * 100}%`,
+  });
   return (
-    <div role="img" aria-label={`${BUNDLE_LOOK.name} bundle cover`} className="relative aspect-square w-full">
-      {behind[0] && (
-        <div className="absolute left-[-4%] top-[2%] w-[66%] opacity-95">
-          <Box spine={<Spine kit={behind[0]} />}>
-            <Front kit={behind[0]} id={`kc-${behind[0].id}`} />
-          </Box>
+    <div className="relative w-full" style={{ aspectRatio: `760 / ${spaceH}` }} aria-hidden>
+      {back.map((kit, i) => (
+        <div key={kit.id} className="absolute" style={place(i, 205, 230, 0)}>
+          <BoxSvg kit={kit} id={`${idPrefix}-b-${kit.id}`} className="block h-auto w-full" />
         </div>
-      )}
-      {behind[1] && (
-        <div className="absolute right-[-6%] top-[0%] w-[66%] opacity-95">
-          <Box spine={<Spine kit={behind[1]} />}>
-            <Front kit={behind[1]} id={`kc-${behind[1].id}`} />
-          </Box>
+      ))}
+      {front.map((kit, i) => (
+        <div key={kit.id} className="absolute" style={place(i, 232, 262, 172)}>
+          <BoxSvg kit={kit} id={`${idPrefix}-f-${kit.id}`} reflect={reflect} className="block h-auto w-full" />
         </div>
-      )}
-      <div className="absolute bottom-[-2%] left-[14%] w-[78%] drop-shadow-[0_10px_18px_rgba(0,0,0,0.45)]">
-        <Box spine={<Spine kit={BUNDLE_LOOK} />}>
-          <BundleFront />
-        </Box>
+      ))}
+    </div>
+  );
+}
+
+/** The bundle's cover in grids and the cart: all six boxes stacked in a square. */
+export function BundleCover() {
+  return (
+    <div role="img" aria-label="The Complete Vault: all six kit boxes" className="flex aspect-square w-full items-center justify-center">
+      <div className="w-full">
+        <VaultStack idPrefix="bc" />
       </div>
     </div>
   );
 }
 
 /**
- * The bundle's poster for its product section: every kit's cover face-on,
+ * The bundle's poster for its product section: every kit's front face-on,
  * in a 3 × 2 grid, each linking to its kit page.
  */
 export function BundleSpread() {

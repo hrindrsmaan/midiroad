@@ -30,7 +30,7 @@ export function OneTimeProducts({ heading = "Prefer to own it once?" }: { headin
           </p>
           <p className="mt-4 flex items-baseline gap-2">
             <span className="font-wide text-xl text-brand">{formatUSD(BUNDLE_PRICE_NOW)}</span>
-            <span className="text-sm text-muted line-through">{formatUSD(PRICING.currentPrice)}</span>
+            <span className="text-sm text-muted line-through">{formatUSD(PRICING.originalPrice)}</span>
           </p>
           <p className="mt-1 text-xs text-muted">One payment. Yours forever.</p>
           <div className="mt-4 space-y-2">

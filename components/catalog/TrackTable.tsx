@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PauseIcon, PlayIcon } from "@/components/AudioPreviews";
 import { SignInModal, type DownloadGate } from "@/components/auth/SignInModal";
+import { KitCover } from "@/components/KitCover";
 import { WaveformSvg, usePlayer } from "@/components/player/Player";
+import { KIT_PRODUCTS } from "@/lib/products";
 import { authClient } from "@/lib/auth-client";
 import { event } from "@/lib/gtag";
 import { paidDownload, type PaidDownload } from "@/lib/paid-download";
@@ -12,6 +14,35 @@ import { SIGNUP_CREDITS } from "@/lib/plans";
 import type { CatalogTrack } from "@/lib/tracks";
 
 const RESUME_PARAM = "download";
+
+/** One column template for the header and every row, so they line up. */
+const ROW_GRID =
+  "grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-1 md:grid-cols-[2.75rem_minmax(0,1.5fr)_minmax(0,0.9fr)_4.5rem_6.5rem_minmax(7rem,1fr)_4.5rem]";
+/** The same, with the kit's box in a column of its own before play. */
+const ROW_GRID_COVERS =
+  "grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-1 md:grid-cols-[3.5rem_2.75rem_minmax(0,1.5fr)_minmax(0,0.9fr)_4.5rem_6.5rem_minmax(7rem,1fr)_4.5rem]";
+
+const KIT_BY_SLUG = new Map(KIT_PRODUCTS.map((kit) => [kit.slug, kit]));
+
+/** Titles come from the catalog in lower case; sentence case reads better in a list. */
+function displayTitle(title: string) {
+  return title.charAt(0).toUpperCase() + title.slice(1);
+}
+
+function ColumnLabels({ showKit, downloads, covers }: { showKit: boolean; downloads: boolean; covers: boolean }) {
+  return (
+    <div aria-hidden className={`hidden ${covers ? ROW_GRID_COVERS : ROW_GRID} pb-2 pt-3 text-xs text-muted md:grid`}>
+      {covers && <span />}
+      <span />
+      <span>Pattern</span>
+      <span>{showKit ? "Kit" : ""}</span>
+      <span>BPM</span>
+      <span>Part</span>
+      <span>Preview</span>
+      <span className="whitespace-nowrap text-right">{downloads ? "Download" : ""}</span>
+    </div>
+  );
+}
 
 function LazyWave({ code, active }: { code: string; active: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -58,6 +89,7 @@ export function TrackTable({
   google = false,
   label = "Patterns",
   creditNote,
+  covers = false,
 }: {
   tracks: CatalogTrack[];
   /** Prev/next list. Defaults to `tracks`. */
@@ -72,6 +104,8 @@ export function TrackTable({
    * would read as a second charge for the same files.
    */
   creditNote?: React.ReactNode;
+  /** Show each kit's box at the start of the row (desktop) and its colour by the kit name. */
+  covers?: boolean;
 }) {
   const player = usePlayer();
   const list = queue ?? tracks;
@@ -133,22 +167,29 @@ export function TrackTable({
 
   return (
     <div>
+      <ColumnLabels showKit={showKit} downloads={downloads} covers={covers} />
       <ul aria-label={label} className="divide-y divide-line border-y border-line">
         {tracks.map((track) => {
           const playing = player.playingId === track.id;
+          const kit = covers ? KIT_BY_SLUG.get(track.kitSlug) : undefined;
           return (
             <li
               key={track.id}
-              className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-1 py-2 md:grid-cols-[auto_minmax(0,1.5fr)_minmax(0,0.9fr)_4.5rem_6.5rem_minmax(7rem,1fr)_auto] ${
-                playing ? "bg-foreground/[0.035]" : ""
+              className={`grid ${covers ? ROW_GRID_COVERS : ROW_GRID} py-2.5 transition-colors ${
+                playing ? "bg-foreground/[0.035]" : "hover:bg-foreground/[0.02]"
               }`}
             >
+              {covers && (
+                <Link href={`/kits/${track.kitSlug}`} tabIndex={-1} aria-hidden className="hidden md:block">
+                  {kit ? <KitCover kit={kit} idPrefix={`row-${track.id}`} /> : null}
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => player.play(track, list)}
-                aria-label={`${playing ? "Stop" : "Play"} ${track.title}`}
+                aria-label={`${playing ? "Stop" : "Play"} ${displayTitle(track.title)}`}
                 aria-pressed={playing}
-                className={`grid h-9 w-9 cursor-pointer place-items-center rounded-full [&_svg]:h-3.5 [&_svg]:w-3.5 ${
+                className={`grid h-11 w-11 cursor-pointer place-items-center rounded-full [&_svg]:h-3.5 [&_svg]:w-3.5 md:h-9 md:w-9 md:justify-self-center ${
                   playing ? "bg-brand text-on-brand" : "bg-foreground/[0.06] text-ink hover:bg-foreground/[0.08]"
                 }`}
               >
@@ -156,7 +197,7 @@ export function TrackTable({
               </button>
               <div className="min-w-0">
                 <Link href={track.path} className="block truncate text-sm font-medium hover:underline">
-                  {track.title}
+                  {displayTitle(track.title)}
                 </Link>
                 <p className="truncate text-xs text-muted md:hidden">
                   {showKit ? `${track.kitName} · ` : ""}
@@ -165,8 +206,18 @@ export function TrackTable({
                 </p>
               </div>
               {showKit ? (
-                <Link href={`/kits/${track.kitSlug}`} className="hidden truncate text-xs text-muted hover:text-ink md:block">
-                  {track.kitName}
+                <Link
+                  href={`/kits/${track.kitSlug}`}
+                  className="hidden min-w-0 items-center gap-2 text-xs text-muted hover:text-ink md:flex"
+                >
+                  {kit && (
+                    <span
+                      aria-hidden
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ background: kit.accent, boxShadow: `0 0 0 2px ${kit.accent2}` }}
+                    />
+                  )}
+                  <span className="truncate">{track.kitName}</span>
                 </Link>
               ) : (
                 <span className="hidden md:block" />
@@ -187,8 +238,8 @@ export function TrackTable({
                     else void download(track);
                   }}
                   disabled={busy !== null}
-                  aria-label={`Download ${track.title} MIDI, 1 credit`}
-                  className={`grid h-9 w-9 cursor-pointer place-items-center rounded-full border [&_svg]:h-4 [&_svg]:w-4 ${
+                  aria-label={`Download ${displayTitle(track.title)} MIDI, 1 credit`}
+                  className={`grid h-11 w-11 cursor-pointer place-items-center rounded-full border [&_svg]:h-4 [&_svg]:w-4 md:h-9 md:w-9 md:justify-self-end ${
                     saved.has(track.id)
                       ? "border-brand/40 text-brand"
                       : "border-line text-ink hover:border-strong disabled:opacity-50"

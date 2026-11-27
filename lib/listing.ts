@@ -62,12 +62,38 @@ export function parseListingQuery(searchParams: ListingSearch | undefined): List
   };
 }
 
+/**
+ * "Featured" round-robins the drum parts instead of walking the catalog part by
+ * part, so the first page reads hats, snare, kick, 808 rather than 32 808s from
+ * one kit. Order inside each part is preserved, so the result is deterministic.
+ */
+export function interleaveByPart<T extends Listable>(items: readonly T[]): T[] {
+  const buckets = new Map<string, T[]>();
+  for (const item of items) {
+    const bucket = buckets.get(item.partId);
+    if (bucket) bucket.push(item);
+    else buckets.set(item.partId, [item]);
+  }
+  if (buckets.size < 2) return [...items];
+  const groups = [...buckets.values()];
+  const out: T[] = [];
+  for (let index = 0; out.length < items.length; index++) {
+    for (const group of groups) {
+      const row = group[index];
+      if (row !== undefined) out.push(row);
+    }
+  }
+  return out;
+}
+
 export function arrangeListing<T extends Listable>(items: readonly T[], query: ListingQuery, pageSize = PAGE_SIZE): ListingView<T> {
   let rows = items.filter((item) => (query.part ? item.partId === query.part : true));
   if (query.sort === "bpm-asc") {
     rows = [...rows].sort((a, b) => a.bpm - b.bpm || a.title.localeCompare(b.title) || a.id.localeCompare(b.id));
   } else if (query.sort === "title") {
     rows = [...rows].sort((a, b) => a.title.localeCompare(b.title) || a.id.localeCompare(b.id));
+  } else {
+    rows = interleaveByPart(rows);
   }
   const total = rows.length;
   const pages = Math.max(1, Math.ceil(total / pageSize));
