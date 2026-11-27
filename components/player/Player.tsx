@@ -120,6 +120,18 @@ export function WaveformSvg({
       <g style={{ clipPath: `inset(0 ${((1 - played) * 100).toFixed(2)}% 0 0)` }}>
         <path d={path} className="text-brand" fill="currentColor" />
       </g>
+      {played > 0 && played < 1 && (
+        <line
+          x1={played * 100}
+          x2={played * 100}
+          y1={0}
+          y2={24}
+          className="text-ink"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          vectorEffect="non-scaling-stroke"
+        />
+      )}
     </svg>
   );
 }

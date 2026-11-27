@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { AccountLink } from "@/components/auth/AccountLink";
 import { AddToCartButton, CartButton } from "@/components/cart/CartButtons";
-import { FreeKitLink } from "@/components/FreeKitCta";
 import { Logo } from "@/components/Logo";
+import { MobileNav } from "@/components/MobileNav";
 import { TrackedLink } from "@/components/TrackedLink";
 import { BPM_KEY_PATH } from "@/lib/bpm-key/content";
 import { formatUSD } from "@/lib/pricing";
@@ -17,7 +17,6 @@ const NAV_LINKS = [
   { href: "/beat-maker", label: "Beat Maker" },
   { href: "/chord-maker", label: "Chord Maker" },
   { href: BPM_KEY_PATH, label: "BPM & Key Finder" },
-  { href: "/free-midi-kit", label: "$1 Starter Kit" },
   { href: "/guides", label: "Guides" },
   { href: "/compare", label: "Compare" },
   { href: "/pricing", label: "Pricing" },
@@ -25,15 +24,17 @@ const NAV_LINKS = [
 ];
 
 /** Sticky top bar, kept to the essentials: logo, chord maker, account and cart. Every other page is linked from the footer. */
-export function SiteNav() {
+export function SiteNav({ tone = "paper" }: { tone?: "paper" | "night" } = {}) {
+  const night = tone === "night";
   return (
     <>
     <BlackFridayBar />
-    <nav className="sticky top-0 z-50 border-b border-line bg-background/90 backdrop-blur">
+    <nav className={`sticky top-0 z-50 border-b border-line bg-background/90 backdrop-blur ${night ? "tone-night" : ""}`}>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 md:px-5">
         <Link href="/" className="flex shrink-0 items-center" aria-label="MidiRoad home">
           {/* A notch smaller on phones, so the links and cart fit beside it. */}
           <Logo
+            inverted={night}
             markClassName="h-8 w-8 md:h-9 md:w-9"
             className="gap-2 md:gap-2.5 [&>span:last-child]:text-lg md:[&>span:last-child]:text-[21px]"
           />
@@ -42,7 +43,7 @@ export function SiteNav() {
           <TrackedLink
             href="/kits"
             track={{ action: "click_kits", category: "navigation", label: "header" }}
-            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink sm:inline"
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink md:inline"
           >
             Kits
           </TrackedLink>
@@ -54,19 +55,20 @@ export function SiteNav() {
             Patterns
           </TrackedLink>
           <TrackedLink
+            href="/beat-maker"
+            track={{ action: "click_beat_maker", category: "navigation", label: "header" }}
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink lg:inline"
+          >
+            Beat maker
+          </TrackedLink>
+          <TrackedLink
             href="/chord-maker"
             track={{ action: "click_chord_maker", category: "navigation", label: "header" }}
-            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink min-[420px]:inline"
+            className="hidden text-sm font-medium text-muted transition-colors hover:text-ink md:inline"
           >
             Chord Maker
           </TrackedLink>
-          <FreeKitLink
-            source="header"
-            className="inline-flex h-8 items-center rounded-key border border-brand/50 bg-brand/10 px-2.5 text-xs font-semibold text-brand transition-colors hover:bg-brand/20 md:h-9 md:px-3.5 md:text-sm"
-          >
-            <span className="md:hidden">$1 kit</span>
-            <span className="hidden md:inline">$1 starter kit</span>
-          </FreeKitLink>
+          <MobileNav />
           <AccountLink />
           <CartButton />
         </div>

@@ -25,7 +25,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
     { url: absoluteUrl("/beat-maker"), changeFrequency: "monthly", priority: 0.9 },
-    { url: absoluteUrl("/free-midi-kit"), changeFrequency: "monthly", priority: 0.9 },
     { url: absoluteUrl("/kits"), changeFrequency: "weekly", priority: 0.8 },
     { url: absoluteUrl("/chord-maker"), changeFrequency: "monthly", priority: 0.8 },
     { url: absoluteUrl(BPM_KEY_PATH), changeFrequency: "monthly", priority: 0.8 },

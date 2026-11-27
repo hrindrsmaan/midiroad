@@ -7,7 +7,14 @@ import { TESTIMONIALS } from "@/lib/testimonials";
  * comment, two per row on wider screens, so it adds social proof without
  * pushing the product details down.
  */
-export function Testimonials({ className = "" }: { className?: string }) {
+export function Testimonials({
+  className = "",
+  layout = "grid",
+}: {
+  className?: string;
+  /** `stack` fills a tall column; `grid` stays compact beside a buy box. */
+  layout?: "grid" | "stack";
+}) {
   if (TESTIMONIALS.length === 0) return null;
 
   return (
@@ -33,20 +40,38 @@ export function Testimonials({ className = "" }: { className?: string }) {
           </Link>
         </span>
       </figcaption>
-      <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <ul
+        className={
+          layout === "stack"
+            ? "flex flex-col gap-3"
+            : "grid grid-cols-1 gap-3 md:grid-cols-2"
+        }
+      >
         {TESTIMONIALS.map((t) => (
-          <li key={t.handle} className="flex min-w-0 items-start gap-3 rounded-md border border-line bg-card p-4">
+          <li
+            key={t.handle}
+            className={`flex min-w-0 items-start gap-3 rounded-md border border-line bg-card ${
+              layout === "stack" ? "p-5" : "p-4"
+            }`}
+          >
             <Image
               src={t.avatar}
               alt=""
-              width={36}
-              height={36}
-              className="h-9 w-9 shrink-0 rounded-full object-cover"
+              width={40}
+              height={40}
+              className={`${layout === "stack" ? "h-10 w-10" : "h-9 w-9"} shrink-0 rounded-full object-cover`}
             />
-            <p className="min-w-0 text-sm leading-snug">
-              <span className="text-ink">&ldquo;{t.text}&rdquo;</span>{" "}
-              <span className="text-muted">{t.handle}</span>
-            </p>
+            {layout === "stack" ? (
+              <div className="min-w-0">
+                <p className="text-pretty text-[15px] leading-relaxed text-ink">&ldquo;{t.text}&rdquo;</p>
+                <p className="mt-1.5 text-xs text-muted">{t.handle}</p>
+              </div>
+            ) : (
+              <p className="min-w-0 text-sm leading-snug">
+                <span className="text-ink">&ldquo;{t.text}&rdquo;</span>{" "}
+                <span className="text-muted">{t.handle}</span>
+              </p>
+            )}
           </li>
         ))}
       </ul>

@@ -60,7 +60,7 @@ export function Waveform({
       className={fluid ? "min-w-0 flex-1" : "shrink-0"}
     >
       {peaks.map((peak, i) => {
-        const h = Math.max(1, peak * height);
+        const h = Math.max(2, peak * height);
         return (
           <rect
             key={i}
@@ -68,11 +68,22 @@ export function Waveform({
             y={(height - h) / 2}
             width={BAR_WIDTH}
             height={h}
-            rx={1}
+            rx={BAR_WIDTH / 2}
             fill={i < played ? playedColor : color}
           />
         );
       })}
+      {progress > 0 && progress < 1 && (
+        <line
+          x1={played * (BAR_WIDTH + BAR_GAP)}
+          x2={played * (BAR_WIDTH + BAR_GAP)}
+          y1={0}
+          y2={height}
+          stroke="#1f1f1f"
+          strokeWidth={1.5}
+          vectorEffect="non-scaling-stroke"
+        />
+      )}
     </svg>
   );
 }

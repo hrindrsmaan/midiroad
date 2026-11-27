@@ -3,7 +3,6 @@ import { MIDI_PATTERN_COUNT, ONE_SHOT_COUNT } from "@/lib/bundle";
 import { FAQS } from "@/lib/faq";
 import { BUNDLE_NAME, BUNDLE_PRICE, KIT_PRODUCTS, kitStats } from "@/lib/products";
 import { GUIDES, guidePath } from "@/lib/guides";
-import { FREE_KIT_COUNT, FREE_KIT_MAX_BPM, FREE_KIT_MIN_BPM, FREE_KIT_PATH } from "@/lib/free-kit";
 import { GENRES, genrePath } from "@/lib/patterns";
 import { buyerLlmsLines } from "@/lib/buyer-intent";
 import { SITE_DESCRIPTION, absoluteUrl } from "@/lib/site";
@@ -34,7 +33,6 @@ ${kits.join("\n")}
 
 ## Free tools
 
-- [MIDI drum starter kit](${absoluteUrl(FREE_KIT_PATH)}): ${FREE_KIT_COUNT} royalty-free MIDI drum patterns (two each from trap, street trap, melodic trap, dark trap, drill and 808 bass, ${FREE_KIT_MIN_BPM}–${FREE_KIT_MAX_BPM} BPM) for $1. No account needed.
 - [Free trap beat maker](${absoluteUrl("/beat-maker")}): generates a trap beat (hats, snare, kick, 808) in the browser, with tempo, key, sound picks and mutes. Export the whole beat or a single track as MIDI.
 - [Free chord progression maker](${absoluteUrl("/chord-maker")}): builds a four-bar chord progression in any major or minor key, editable on a piano roll, with rhythm, sound and bass options. Playing is free; the MIDI download is for subscribers.
 - [Free BPM and key finder](${absoluteUrl(BPM_KEY_PATH)}): detects tempo, musical key, and Camelot code from an MP3 or WAV in the browser. The file is never uploaded.
